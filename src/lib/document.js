@@ -157,16 +157,17 @@ define(function (require, exports) {
     /**
      * Close a document without saving
      * 
-     * @param {number} documentID
+     * @param {object} sourceRef
      * @param {string=} save Whether the document should be saved. "yes", "no"
      * @return {PlayObject}
      *
      * Preconditions:
      * The document should be saved previously and have fileReference path value for saving.
      */
-    var closeDocument = function (documentID, save) {
+    var closeDocument = function (sourceRef, save) {
+        assert(referenceOf(sourceRef) === "document", "closeDocument is passed a non-document reference");
         var desc = {
-            documentID: documentID
+            null: sourceRef
         };
 
         if (save) {
