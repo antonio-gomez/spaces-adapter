@@ -830,6 +830,11 @@ define(function () {
     });
 
     /* _spaces._debug.descriptorIdentity(): timing test, multiple iterations
+     *
+     * https://developer.mozilla.org/en-US/docs/Web/API/Performance/now
+     *
+     * "The Performance.now() method returns a DOMHighResTimeStamp, measured
+     * in milliseconds, accurate to one thousandth of a millisecond."
      */
     asyncTest("_spaces._debug.descriptorIdentity(): timing test, multiple iterations", function () {
         expect(1);
@@ -850,10 +855,8 @@ define(function () {
                 var elapsed = timings[timings.length - 1] - startTime;
                 var avgTime = elapsed / iterations;
                 var discreteTimings = timings.map(function (currentValue, index, array) {
-                    if (index > 0) {
-                        return currentValue - array[index - 1];
-                    }
-                    return currentValue - startTime;
+                    if (index === 0) return currentValue - startTime;
+                    return currentValue - array[index - 1];
                 });
                 var sortedTimings = discreteTimings.sort();
                 var maxTime = sortedTimings[sortedTimings.length - 1];
@@ -862,11 +865,11 @@ define(function () {
                 var reportAsWarning = avgTime > warnThreshold && avgTime < errorThreshold ||
                     medianTime > warnThreshold && medianTime < errorThreshold;
                 var reportAsError = avgTime > errorThreshold || medianTime > errorThreshold;
-                var logstring = "AVG ROUND TRIP TIMES (ms) ";
+                var logstring = "ROUND TRIP TIMING TEST (";
                 logstring += iterations;
-                logstring += " iterations (thresholds: warn: ";
+                logstring += " iterations, times in ms. Thresholds: warn=";
                 logstring += warnThreshold;
-                logstring += ", error: ";
+                logstring += ", error=";
                 logstring += errorThreshold;
                 logstring += "): avg: ";
                 logstring += avgTime.toFixed(2);
@@ -876,10 +879,21 @@ define(function () {
                 logstring += maxTime.toFixed(2);
                 logstring += ", min: ";
                 logstring += minTime.toFixed(2);
-                if (reportAsWarning) {
-                    console.warn(logstring);
-                }
+                // If reportAsError is true, the timings based on average and/or median
+                // have exceeded our threshold values and the test will FAIL.
+                // Note Performance.now() claims accuracy to 1 ms, so keep that
+                // in mind if we report average or median timings of less than
+                // 1 ms.
                 ok(!reportAsError, logstring);
+                if (!reportAsError) {
+                    // If not failing, just determine whether to log the
+                    // result as a warning if simple info
+                    if (reportAsWarning) {
+                        console.warn(logstring);
+                    } else {
+                        console.info(logstring);
+                    }
+                }
                 start();
             }
         };
@@ -1403,7 +1417,7 @@ define(function () {
         ];
 
         var options = {
-        	"synchronous":false
+            "synchronous":false
         };
 
         _spaces.ps.descriptor.batchPlay(commands, options, function (err, descriptors, errors) {
@@ -1493,14 +1507,14 @@ define(function () {
         ok(typeof _spaces.ps.ui.pointerPropagationMode === "object",
             "_spaces.ps.ui.pointerPropagationMode defined");
         // constants
-        ok(typeof _spaces.ps.ui.pointerPropagationMode.ALPHA_PROPAGATE === "number",
-            "_spaces.ps.ui.pointerPropagationMode.ALPHA_PROPAGATE");
-        ok(typeof _spaces.ps.ui.pointerPropagationMode.ALWAYS_PROPAGATE === "number",
-            "_spaces.ps.ui.pointerPropagationMode.ALWAYS_PROPAGATE");
-        ok(typeof _spaces.ps.ui.pointerPropagationMode.NEVER_PROPAGATE === "number",
-            "_spaces.ps.ui.pointerPropagationMode.NEVER_PROPAGATE");
-        ok(typeof _spaces.ps.ui.pointerPropagationMode.ALPHA_PROPAGATE_WITH_NOTIFY === "number",
-            "_spaces.ps.ui.pointerPropagationMode.ALPHA_PROPAGATE_WITH_NOTIFY");
+        ok(typeof _spaces.ps.ui.pointerPropagationMode.PROPAGATE_BY_ALPHA === "number",
+            "_spaces.ps.ui.pointerPropagationMode.PROPAGATE_BY_ALPHA");
+        ok(typeof _spaces.ps.ui.pointerPropagationMode.PROPAGATE_TO_PHOTOSHOP === "number",
+            "_spaces.ps.ui.pointerPropagationMode.PROPAGATE_TO_PHOTOSHOP");
+        ok(typeof _spaces.ps.ui.pointerPropagationMode.PROPAGATE_TO_BROWSER === "number",
+            "_spaces.ps.ui.pointerPropagationMode.PROPAGATE_TO_BROWSER");
+        ok(typeof _spaces.ps.ui.pointerPropagationMode.PROPAGATE_BY_ALPHA_AND_NOTIFY === "number",
+            "_spaces.ps.ui.pointerPropagationMode.PROPAGATE_BY_ALPHA_AND_NOTIFY");
     });
 
     /* _spaces.ps.ui.getPointerPropagationMode()
@@ -1517,10 +1531,10 @@ define(function () {
         _spaces.ps.ui.getPointerPropagationMode(function (err, mode) {
             _validateNotifierResult(err);
 
-            var modeValidation = (mode === _spaces.ps.ui.pointerPropagationMode.ALPHA_PROPAGATE ||
-                mode === _spaces.ps.ui.pointerPropagationMode.NEVER_PROPAGATE ||
-                mode === _spaces.ps.ui.pointerPropagationMode.ALWAYS_PROPAGATE ||
-                mode === _spaces.ps.ui.pointerPropagationMode.ALPHA_PROPAGATE_WITH_NOTIFY);
+            var modeValidation = (mode === _spaces.ps.ui.pointerPropagationMode.PROPAGATE_BY_ALPHA ||
+                mode === _spaces.ps.ui.pointerPropagationMode.PROPAGATE_TO_BROWSER ||
+                mode === _spaces.ps.ui.pointerPropagationMode.PROPAGATE_TO_PHOTOSHOP ||
+                mode === _spaces.ps.ui.pointerPropagationMode.PROPAGATE_BY_ALPHA_AND_NOTIFY);
 
             ok(modeValidation, "mode factor validation");
             if (!modeValidation) {
@@ -1537,7 +1551,7 @@ define(function () {
      * Validates setPointerPropagationMode() and getPointerPropagationMode() callback args.
      */
     asyncTest("_spaces.ps.ui.setPointerPropagationMode() get/set", function () {
-        expect(18);
+        expect(30);
 
         // getPointerPropagationMode() callback
         var getModeCallback = function (err, mode) {
@@ -1584,22 +1598,21 @@ define(function () {
 
 
     /* _spaces.ps.ui.policyAction constants object
-     * Only valid for Mac
      * Validates: defined, type, number of elements, their type, ref by name
      */
-    if (navigator.platform === "MacIntel") {
-        test("_spaces.ps.ui.policyAction constants object", function () {
-            ok(typeof _spaces.ps.ui.policyAction === "object",
-                "_spaces.ps.ui.policyAction defined");
-            // constants
-            ok(typeof _spaces.ps.ui.policyAction.ALPHA_PROPAGATE === "number",
-                "_spaces.ps.ui.policyAction.ALPHA_PROPAGATE");
-            ok(typeof _spaces.ps.ui.policyAction.ALWAYS_PROPAGATE === "number",
-                "_spaces.ps.ui.policyAction.ALWAYS_PROPAGATE");
-            ok(typeof _spaces.ps.ui.policyAction.NEVER_PROPAGATE === "number",
-                "_spaces.ps.ui.policyAction.NEVER_PROPAGATE");
-        });
-    }
+    test("_spaces.ps.ui.policyAction constants object", function () {
+        ok(typeof _spaces.ps.ui.policyAction === "object",
+           "_spaces.ps.ui.policyAction defined");
+        // constants
+        ok(typeof _spaces.ps.ui.policyAction.PROPAGATE_BY_ALPHA === "number",
+           "_spaces.ps.ui.policyAction.PROPAGATE_BY_ALPHA");
+        ok(typeof _spaces.ps.ui.policyAction.PROPAGATE_BY_FOCUS === "number",
+           "_spaces.ps.ui.policyAction.PROPAGATE_BY_FOCUS");
+        ok(typeof _spaces.ps.ui.policyAction.PROPAGATE_TO_PHOTOSHOP === "number",
+           "_spaces.ps.ui.policyAction.PROPAGATE_TO_PHOTOSHOP");
+        ok(typeof _spaces.ps.ui.policyAction.PROPAGATE_TO_BROWSER === "number",
+           "_spaces.ps.ui.policyAction.PROPAGATE_TO_BROWSER");
+    });
 
     /* _spaces.ps.ui.keyboardPropagationMode constants object
      * Validates: defined, type, number of elements, their type, ref by name
@@ -1608,12 +1621,12 @@ define(function () {
         ok(typeof _spaces.ps.ui.keyboardPropagationMode === "object",
             "_spaces.ps.ui.keyboardPropagationMode defined");
         // constants
-        ok(typeof _spaces.ps.ui.keyboardPropagationMode.FOCUS_PROPAGATE === "number",
-            "_spaces.ps.ui.keyboardPropagationMode.FOCUS_PROPAGATE");
-        ok(typeof _spaces.ps.ui.keyboardPropagationMode.ALWAYS_PROPAGATE === "number",
-            "_spaces.ps.ui.keyboardPropagationMode.ALWAYS_PROPAGATE");
-        ok(typeof _spaces.ps.ui.keyboardPropagationMode.NEVER_PROPAGATE === "number",
-            "_spaces.ps.ui.keyboardPropagationMode.NEVER_PROPAGATE");
+        ok(typeof _spaces.ps.ui.keyboardPropagationMode.PROPAGATE_BY_FOCUS === "number",
+            "_spaces.ps.ui.keyboardPropagationMode.PROPAGATE_BY_FOCUS");
+        ok(typeof _spaces.ps.ui.keyboardPropagationMode.PROPAGATE_TO_PHOTOSHOP === "number",
+            "_spaces.ps.ui.keyboardPropagationMode.PROPAGATE_TO_PHOTOSHOP");
+        ok(typeof _spaces.ps.ui.keyboardPropagationMode.PROPAGATE_TO_BROWSER === "number",
+            "_spaces.ps.ui.keyboardPropagationMode.PROPAGATE_TO_BROWSER");
     });
 
     /* _spaces.ps.ui.getKeyboardPropagationMode()
@@ -1649,7 +1662,7 @@ define(function () {
      * Validates setKeyboardPropagationMode() and getKeyboardPropagationMode() callback args.
      */
     asyncTest("_spaces.ps.ui.setKeyboardPropagationMode() get/set", function () {
-        expect(14);
+        expect(22);
 
         // getKeyboardPropagationMode() callback
         var getModeCallback = function (err, mode) {
@@ -2278,14 +2291,19 @@ define(function () {
                         var isActive = value;
                         getOpenDocumentCount(function (err, value) {
                             if (err === undefined) {
-                                ok(isActive === false || isActive === true && value === 0,
-                                   "isActive() value following release()");
-                                if (value === 0) {
-                                    if (isActive) {
-                                        console.warn("isActive() returns true after call to release() where no docs are open: https://watsonexp.corp.adobe.com/#bug=4011552");
-                                    } else {
-                                        console.warn("_spaces.os.keyboardFocus.isActive() bug appears to be fixed! See: https://watsonexp.corp.adobe.com/#bug=4011552");
+                                if (navigator.platform === "MacIntel") {
+                                    ok(isActive === false || isActive === true && value === 0,
+                                       "isActive() value following release()");
+                                    if (value === 0) {
+                                        if (isActive) {
+                                            console.warn("BUG: isActive() returns true after call to release() where no docs are open: https://watsonexp.corp.adobe.com/#bug=4011552");
+                                        } else {
+                                            console.warn("_spaces.os.keyboardFocus.isActive() bug appears to be fixed! See: https://watsonexp.corp.adobe.com/#bug=4011552");
+                                        }
                                     }
+                                } else {
+                                    ok(isActive === false || isActive === true && value === 0,
+                                       "isActive() value following release()");
                                 }
                             } else {
                                 // The correct/original validator. If we can't get the document count,
