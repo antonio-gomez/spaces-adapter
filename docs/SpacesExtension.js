@@ -759,24 +759,61 @@ _spaces.ps.ui.setWidgetTypeVisibility = function (widgetTypes, visibility, callb
     return psUiSetWidgetTypeVisibility(widgetTypes, visibility, callback);
 };
 
-/// enumeration controlling pointer propagation
+/// enumeration controlling the pointer propagation mode
 _spaces.ps.ui.pointerPropagationMode = {
-	/// Propagate the pointer event based on the alpha value under the event point.
+
+    /** Propagate the pointer event based on the alpha value at the event point.
+    If alpha is 0, then the event is sent to Photoshop.
+    If alpha is not 0, then the event is sent to the browser.
+    */
+    PROPAGATE_BY_ALPHA: 0,
+
+    /** Always send the pointer event to Photoshop
+    */
+    PROPAGATE_TO_PHOTOSHOP: 1,
+
+    /** Always send the pointer event to the browser.
+    */
+    PROPAGATE_TO_BROWSER: 2,
+
+	/** Propagate the pointer event based on the alpha value under the event point
+    similar to PROPAGATE_BY_ALPHA.
+    If a mouse move event is sent to Photoshop, then the browser is notified
+    via a EXTERNAL_MOUSE_MOVE message.
+    */
+    PROPAGATE_BY_ALPHA_AND_NOTIFY: 3,
+
+
+    // @{ legacy definitions - start
 	ALPHA_PROPAGATE: 0,
-
-    /// Always propagate pointer events. Spaces will never get a pointer event
     ALWAYS_PROPAGATE: 1,
-
-	/// Never propagate pointer events. Spaces consumes all pointer events
     NEVER_PROPAGATE: 2,
+    ALPHA_PROPAGATE_WITH_NOTIFY: 3
+    // @} legacy definitions - end
+};
 
-	/// Propagate the pointer event based on the alpha value under the event point,
-	/// and send notification of mousemoves when alpha==0 (transparent).
-	/// Differs from ALPHA_PROPAGATE via:
-	/// 1) "EXTERNAL_MOUSE_MOVE notification": If a mousemove event is over a
-	/// transparent (alpha==0) section of Spaces surface, Javascript is
-	/// delivered a notification of that mousemove via EXTERNAL_MOUSE_MOVE.
-    ALPHA_PROPAGATE_WITH_NOTIFY: 3,
+/// enumeration controlling the keyboard propagation mode
+_spaces.ps.ui.keyboardPropagationMode = {
+
+    /** The keyboard event propagation is based on the current
+    OS keyboard focus.
+    The browser will receive the event if the browser has keyboard focus.
+    */
+    PROPAGATE_BY_FOCUS: 0,
+
+    /** Always send the keyboard event to Photoshop
+    */
+    PROPAGATE_TO_PHOTOSHOP: 1,
+
+    /** Always send the keyboard event to the browser.
+    */
+    PROPAGATE_TO_BROWSER: 2,
+
+    // @{ legacy definitions - start
+	FOCUS_PROPAGATE: 0,
+    ALWAYS_PROPAGATE: 1,
+    NEVER_PROPAGATE: 2,
+    // @} legacy definitions - end
 };
 
 /** Change the pointer propagation mode.
@@ -805,17 +842,34 @@ _spaces.ps.ui.getPointerPropagationMode = function (callback) {
         return psUiGetPointerPropagationMode(callback);
     };
 
-/** Modifier bit fields. The command modifier is only used on Mac OS
-*/
+/// enumeration controlling the action for an event policy entry
 _spaces.ps.ui.policyAction = {
-    /// Propagate the pointer event based on the alpha value under the event point
-    ALPHA_PROPAGATE: 0,
 
-    /// Always propagate pointer events. Spaces will never get a pointer event
+    /** Specifies that a pointer policy action uses alpha propagation.
+    @see pointerPropagationMode.PROPAGATE_BY_ALPHA
+    */
+    PROPAGATE_BY_ALPHA: 0,
+
+    /** Specifies that a keyboard policy action uses focus propagation.
+    @see keyboardPropagationMode.PROPAGATE_BY_FOCUS
+    */
+    PROPAGATE_BY_FOCUS: 0,
+
+    /** Always send the event to Photoshop
+    */
+    PROPAGATE_TO_PHOTOSHOP: 1,
+
+    /** Always send the event to the browser.
+    */
+    PROPAGATE_TO_BROWSER: 2,
+
+    // @{ legacy definitions - start
+	DEFAULT_PROPAGATE: 0,
     ALWAYS_PROPAGATE: 1,
-
-    /// Never propagate pointer events. Spaces consumes all pointer events
     NEVER_PROPAGATE: 2,
+    ALPHA_PROPAGATE: 0,
+    FOCUS_PROPAGATE: 0,
+    // @} legacy definitions - end
 };
 
 /** Change the pointer propagation policy
@@ -839,19 +893,6 @@ _spaces.ps.ui.policyAction = {
 _spaces.ps.ui.setPointerEventPropagationPolicy = function (options, callback) {
     native function psUiSetPointerEventPropagationPolicy();
     return psUiSetPointerEventPropagationPolicy(options, callback);
-};
-
-/// enumeration controlling keyboard propagation
-_spaces.ps.ui.keyboardPropagationMode = {
-	/// Propagate keyboard event based on system focus.
-	/// Spaces consumes keyboard events if it has focus
-	FOCUS_PROPAGATE: 0,
-
-    /// Always propagate keyboard events. Spaces will never get a keyboard event
-    ALWAYS_PROPAGATE: 1,
-
-    /// Never propagate keyboard events. Spaces consumes all keyboard events
-    NEVER_PROPAGATE: 2,
 };
 
 /** Change the keyboard propagation mode.
