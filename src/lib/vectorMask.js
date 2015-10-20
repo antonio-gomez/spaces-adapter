@@ -40,7 +40,11 @@ define(function (require, exports) {
         _vectorMaskRef = {
             "_ref": "path",
             "_enum": "path",
-            "_value": "vectorMask" };
+            "_value": "vectorMask" },
+        _pathRef = {
+            "_ref": "path",
+            "_enum": "ordinal",
+            "_value": "targetEnum" };
 
     /**
      * creates a rectangular work path with the given bounds descriptor 
@@ -74,11 +78,7 @@ define(function (require, exports) {
             "_ref": [_vectorMaskRef]
         },
             pathRef = {
-                "_ref": [{
-                    "_ref": "path",
-                    "_enum": "ordinal",
-                    "_value": "targetEnum"
-                }]
+                "_ref": [_pathRef]
             };
 
         return new PlayObject("make", {
@@ -148,6 +148,20 @@ define(function (require, exports) {
         });
     };
     
+
+    /**
+     * drops the selection on the current path
+     * 
+     * @return {PlayObject}
+     */
+    var dropPathSelection = function () {
+        return new PlayObject("deselect", {
+            "null": {
+                "_ref": [_pathRef]
+            }
+        });
+    };
+
     /**
      * free transform the whole path of the targeted vector mask
      * 
@@ -193,6 +207,7 @@ define(function (require, exports) {
     exports.createRevealAllMask = createRevealAllMask;
     exports.enterFreeTransformPathMode = enterFreeTransformPathMode;
     exports.activateVectorMaskEditing = activateVectorMaskEditing;
+    exports.dropPathSelection = dropPathSelection;
     exports.makeBoundsWorkPath = makeBoundsWorkPath;
     exports.selectVectorMask = selectVectorMask;
     exports.deleteWorkPath = deleteWorkPath;
