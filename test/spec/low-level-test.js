@@ -2106,6 +2106,8 @@ define(function () {
             "_spaces.os.eventKind.MOUSE_WHEEL");
         ok(typeof _spaces.os.eventKind.MOUSE_MOVE === "number",
             "_spaces.os.eventKind.MOUSE_MOVE");
+        ok(typeof _spaces.os.eventKind.RIGHT_MOUSE_DOWN === "number",
+            "_spaces.os.eventKind.RIGHT_MOUSE_DOWN");
     });
 
     /* _spaces.os.eventModifiers constants object
@@ -2213,6 +2215,8 @@ define(function () {
             "_spaces.os.notifierKind.EXTERNAL_MOUSE_MOVE");
         ok(typeof _spaces.os.notifierKind.EXTERNAL_MOUSE_DOWN === "string",
             "_spaces.os.notifierKind.EXTERNAL_MOUSE_DOWN");
+        ok(typeof _spaces.os.notifierKind.EXTERNAL_RMOUSE_DOWN === "string",
+            "_spaces.os.notifierKind.EXTERNAL_RMOUSE_DOWN");
         ok(typeof _spaces.os.notifierKind.EXTERNAL_MOUSE_WHEEL === "string",
             "_spaces.os.notifierKind.EXTERNAL_MOUSE_WHEEL");
         ok(typeof _spaces.os.notifierKind.EXTERNAL_KEYEVENT === "string",

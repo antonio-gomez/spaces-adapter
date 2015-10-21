@@ -880,7 +880,7 @@ _spaces.ps.ui.policyAction = {
     only pointer events are supported.
     A pointer event policy is an object with the following keys:
     "eventKind" (number, required)
-        Can be _spaces.os.eventKind.LEFT_MOUSE_DOWN or MOUSE_WHEEL,
+        Can be _spaces.os.eventKind.LEFT_MOUSE_DOWN or MOUSE_WHEEL or RIGHT_MOUSE_DOWN,
     "modifiers" (number)    _spaces.os.eventModifiers,
     "area" (list, optional). Area relative to the Spaces surface that the policy covers.
                             The list is interpreted as: [x, y, width, height]
@@ -1162,6 +1162,7 @@ _spaces.os.eventKind = {
     FLAGS_CHANGED:		4,
     MOUSE_WHEEL:		5,
     MOUSE_MOVE:			6,
+    RIGHT_MOUSE_DOWN:	7,
 };
 
 /** Modifier bit fields. The command modifier is only used on Mac OS.
@@ -1262,6 +1263,10 @@ _spaces.os.notifierKind = {
     the Spaces surface.
     */
     EXTERNAL_MOUSE_DOWN: "externalMouseDown",
+
+	/** A mousedown event (right mouse button) occurred and was not routed to Spaces.
+    */
+    EXTERNAL_RMOUSE_DOWN: "externalRMouseDown",
 
 	/** A mousewheel event occurred and was not routed to Spaces.
 	*/
