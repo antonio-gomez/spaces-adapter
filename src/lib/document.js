@@ -156,23 +156,29 @@ define(function (require, exports) {
 
     /**
      * Close a document without saving
-     * 
+     *
      * @param {number} documentID
-     * @param {string=} save Whether the document should be saved. "yes", "no"
+     * @param {object=} settings
+     * @param {string=} settings.save - Whether the document should be saved. "yes", "no"
+     * @param {boolean=} settings.forceMRU - Will save the file to Most Recently Used list only when true
+     *                                       default is true
      * @return {PlayObject}
      *
      * Preconditions:
      * The document should be saved previously and have fileReference path value for saving.
      */
-    var closeDocument = function (documentID, save) {
+    var closeDocument = function (documentID, settings) {
+        settings = settings || {};
+        
         var desc = {
-            documentID: documentID
+            documentID: documentID,
+            forceMRU: (typeof settings.forceMRU === "boolean") ? settings.forceMRU : true
         };
 
-        if (save) {
+        if (settings.save) {
             desc.saving = {
                 "_enum": "yesNo",
-                "_value": save
+                "_value": settings.save
             };
         }
 
