@@ -62,24 +62,26 @@ define(function (require, exports) {
     /**
      * Sends a notification to Photoshop with the chosen element path
      *
-     * @param {number} requestRef Reference to initial request sent
-     *                            by Photoshop for relinking
+     * @param {number} documentID - Owner document ID
+     * @param {number} layerID - Affected layer IDs
      * @param {AdobeLibraryElement} element Chosen element object
      * @param {string} path Location of the file in local storage cache
      * @param {{id: number, license: boolean}} stockData License information on Adobe Stock images
      *
      * @return {PlayObject}
      */
-    var chooseElement = function (requestRef, element, path, stockData) {
-        var eventData = JSON.stringify({
-            "requestRef": requestRef,
+    var chooseElement = function (documentID, layerID, element, path, stockData) {
+        var eventData = {
+            "requestRef": {
+                docAndLayerIDs: [documentID, layerID].join("/")
+            },
             "elementRef": element.getReference(),
             "name": element.name,
             "libraryName": element.library.name,
             "modifiedTime": element.modified,
             "creationTime": element.created,
             "data": [path]
-        });
+        };
 
         if (stockData) {
             eventData.adobeStock = stockData;
@@ -89,7 +91,7 @@ define(function (require, exports) {
             "spacesLibraryElementChosen",
             {
                 "null": appReference.current,
-                "json": eventData
+                "json": JSON.stringify(eventData)
             }
         );
     };
