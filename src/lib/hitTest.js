@@ -44,7 +44,8 @@ define(function (require, exports) {
             {
                 "null": documentRef,
                 "x": px,
-                "y": py
+                "y": py,
+                "ignoreEmptyGroups": true
             }
         );
     };
