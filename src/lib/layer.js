@@ -624,8 +624,8 @@ define(function (require, exports) {
      */
     var translate = function (ref, _x, _y) {
         assert(referenceOf(ref) === "layer", "translate is passed a non-layer reference");
-        var x = _x || 0,
-            y = _y || 0;
+        var x = inUnits.pixels(_x || 0),
+            y = inUnits.pixels(_y || 0);
 
         return new PlayObject(
             "move",
