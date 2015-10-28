@@ -219,27 +219,27 @@ define(function (require, exports, module) {
 
     /**
      * Pointer propagation modes - Used for the default mouse policy
-     * ALPHA_PROPAGATE: Default behavior, events will be sent to Spaces
+     * PROPAGATE_BY_ALPHA: Default behavior, events will be sent to Spaces
      * if they're clicking on a Spaces view
-     * ALWAYS_PROPAGATE: Spaces will never get a pointer event
-     * NEVER_PROPAGATE: Spaces consumes all pointer events
+     * PROPAGATE_TO_PHOTOSHOP: Spaces will never get a pointer event
+     * PROPAGATE_TO_BROWSER: Spaces consumes all pointer events
      */
     UI.prototype.pointerPropagationMode = _spaces.ps.ui.pointerPropagationMode;
 
     /**
      * Keyboard propagation modes - Used for the default keyboard policy
-     * FOCUS_PROPAGATE: Default behavior, events will be sent to in focus element
-     * ALWAYS_PROPAGATE: Spaces will never get a keyboard event
-     * NEVER_PROPAGATE: Spaces consumes all keyboard events
+     * PROPAGATE_BY_FOCUS: Default behavior, events will be sent to in focus element
+     * PROPAGATE_TO_PHOTOSHOP: Spaces will never get a keyboard event
+     * PROPAGATE_TO_BROWSER: Spaces consumes all keyboard events
      */
     UI.prototype.keyboardPropagationMode = _spaces.ps.ui.keyboardPropagationMode;
 
     /**
      * Policy action modes - Used for custom policies
      * Numerically, they're identical for keyboard and pointer
-     * ALPHA_PROPAGATE (applies as FOCUS_PROPAGATE on Keyboard events)
-     * ALWAYS_PROPAGATE
-     * NEVER_PROPAGATE
+     * PROPAGATE_BY_ALPHA (applies as PROPAGATE_BY_FOCUS on Keyboard events)
+     * PROPAGATE_TO_PHOTOSHOP
+     * PROPAGATE_TO_BROWSER
      */
     UI.prototype.policyAction = _spaces.ps.ui.policyAction;
 
