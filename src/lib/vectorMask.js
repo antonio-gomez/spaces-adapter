@@ -24,7 +24,8 @@
 define(function (require, exports) {
     "use strict";
     
-    var PlayObject = require("../playObject");
+    var PlayObject = require("../playObject"),
+        unitLib = require("adapter/lib/unit");
 
     /**
      * common  obejcts used in PS references 
@@ -64,6 +65,43 @@ define(function (require, exports) {
             "to": {
                 "_obj": "rectangle",
                 "_value": bounds
+            }
+        });
+    };
+
+    /**
+     * creates a circular work path with the given bounds descriptor 
+     *
+     * below each unit is a object of type {_value: number, _unit: type}
+     * @param {{top: unit, bottom: unit, left: unit, right: unit}} bounds the bounds object 
+     * @return {PlayObject}
+     */
+    var makeCircularBoundsWorkPath = function (bounds) {
+        var cenX = (bounds.left + bounds.right) / 2,
+            cenY = (bounds.top + bounds.bottom) / 2,
+            radius = Math.min(bounds.top - cenY, bounds.right - cenX),
+            circleTop = unitLib.pixels(cenY - radius),
+            circleLeft = unitLib.pixels(cenX - radius),
+            circleRight = unitLib.pixels(cenX + radius),
+            circleBottom = unitLib.pixels(cenY + radius),
+            circleBounds = {
+                "unitValueQuadVersion": 1,
+                "top": circleTop,
+                "left": circleLeft,
+                "bottom": circleBottom,
+                "right": circleRight
+            };
+
+        return new PlayObject("set", {
+            "null": {
+                "_ref": [{
+                    "_ref": "path",
+                    "_property": "workPath"
+                }]
+            },
+            "to": {
+                "_obj": "ellipse",
+                "_value": circleBounds
             }
         });
     };
@@ -211,4 +249,5 @@ define(function (require, exports) {
     exports.deleteWorkPath = deleteWorkPath;
     exports.deleteVectorMask = deleteVectorMask;
     exports.makeVectorMaskFromWorkPath = makeVectorMaskFromWorkPath;
+    exports.makeCircularBoundsWorkPath = makeCircularBoundsWorkPath;
 });
