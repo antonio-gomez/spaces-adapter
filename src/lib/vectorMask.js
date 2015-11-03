@@ -105,7 +105,39 @@ define(function (require, exports) {
             }
         });
     };
+    /**
+     * creates a ciruclar work path with the given bounds descriptor 
+     *
+     * below each unit is a object of type {_value: number, _unit: type}
+     * @param {{top: unit, bottom: unit, left: unit, right: unit}} bounds the bounds object 
+     * @return {PlayObject}
+     */
+    var makeCircularBoundsVectorMaskPath = function (bounds) {
+        var cenX = (bounds.left + bounds.right) / 2,
+            cenY = (bounds.top + bounds.bottom) / 2,
+            radius = Math.min(bounds.top - cenY, bounds.right - cenX),
+            circleTop = unitLib.pixels(cenY - radius),
+            circleLeft = unitLib.pixels(cenX - radius),
+            circleRight = unitLib.pixels(cenX + radius),
+            circleBottom = unitLib.pixels(cenY + radius),
+            circleBounds = {
+                "unitValueQuadVersion": 1,
+                "top": circleTop,
+                "left": circleLeft,
+                "bottom": circleBottom,
+                "right": circleRight
+            };
 
+        return new PlayObject("set", {
+            "null": {
+                "_ref": [_vectorMaskRef, _layerRef]
+            },
+            "to": {
+                "_obj": "ellipse",
+                "_value": circleBounds
+            }
+        });
+    };
     /**
      * Turn the workpath into a vector mask for the current layer
      * 
@@ -252,4 +284,5 @@ define(function (require, exports) {
     exports.deleteVectorMask = deleteVectorMask;
     exports.makeVectorMaskFromWorkPath = makeVectorMaskFromWorkPath;
     exports.makeCircularBoundsWorkPath = makeCircularBoundsWorkPath;
+    exports.makeCircularBoundsVectorMaskPath = makeCircularBoundsVectorMaskPath;
 });
