@@ -27,7 +27,7 @@ require.config({
     paths: {
         "bluebird": "../bower_components/bluebird/js/browser/bluebird",
         "eventEmitter": "../bower_components/eventEmitter/EventEmitter",
-        "lodash": "../bower_components/lodash/dist/lodash"
+        "lodash": "../bower_components/lodash/lodash"
     },
     packages: [
         { name: "adapter", location: "../src" }
