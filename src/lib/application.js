@@ -25,7 +25,8 @@
 define(function (require, exports) {
     "use strict";
 
-    var PlayObject = require("../playObject");
+    var PlayObject = require("../playObject"),
+        referenceBy = require("./reference").wrapper("application");
 
     /**
      * PlayObject that returns the system font list.
@@ -57,4 +58,6 @@ define(function (require, exports) {
     };
 
     exports.getFontList = getFontList;
+
+    exports.referenceBy = referenceBy;
 });
