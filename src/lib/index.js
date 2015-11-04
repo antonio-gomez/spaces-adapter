@@ -1,3 +1,5 @@
+define(function (require, exports) {
+
 exports.artboard = require("./artboard");
 exports.brushes = require("./brushes");
 exports.color = require("./color");
@@ -15,3 +17,5 @@ exports.shape = require("./shape");
 exports.textLayer = require("./textLayer");
 exports.tool = require("./tool");
 exports.unit = require("./unit");
+
+});
