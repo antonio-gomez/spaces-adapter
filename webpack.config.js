@@ -2,7 +2,8 @@ module.exports = {
     entry: "./src/main.js",
     output: {
         path: "./build/",
-        filename: "spaces-adapter.js"
+        filename: "spaces-adapter.js",
+        libraryTarget: "amd"
     },
     module: {
         loaders: [

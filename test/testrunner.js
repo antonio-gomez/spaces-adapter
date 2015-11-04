@@ -27,11 +27,9 @@ require.config({
     paths: {
         "bluebird": "../bower_components/bluebird/js/browser/bluebird",
         "events": "../node_modules/wolfy-eventemitter/src/EventEmitter",
-        "lodash": "../bower_components/lodash/lodash"
-    },
-    packages: [
-        { name: "adapter", location: "../src" }
-    ]
+        "lodash": "../bower_components/lodash/lodash",
+        "adapter": "../build/spaces-adapter"
+    }
 });
 
 define(function (require) {
