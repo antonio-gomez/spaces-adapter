@@ -1,5 +1,5 @@
 module.exports = {
-    entry: "./src",
+    entry: "./src/main.js",
     output: {
         path: "./build/",
         filename: "spaces-adapter.js"

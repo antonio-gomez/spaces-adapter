@@ -153,4 +153,6 @@ define(function (require, exports) {
     exports.util = require("./util");
     exports.PlayObject = require("./playObject");
 
+    return exports;
+
 });
