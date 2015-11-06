@@ -4,7 +4,7 @@
   "scripts": {
     "test": "grunt test"
   },
-  "main": "./src/index.js",
+  "main": "build/spaces-adapter.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/adobe-photoshop/spaces-adapter.git"

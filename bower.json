@@ -10,7 +10,7 @@
   "moduleType": [
     "node"
   ],
-  "main": "main.js",
+  "main": "build/spaces-adapter.js",
   "location": "lib",
   "license": "MIT",
   "private": true,
