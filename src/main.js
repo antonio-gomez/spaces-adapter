@@ -146,4 +146,10 @@ define(function (require, exports) {
     exports.openURLInDefaultBrowser = openURLInDefaultBrowser;
     exports.getPropertyValue = getPropertyValue;
     exports.setPropertyValue = setPropertyValue;
+    
+    exports.lib = require("./lib/index");
+    exports.os = require("./os");
+    exports.ps = require("./ps");
+    exports.util = require("./util");
+    exports.PlayObject = require("./playObject");
 });
