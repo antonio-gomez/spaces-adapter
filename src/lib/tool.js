@@ -145,10 +145,6 @@ define(function (require, exports) {
 
 
     /**
-     * Resets the mode of shape tools back to "shape" from "path" or "pixel".
-     * 
-     * @return {PlayObject}
-     *
      * Sets the default values of the shape tool
      *      
      * @param {string} toolName the name of the tool we're using "ellipseTool" or "rectangleTool"
