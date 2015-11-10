@@ -79,7 +79,7 @@ define(function (require, exports) {
     var makeCircularBoundsWorkPath = function (bounds) {
         var cenX = (bounds.left + bounds.right) / 2,
             cenY = (bounds.top + bounds.bottom) / 2,
-            radius = Math.min(bounds.top - cenY, bounds.right - cenX),
+            radius = Math.max(bounds.top - cenY, bounds.right - cenX),
             circleTop = unitLib.pixels(cenY - radius),
             circleLeft = unitLib.pixels(cenX - radius),
             circleRight = unitLib.pixels(cenX + radius),
