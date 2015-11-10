@@ -61,37 +61,16 @@ define(function (require, exports) {
     };
 
     /**
-     * Format a version object a string.
-     * 
-     * @private
-     * @param {{major: number=, minor: number=, patch: number=}} version
-     * @return {string}
-     */
-    var _formatVersion = function (version) {
-        return [version.major, version.minor, version.patch].join(".");
-    };
-
-    /**
-     * Assert that the current plugin version is compatible with the specified
+     * Check if the current plugin version is compatible with the specified
      * minimum-compatible plugin version.
      * 
-     * @throws {Error} If the current plugin version is incompatible with the
-     *  minimum compatible plugin version.
+     * @return {boolean}
      */
-    var _assertPluginVersionIsCompatible = function () {
+    var isPluginCompatible = function () {
         var pluginVersion = _spaces.version;
 
-        if (!_versionCompatible(COMPATIBLE_PLUGIN_VERSION, pluginVersion)) {
-            var message = "Plugin version " + _formatVersion(pluginVersion) +
-                " is incompatible with the required version, " +
-                 _formatVersion(COMPATIBLE_PLUGIN_VERSION);
-
-            throw new Error(message);
-        }
+        return _versionCompatible(COMPATIBLE_PLUGIN_VERSION, pluginVersion);
     };
-
-    // Assert plugin compatibility at load time
-    _assertPluginVersionIsCompatible();
 
     /**
      * Promisified version of _spaces.
@@ -104,11 +83,22 @@ define(function (require, exports) {
          * Follows Semver 2.0.0 conventions: http://semver.org/spec/v2.0.0.html
          *
          * @const
-         * @type {string}
+         * @type {{major: number, minor: number, patch: number}}
          */
         "version": {
             enumerable: true,
             value: _spaces.version
+        },
+
+        /**
+         * Compatible version spec for the Spaces plugin.
+         *
+         * @const
+         * @type {{major: number=, minor: number=, patch: number=}}
+         */
+        "compatiblePluginVersion": {
+            enumerable: true,
+            value: COMPATIBLE_PLUGIN_VERSION
         },
 
         /**
@@ -143,6 +133,7 @@ define(function (require, exports) {
         return _main.openURLInDefaultBrowserAsync(url);
     };
 
+    exports.isPluginCompatible = isPluginCompatible;
     exports.openURLInDefaultBrowser = openURLInDefaultBrowser;
     exports.getPropertyValue = getPropertyValue;
     exports.setPropertyValue = setPropertyValue;
