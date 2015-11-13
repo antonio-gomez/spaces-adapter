@@ -21,7 +21,6 @@
  * 
  */
 
-
 define(function (require, exports) {
     "use strict";
 
@@ -29,9 +28,7 @@ define(function (require, exports) {
      * Returns the target of the event by parsing the action descriptor
      * 
      * @param {ActionDescriptor} event
-     *
-     * @return {string} Target of the event
-     *
+     * @return {?string} Target of the event
      */
     var targetOf = function (event) {
         if (event.hasOwnProperty("new")) {

@@ -58,14 +58,40 @@ module.exports = function (grunt) {
                     recurse: true
                 }
             }
+        },
+        jsonlint: {
+            src: [
+                "*.json",
+                "src/**/*.json",
+                "test/**/*.json"
+            ]
+        },
+        lintspaces: {
+            src: [
+                "*",
+                "src/**/*.json",
+                "src/**/*.js"
+            ],
+            options: {
+                newline: true,
+                newlineMaximum: 1
+            }
+        },
+        concurrent: {
+            test: ["jshint", "jscs", "jsdoc", "jsonlint", "lintspaces"]
         }
     });
 
     grunt.loadNpmTasks("grunt-contrib-jshint");
     grunt.loadNpmTasks("grunt-jscs");
     grunt.loadNpmTasks("grunt-jsdoc");
+    grunt.loadNpmTasks("grunt-jsonlint");
+    grunt.loadNpmTasks("grunt-lintspaces");
 
-    grunt.registerTask("test", ["jshint", "jscs", "jsdoc"]);
+    grunt.loadNpmTasks("grunt-concurrent");
+
+    grunt.registerTask("seqtest", ["jshint", "jscs", "jsdoc", "jsonlint", "lintspaces"]);
+    grunt.registerTask("test", ["concurrent:test"]);
 
     grunt.registerTask("default", ["test"]);
 };

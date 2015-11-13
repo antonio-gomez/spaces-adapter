@@ -21,7 +21,6 @@
  * 
  */
 
-
 define(function (require, exports) {
     "use strict";
 
@@ -58,6 +57,5 @@ define(function (require, exports) {
     };
 
     exports.getFontList = getFontList;
-
     exports.referenceBy = referenceBy;
 });

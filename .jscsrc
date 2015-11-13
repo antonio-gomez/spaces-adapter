@@ -18,6 +18,9 @@
     ],
     "disallowMixedSpacesAndTabs": true,
     "disallowMultipleSpaces": true,
+    "disallowNestedTernaries": {
+        "maxLevel": 1
+    },
     "disallowNewlineBeforeBlockStatements": true,
     "disallowOperatorBeforeLineBreak": [
         "."
@@ -43,6 +46,7 @@
     "disallowSpacesInsideArrayBrackets": "nested",
     "disallowSpacesInsideBrackets": true,
     "disallowSpacesInsideParentheses": true,
+    "disallowTabs": true,
     "disallowTrailingComma": true,
     "disallowTrailingWhitespaceInSource": true,
     "esnext": true,
@@ -51,6 +55,7 @@
         ".jshintrc",
         "*.json"
     ],
+    "fileExtensions": [".js"],
     "maximumLineLength": 120,
     "requireBlocksOnNewline": 1,
     "requireCamelCaseOrUpperCaseIdentifiers": true,
@@ -85,14 +90,12 @@
         "<="
     ],
     "requirePaddingNewLinesAfterUseStrict": true,
-    "requirePaddingNewlinesBeforeKeywords": [
-        "do",
-        "for",
-        "while"
-    ],
     "requireParenthesesAroundIIFE": true,
     "requireSemicolons": true,
     "requireSpaceAfterBinaryOperators": true,
+    "requireSpaceAfterComma": {
+        "allExcept": ["trailing"]
+    },
     "requireSpaceAfterKeywords": true,
     "requireSpaceAfterLineComment": true,
     "requireSpaceBeforeBinaryOperators": true,
@@ -134,10 +137,41 @@
         "self"
     ],
     "validateIndentation": 4,
-    "validateJSDoc": {
+    "jsDoc": {
+        "checkAnnotations": {
+            "preset": "closurecompiler",
+            "extra": {
+                "callback": true
+            }
+        },
         "checkParamNames": true,
         "requireParamTypes": true,
-        "checkRedundantParams": true
+        "checkRedundantParams": true,
+        "checkReturnTypes": true,
+        "checkRedundantReturns": true,
+        "requireReturnTypes": true,
+        "enforceExistence": {
+            "allExcept": ["exports"]
+        },
+        "enforceExistenceExcept": [
+            "get",
+            "setup",
+            "value",
+            "beforeStartup",
+            "initialize",
+            "render",
+            "getState",
+            "getInitialState",
+            "getDefaultProps",
+            "getStateFromFlux",
+            "componentWillReceiveProps",
+            "componentWillMount",
+            "componentWillUnmount",
+            "componentDidMount",
+            "shouldComponentUpdate",
+            "componentWillUpdate",
+            "componentDidUpdate"
+        ]
     },
     "validateLineBreaks": "LF",
     "validateParameterSeparator": ", ",

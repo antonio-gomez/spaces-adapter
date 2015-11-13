@@ -65,6 +65,5 @@ define(function (require, exports, module) {
      */
     PlayObject.prototype.options = null;
 
-    
     module.exports = PlayObject;
 });

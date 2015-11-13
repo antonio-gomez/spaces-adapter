@@ -248,6 +248,13 @@ define(function (require, exports) {
         return layerEffectPsProperties;
     };
 
+    /**
+     * FIXME: Needs explanation.
+     *
+     * @private
+     * @param {object} properties
+     * @return {boolean}
+     */
     var _isHiddenLayerProperties = function (properties) {
         return properties.enabled === false && properties.present === false;
     };
@@ -318,11 +325,11 @@ define(function (require, exports) {
         return _layerEffectDescriptor(ref, effectType, descriptorValue, true);
     };
 
-
     /**
      * Representation of a hidden layer effect.
      *
-     * @constant {object}
+     * @const
+     * @type {object}
      */
     var HIDDEN_LAYER_EFFECT_PROPERTIES = { "enabled": false, "present": false };
 

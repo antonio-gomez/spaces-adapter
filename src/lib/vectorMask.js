@@ -108,7 +108,6 @@ define(function (require, exports) {
         });
     };
 
-
     /**
      * Delete the current vector mask on the current layer
      * 
@@ -148,7 +147,6 @@ define(function (require, exports) {
         });
     };
     
-
     /**
      * drops the selection on the current path
      * 

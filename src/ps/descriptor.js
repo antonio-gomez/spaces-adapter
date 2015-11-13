@@ -133,6 +133,8 @@ define(function (require, exports, module) {
         }
 
         Descriptor.super_.prototype.emitEvent.call(this, event, args);
+
+        return this;
     };
 
     /** 

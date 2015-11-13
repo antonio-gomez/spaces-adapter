@@ -115,10 +115,23 @@ define(function (require, exports) {
         }
     });
 
+    /**
+     * Asynchronously get the value of a Photoshop property.
+     *
+     * @param {string} name
+     * @return {Promise}
+     */
     var getPropertyValue = function (name) {
         return _main.getPropertyValueAsync(name, {});
     };
 
+    /**
+     * Asynchronously set the value of a Photoshop property.
+     *
+     * @param {string} name
+     * @param {string} value
+     * @return {Promise}
+     */
     var setPropertyValue = function (name, value) {
         return _main.setPropertyValueAsync(name, value, {});
     };
