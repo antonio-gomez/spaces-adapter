@@ -226,8 +226,6 @@ define(function (require, exports) {
         );
     };
 
-
-
     /**
      * @param {ActionDescriptor} sourceRef Reference to layer(s) to edit
      * @param {string} cap The stroke path cap. "square", "round", or "butt"
@@ -268,7 +266,7 @@ define(function (require, exports) {
      */
     var setStrokeCorner = function (sourceRef, corner) {
         assert(referenceOf(sourceRef) === "contentLayer", "setStrokeCorner is passed a non-layer reference");
-        return new PlayObject (
+        return new PlayObject(
             "set",
             {
                 "null": sourceRef,
@@ -321,7 +319,6 @@ define(function (require, exports) {
         };
         return new PlayObject("set", descriptor);
     };
-
 
     /**
      * Set shape fill to solid color with RGB color
@@ -689,7 +686,7 @@ define(function (require, exports) {
      * @param {string} typeShape The type of shape to create. "rectangle" for
      *      Rectangle or Rounded Rectangle, "ellipse" for Ellipse
      * @param {array} shapeVal The array of pixelsUnit values.
-                      rectangle for [top,bottom,left,right,topleft,topright,bottomleft,bottomright],
+     *                rectangle for [top,bottom,left,right,topleft,topright,bottomleft,bottomright],
      *                ellipse for [top,bottom,left,right]
      * y,x
      *

@@ -27,7 +27,6 @@ define(function (require, exports) {
     var PlayObject = require("../playObject"),
         color = require("./color");
 
-
     /**
      * Sets the current tool to given tool
      *
@@ -142,7 +141,6 @@ define(function (require, exports) {
             }
         );
     };
-
 
     /**
      * Sets the default values of the shape tool

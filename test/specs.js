@@ -36,6 +36,13 @@ define(function (require, exports) {
         ]
     };
 
+
+    /**
+     * FIXME: Needs explanation.
+     *
+     * @param {string} specClass
+     * @return {Array.<string>}
+     */
     var getSpecsByClass = function (specClass) {
         var section = specClass || "unit",
             tests = [];

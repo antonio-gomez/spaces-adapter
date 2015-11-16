@@ -48,6 +48,12 @@ define(function (require, exports) {
         });
     };
 
+    /**
+     * Throw an exception with the given message if the provided value is not truthy.
+     *
+     * @param {boolean} expression
+     * @param {string} message
+     */
     var assert = function (expression, message) {
         console.assert(expression, message);
     };

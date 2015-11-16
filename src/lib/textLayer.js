@@ -21,7 +21,6 @@
  * 
  */
 
-
 define(function (require, exports) {
     "use strict";
 
@@ -609,7 +608,6 @@ define(function (require, exports) {
         } else if (style.letterSpacing) {
             styleDescriptor.tracking = style.letterSpacing.value;
         }
-
 
         if (style.adbeAutoLeading) {
             styleDescriptor.autoLeading = style.adbeAutoLeading;

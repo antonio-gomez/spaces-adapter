@@ -62,7 +62,7 @@ define(function (require, exports, module) {
      * OS notifier kinds
      * 
      * @const
-     * @type{Object.<string, number>}
+     * @type {Object.<string, number>}
      */
     OS.prototype.notifierKind = _os.notifierKind;
 
@@ -70,7 +70,7 @@ define(function (require, exports, module) {
      * OS event kinds
      * 
      * @const
-     * @type{Object.<string, number>}
+     * @type {Object.<string, number>}
      */
     OS.prototype.eventKind = _os.eventKind;
 
@@ -78,7 +78,7 @@ define(function (require, exports, module) {
      * OS event modifiers
      * 
      * @const
-     * @type{Object.<string, number>}
+     * @type {Object.<string, number>}
      */
     OS.prototype.eventModifiers = _os.eventModifiers;
 
@@ -86,10 +86,9 @@ define(function (require, exports, module) {
      * OS event keyCodes
      * 
      * @const
-     * @type{Object.<string, number>}
+     * @type {Object.<string, number>}
      */
     OS.prototype.eventKeyCode = _os.eventKeyCode;
-
 
     /**
      * Event handler for events from the native bridge.

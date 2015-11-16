@@ -21,18 +21,17 @@
  * 
  */
 
-
 define(function (require, exports) {
     "use strict";
+
+    var _ = require("lodash");
 
     var PlayObject = require("../playObject"),
         referenceBy = require("./reference").wrapper("document"),
         referenceOf = require("./reference").refersTo,
         unitsIn = require("./unit"),
-        assert = require("../util").assert,
-        _ = require("lodash");
+        assert = require("../util").assert;
         
-
     /**
      * Open a document (psd, png, jpg, ai, gif)
      * 
@@ -202,7 +201,7 @@ define(function (require, exports) {
      * @param {number} settings.jpgProgressiveScans The number of Scans. 3 to 5
      * @param {number} settings.pngCompression PNG compression. none or smallest
      * @param {number} settings.pngInterlace PNG interlace. none or interlaced
-
+     *
      * @param {boolean} settings.embedProfiles Whether embed color profile
      * 
      * @return {PlayObject}
@@ -371,13 +370,14 @@ define(function (require, exports) {
 
     /**
      * Create a document
-     * 
+     *
+     * @param {object} settings
      * @param {number} settings.width The document width.
      * @param {number} settings.height The document height.
      * @param {number} settings.resolution The document resolution.
      * @param {string} settings.fill The document fill. "white", "backgroundColor", "transparency"
      * @param {string} settings.colorMode The document color mode. "RGBColorMode", "bitmapMode", "grayscaleMode" 
-                        "CMYKColorMode", "labColorMode"
+     *  "CMYKColorMode", "labColorMode"
      * @param {number} settings.depth The color mode depth
      * @param {string} settings.colorProfile The document color profile. "sRGB IEC61966-2.1", "Adobe RGB (1998)",
      *  default: "none"

@@ -109,7 +109,6 @@ define(function (require, exports) {
         }
     });
 
-
     /**
      * Moves the source layer to right before target reference 
      * (usually done by id)
@@ -503,8 +502,6 @@ define(function (require, exports) {
             }
         );
     };
-
-
 
     /**
      * FIXME: Only works with current document!

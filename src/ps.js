@@ -33,7 +33,6 @@ define(function (require, exports) {
      * @private
      */
     var _ps = Promise.promisifyAll(_spaces.ps);
-
     
     /**
      * Commit or cancel the current modal tool edit state.

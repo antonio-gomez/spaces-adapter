@@ -30,7 +30,7 @@ define(function (require, exports) {
      * Set Photoshop to use the ruler unit preference of our choice
      *
      * @param {string} type -  ruler unit type ie "rulerPixels"
-     * @returns {PlayObject} 
+     * @return {PlayObject} 
      */
     var setRulerUnits = function (type) {
         return new PlayObject("set", {
@@ -57,6 +57,12 @@ define(function (require, exports) {
         });
     };
 
+    /**
+     * FIXME: Needs explanation.
+     *
+     * @param {boolean} visible
+     * @return {PlayObject}
+     */
     var setRulerVisibility = function (visible) {
         return new PlayObject("set", {
             "null": {

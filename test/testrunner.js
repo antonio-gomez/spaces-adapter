@@ -47,6 +47,12 @@ define(function (require) {
         };
     };
 
+    /**
+     * FIXME: Needs explanation.
+     *
+     * @private
+     * @return {object}
+     */
     var _parseQueryString = function () {
         var queryString = window.location.search.substr(1), // trims off initial "?"
             parts = queryString.split("&"),
@@ -62,6 +68,11 @@ define(function (require) {
         return result;
     };
 
+    /**
+     * FIXME: Needs explanation.
+     *
+     * @private
+     */
     var _loadTestsAndStart = function () {
         var parsedQueryString = _parseQueryString(),
             section = parsedQueryString.section,

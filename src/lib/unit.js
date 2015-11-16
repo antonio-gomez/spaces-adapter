@@ -21,8 +21,6 @@
  * 
  */
  
- // This is a wrapper to create unit descriptors
-
 define(function (require, exports) {
     "use strict";
 
@@ -35,24 +33,6 @@ define(function (require, exports) {
             _value: val
         };
     };
-
-    // TODO: Later on we need a better translation method here
-    // var _toInches = {
-    //     rulerInches: 1,
-    //     pointsUnit: 1 / 72,
-    //     millimetersUnit: 1 / 25.4,
-    //     rulerCm: 1 / 2.54
-    // };
-    // 
-    // var toPixels = function (unitValue, resolution) {
-    //     var rawValue = unitValue._value;
-    //     var unit = unitValue._unit;
-    // 
-    //     var factor = unit === "pixelsUnit" ? 1 : resolution * _toInches[unit];
-    // 
-    //     return rawValue * factor;
-    // };
-
 
     exports.density = _unit.bind(null, "density");
     exports.pixels = exports.px = _unit.bind(null, "pixels");
@@ -73,6 +53,4 @@ define(function (require, exports) {
     
     // Guides use this
     exports.distance = _unit.bind(null, "distance");
-
-    // exports.toPixels = toPixels;
 });

@@ -49,6 +49,12 @@ define(function (require, exports, module) {
         }
     };
 
+    /**
+     * FIXME: Needs explanation.
+     *
+     * @param {string} className
+     * @return {object}
+     */
     var wrapper = function (className) {
         /**
          * This function is boiler plate for creating reference objects
@@ -92,7 +98,6 @@ define(function (require, exports, module) {
              * @returns {ActionDescriptor} Reference to the given IDs
              */
             id: referenceBy.bind(null, "_id"),
-            
             
             /**
              * @param {int} Offset amount

@@ -138,7 +138,7 @@ define(function (require, exports, module) {
      * Overscroll modes
      * 
      * @const
-     * @type{Object.<string, number>}
+     * @type {Object.<string, number>}
      */
     UI.prototype.overscrollMode = _spaces.ps.ui.overscrollMode;
 
