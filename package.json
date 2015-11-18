@@ -13,6 +13,7 @@
   "bugs": {
     "url": "https://github.com/adobe-photoshop/spaces-adapater/issues"
   },
+  "main": "src/main.js",
   "homepage": "https://github.com/adobe-photoshop/spaces-adapater",
   "devDependencies": {
     "grunt": "^0.4.5",
