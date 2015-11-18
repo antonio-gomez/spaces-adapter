@@ -151,7 +151,7 @@ define(function (require, exports, module) {
      */
     var _wrap = function (reference, multiGetProperties) {
         if (Array.isArray(reference)) {
-            reference = _.chain(reference)
+            reference = _.chain(_.cloneDeep(reference))
                 .map(function (ref) {
                     return _wrap(ref);
                 })
