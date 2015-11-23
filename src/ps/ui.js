@@ -213,7 +213,7 @@ define(function (require, exports, module) {
      */
     UI.prototype.setClassicChromeVisibility = function (visible) {
         return this.setSuppressScrollbars(!visible).then(function () {
-            _ui.setWidgetTypeVisibilityAsync(ALL_NONWINDOW_WIDGETS_BITMASK, visible);
+            return _ui.setWidgetTypeVisibilityAsync(ALL_NONWINDOW_WIDGETS_BITMASK, visible);
         });
     };
 
