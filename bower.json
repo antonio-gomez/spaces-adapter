@@ -20,7 +20,7 @@
   ],
   "dependencies": {
     "eventEmitter": "~4.2.11",
-    "bluebird": "~2.9.24",
+    "bluebird": "~3.0.5",
     "lodash": "~3.10.1"
   },
   "devDependencies": {
