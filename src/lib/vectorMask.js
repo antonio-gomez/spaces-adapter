@@ -25,7 +25,7 @@ define(function (require, exports) {
     "use strict";
     
     var PlayObject = require("../playObject"),
-        unitLib = require("adapter/lib/unit");
+        unitLib = require("./unit");
 
     /**
      * common  obejcts used in PS references 
