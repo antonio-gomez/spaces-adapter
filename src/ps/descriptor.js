@@ -52,8 +52,13 @@ define(function (require, exports, module) {
 
         this._transactions = new Map();
         this._psEventHandler = this._psEventHandler.bind(this);
-        this._batchPlayAsync = Promise.promisify(_spaces.ps.descriptor.batchPlay, _spaces.ps.descriptor);
-        this._getAsync = Promise.promisify(_spaces.ps.descriptor.get, _spaces.ps.descriptor);
+        this._batchPlayAsync = Promise.promisify(_spaces.ps.descriptor.batchPlay, {
+            context: _spaces.ps.descriptor,
+            multiArgs: true
+        });
+        this._getAsync = Promise.promisify(_spaces.ps.descriptor.get, {
+            context: _spaces.ps.descriptor
+        });
     };
     util.inherits(Descriptor, EventEmitter);
 
