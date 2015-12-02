@@ -56,6 +56,62 @@ define(function (require, exports) {
         });
     };
 
+    /**
+     * Possible values for the Photoshop UI color stop.
+     *
+     * @const
+     * @type {Object.<string, string>}
+     */
+    var colorStops = Object.defineProperties({}, {
+        ORIGINAL: {
+            writeable: false,
+            enumerable: true,
+            value: "kPanelBrightnessOriginal"
+        },
+        LIGHT: {
+            writeable: false,
+            enumerable: true,
+            value: "kPanelBrightnessLightGray"
+        },
+        MEDIUM: {
+            writeable: false,
+            enumerable: true,
+            value: "kPanelBrightnessMediumGray"
+        },
+        DARK: {
+            writeable: false,
+            enumerable: true,
+            value: "kPanelBrightnessDarkGray"
+        }
+    });
+
+    /**
+     * PlayObject to set the Photoshop UI color stop.
+     *
+     * @param {string} stop Must be one of the values in the colorStops enum above.
+     * @return {PlayObject}
+     */
+    var setColorStop = function (stop) {
+        return new PlayObject("set", {
+            "null": {
+                _ref: [
+                    {
+                        _ref: null,
+                        _property: "kuiBrightnessLevel"
+                    },
+                    referenceBy.current
+                ]
+            },
+            "to": {
+                "_enum": "uiBrightnessLevelEnumType",
+                "_value": stop
+            }
+        });
+    };
+
     exports.getFontList = getFontList;
+    exports.colorStops = colorStops;
+    exports.setColorStop = setColorStop;
+
     exports.referenceBy = referenceBy;
 });
