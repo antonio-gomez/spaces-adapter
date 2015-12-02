@@ -98,37 +98,6 @@ define(function (require, exports) {
             };
         }
 
-        if (fileType === "ai") {
-            desc.as = {};
-            desc.as._obj = "PDFGenericFormat";
-            desc.as._value.selection = {
-                "_enum": "pdfSelection",
-                "_value": params.pdfSelection
-            };
-            desc.as._value.suppressWarnings = params.suppressWarnings;
-            desc.as._value.pageNumber = params.pageNumber;
-            
-            if (params.pdfSelection === "page") {
-                desc.as._value = {
-                    "antiAlias": params.bAntiAlias,
-                    "constrainProportions": params.bConstrainProportions,
-                    "crop": {
-                        "_enum": "cropTo",
-                        "_value": openDocument.cropTo[params.box]
-                    },
-                    "depth": params.bitDepth,
-                    "width": unitsIn.pixels(params.width),
-                    "height": unitsIn.pixels(params.height),
-                    "mode": {
-                        "_enum": "colorSpace",
-                        "_value": openDocument.mode[params.colorSpace]
-                    },
-                    "name": params.name,
-                    "resolution": unitsIn.density(params.resolution)
-                };
-            }
-        }
-
         desc.forceMRU = forceMRU;
 
         return new PlayObject(
