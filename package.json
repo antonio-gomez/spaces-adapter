@@ -1,6 +1,20 @@
 {
   "name": "spaces-adapter",
-  "version": "0.28.0",
+  "version": "0.31.0",
+  "authors": [
+    "Barkin Aygun <baaygun@adobe.com>",
+    "Joel Brandt <jobrandt@adobe.com>",
+    "Jeffrey Cohen <jecohen@adobe.com>",
+    "Eric Haseltine <ehaselti@adobe.com>",
+    "Shaoshing Lee <shaoshing@adobe.com>",
+    "Cory McIlroy <mcilroy@adobe.com>",
+    "Kaori Mikawa <kmikawa@adobe.com>",
+    "Divya Prabhakar <dprabhak@adobe.com>",
+    "Tim Riot Riherd <triherd@adobe.com>",
+    "Chad Rolfs <crolfs@adobe.com>",
+    "Seth Walker <sewalker@adobe.com>",
+    "Ian Wehrman <wehrman@adobe.com>"
+  ],
   "description": "JavaScript adapter for the Adobe Photoshop Spaces plugin",
   "scripts": {
     "test": "grunt test"
@@ -23,8 +37,14 @@
     "grunt-jsdoc": "^1.0.0",
     "grunt-jsonlint": "^1.0.6",
     "grunt-lintspaces": "^0.7.1",
-    "jscs-jsdoc": "shaoshing/jscs-jsdoc#7fbf64b",
+    "jscs-jsdoc": "^1.2.0",
     "jscs-trailing-whitespace-in-source": "0.0.1",
-    "node-lintspaces": "shaoshing/node-lintspaces"
+    "requirejs": "^2.1.22"
+  },
+  "dependencies": {
+    "bluebird": "^3.0.5",
+    "lodash": "^3.10.1",
+    "qunitjs": "^1.20.0",
+    "wolfy87-eventemitter": "^4.3.0"
   }
 }
