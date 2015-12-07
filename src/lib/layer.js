@@ -642,10 +642,11 @@ define(function (require, exports) {
      * Construct an action descriptor to expand or collapse the given groups.
      *
      * @param {object|Array.<object>} layerRef
-     * @param {boolean} expand If true, the groups are expanded, and collapsed otherwise.
+     * @param {boolean} expand - If true, the groups are expanded, and collapsed otherwise.
+     * @param {boolean} recursive - Whether to expand/collapse all descendant groups of the given layers.
      * @return {object} Action descriptor that expands or collapses the given groups.
      */
-    var setGroupExpansion = function (layerRef, expand) {
+    var setGroupExpansion = function (layerRef, expand, recursive) {
         assert(referenceOf(layerRef) === "layer", "setGroupExpansion is passed a non-layer reference");
 
         if (Array.isArray(layerRef)) {
@@ -663,7 +664,8 @@ define(function (require, exports) {
             "null": {
                 _ref: layerRef
             },
-            "to": expand
+            "to": expand,
+            "recursive": !!recursive
         });
     };
 
