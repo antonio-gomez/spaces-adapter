@@ -748,6 +748,19 @@ define(function (require, exports) {
         });
     };
 
+    /**
+     * Build a PlayObject to prompt the resolve fonts dialog
+     *
+     * @return {PlayObject}
+     */
+    var resolveFontsDialog = function () {
+        return new PlayObject("resolveFontsDialog", {
+            "null": {
+                "_ref": []
+            }
+        });
+    };
+
     exports.referenceBy = referenceBy;
     
     exports.open = openDocument;
@@ -768,4 +781,5 @@ define(function (require, exports) {
     exports.setSmartGuidesVisibility = setSmartGuidesVisibility;
     exports.getExtensionData = getExtensionData;
     exports.setExtensionData = setExtensionData;
+    exports.resolveFontsDialog = resolveFontsDialog;
 });
