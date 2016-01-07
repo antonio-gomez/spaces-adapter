@@ -375,7 +375,7 @@ define(function (require, exports, module) {
      * Defines an area that will be erased immediately on given notifications
      * and will be disabled on the given condition
      *
-     * @param {Object} area Area to blit
+     * @param {?object} area Area to blit, or null to disable cloaking.
      * @param {number} area.left
      * @param {number} area.top
      * @param {number} area.right
@@ -387,7 +387,7 @@ define(function (require, exports, module) {
      */
     UI.prototype.setOverlayCloaking = function (area, enablers, disabler) {
         return _setOverlayCloaking({
-            list: [area],
+            list: area ? [area] : [],
             debug: false, // If this is set to true, we'll see red rectangles on blit areas
             enable: enablers,
             disable: disabler
