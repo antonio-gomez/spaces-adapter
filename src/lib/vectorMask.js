@@ -70,6 +70,24 @@ define(function (require, exports) {
     };
 
     /**
+     * set the currently selected layerd vector mask to be linked or unlinked 
+     *
+     * @param {boolean} linked the state of the link between the layer and its vector mask
+     * @return {PlayObject}
+     */
+    var setVectorMaskLinked = function (linked) {
+        return new PlayObject("set", {
+            "null": {
+                "_ref": [_layerRef]
+            },
+            "to": {
+                "_obj": "vectorMaskLinked",
+                "_value": linked
+            }
+        });
+    };
+
+    /**
      * creates a circular work path with the given bounds descriptor 
      *
      * below each unit is a object of type {_value: number, _unit: type}
@@ -266,6 +284,7 @@ define(function (require, exports) {
         return new PlayObject("make", makeMaskDesc);
     };
 
+    exports.setVectorMaskLinked = setVectorMaskLinked;
     exports.createRevealAllMask = createRevealAllMask;
     exports.enterFreeTransformPathMode = enterFreeTransformPathMode;
     exports.activateVectorMaskEditing = activateVectorMaskEditing;
