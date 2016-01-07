@@ -241,62 +241,31 @@ define(function (require, exports) {
         return new PlayObject("make", desc);
     };
 
-    /** 
-     * Create a temporary path with the name TempVectorMask 
-     * using the currently selected layer's vector mask
+    /**
+     * Copy the Vector Mask from the selected shape layer to a target layer
+     *
+     * @param {number} layerToClipID Layer id of the target layer.
      *
      * @return {PlayObject}
      */
-    var makeTempPath = function () {
-        var desc = {
-            "null": {
-                "_ref": [{
-                    "_ref": "path"
-                }]
-            },
-            "from": {
-                "_ref": [_vectorMaskRef, _layerRef]
-            },
-            "name": "TempVectorMask"
-        };
+    var createMaskFromShape = function (layerToClipID) {
+        var dstLayerRef = { "_ref": "layer", "_id": layerToClipID },
+            vecLayerMaskref = { "_ref": [_vectorMaskRef, _layerRef] },
+            makeMaskDesc = {
+                "null": {
+                    "_ref": [{
+                        "_ref": "path"
+                    }]
+                },
+                "at": {
+                    "_ref": [_vectorMaskRef, dstLayerRef]
+                },
+                "using": vecLayerMaskref
+            };
 
-        return new PlayObject("make", desc);
+        return new PlayObject("make", makeMaskDesc);
     };
 
-    /** 
-     * Select a temporary path with the name TempVectorMask.
-     *
-     * @return {PlayObject}
-     */
-    var selectTempPath = function () {
-        var desc = {
-            "null": {
-                "_ref": [{
-                    "_ref": "path",
-                    "_name": "TempVectorMask"
-                }]
-            }
-        };
-        return new PlayObject("select", desc);
-    };
-
-    /** 
-     * Delete the currently selected path.
-     *
-     * @return {PlayObject}
-     */
-    var deleteCurrentPath = function () {
-        var desc = {
-            "null": {
-                "_ref": [_pathRef]
-            }
-        };
-
-        return new PlayObject("delete", desc);
-    };
-
-    exports.deleteCurrentPath = deleteCurrentPath;
-    exports.selectTempPath = selectTempPath;
     exports.createRevealAllMask = createRevealAllMask;
     exports.enterFreeTransformPathMode = enterFreeTransformPathMode;
     exports.activateVectorMaskEditing = activateVectorMaskEditing;
@@ -307,5 +276,5 @@ define(function (require, exports) {
     exports.deleteVectorMask = deleteVectorMask;
     exports.makeVectorMaskFromWorkPath = makeVectorMaskFromWorkPath;
     exports.makeCircularBoundsWorkPath = makeCircularBoundsWorkPath;
-    exports.makeTempPath = makeTempPath;
+    exports.createMaskFromShape = createMaskFromShape;
 });
