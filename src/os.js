@@ -219,6 +219,16 @@ define(function (require, exports, module) {
     };
 
     /**
+     * Returns the current mouse location synchronously
+     * Synchronous as it is ran in V8 and does not communicate with Photoshop
+     *
+     * @return {Array.<number>} X and Y locations of the mouse
+     */
+    OS.prototype.getMouseLocation = function () {
+        return _spaces.os.getMouseLocation();
+    };
+
+    /**
      * The OS singleton
      * @type {OS}
      */
