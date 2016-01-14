@@ -81,8 +81,7 @@ define(function (require, exports) {
                 "_ref": [_layerRef]
             },
             "to": {
-                "_obj": "vectorMaskLinked",
-                "_value": linked
+                "vectorMaskLinked": linked
             }
         });
     };
