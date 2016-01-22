@@ -109,9 +109,60 @@ define(function (require, exports) {
         });
     };
 
+    /**
+     * PlayObject to set "add 'copy' to duplicated layer names" preference
+     *
+     * @param {boolean} add If true, duplicated layers will have "[layer name] copy" as their name
+     * @return {PlayObject}
+     */
+    var setAddCopyToLayerNames = function (add) {
+        return new PlayObject("set", {
+            "null": {
+                _ref: [
+                    {
+                        _ref: null,
+                        _property: "addCopyToLayerNames"
+                    },
+                    referenceBy.current
+                ]
+            },
+            "addCopyToLayerNames": add || false
+        });
+    };
+
+    /**
+     * Sets the global preferences of given objects
+     * 
+     * @param {object} preferences An object containing key/value pairs of preferences to set
+     * 
+     * @return {PlayObject}
+     */
+    var setGlobalPreferences = function (preferences) {
+        return new PlayObject(
+            "set",
+            {
+                "null": {
+                    _ref: [
+                        {
+                            "_property": "generalPreferences",
+                            "_ref": "property"
+                        },
+                        referenceBy.current
+                    ]
+                },
+                "to": {
+                    _obj: "generalPreferences",
+                    _value: preferences || {}
+                }
+            }
+        );
+    };
+
     exports.getFontList = getFontList;
     exports.colorStops = colorStops;
     exports.setColorStop = setColorStop;
+    exports.setAddCopyToLayerNames = setAddCopyToLayerNames;
+    exports.setGlobalPreferences = setGlobalPreferences;
 
     exports.referenceBy = referenceBy;
 });
