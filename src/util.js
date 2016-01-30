@@ -55,6 +55,7 @@ define(function (require, exports) {
      * @param {string} message
      */
     var assert = function (expression, message) {
+        /*eslint no-console:0*/
         console.assert(expression, message);
     };
 

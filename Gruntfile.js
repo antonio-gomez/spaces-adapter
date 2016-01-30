@@ -21,31 +21,27 @@
  * 
  */
 
-/* jshint browser: false, node: true */
+/* eslint-env node */
 
 module.exports = function (grunt) {
     "use strict";
 
     grunt.initConfig({
-        jshint: {
+        eslint: {
             options: {
-                jshintrc: ".jshintrc"
+                configFile: ".eslintrc.json"
             },
             all: [
                 "*.js",
-                "package.json",
-                "bower.json",
-                ".jshintrc",
-                ".jscsrc",
-                ".bowerrc",
                 "src/**/*.js",
                 "test/**/*.js",
                 "examples/**/*.js",
+                "!package.json",
                 "!test/spec/low-level-test.js"
             ]
         },
         jscs: {
-            src: "<%= jshint.all %>",
+            src: "<%= eslint.all %>",
             options: {
                 config: ".jscsrc"
             }
@@ -78,11 +74,11 @@ module.exports = function (grunt) {
             }
         },
         concurrent: {
-            test: ["jshint", "jscs", "jsdoc", "jsonlint", "lintspaces"]
+            test: ["eslint", "jscs", "jsdoc", "jsonlint", "lintspaces"]
         }
     });
 
-    grunt.loadNpmTasks("grunt-contrib-jshint");
+    grunt.loadNpmTasks("grunt-eslint");
     grunt.loadNpmTasks("grunt-jscs");
     grunt.loadNpmTasks("grunt-jsdoc");
     grunt.loadNpmTasks("grunt-jsonlint");
@@ -90,7 +86,7 @@ module.exports = function (grunt) {
 
     grunt.loadNpmTasks("grunt-concurrent");
 
-    grunt.registerTask("seqtest", ["jshint", "jscs", "jsdoc", "jsonlint", "lintspaces"]);
+    grunt.registerTask("seqtest", ["eslint", "jscs", "jsdoc", "jsonlint", "lintspaces"]);
     grunt.registerTask("test", ["concurrent:test"]);
 
     grunt.registerTask("default", ["test"]);

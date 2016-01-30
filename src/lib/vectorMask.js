@@ -113,8 +113,8 @@ define(function (require, exports) {
      */
     var makeVectorMaskFromWorkPath = function () {
         var maskRef = {
-            "_ref": [_vectorMaskRef]
-        },
+                "_ref": [_vectorMaskRef]
+            },
             pathRef = {
                 "_ref": [_pathRef]
             };
@@ -205,9 +205,9 @@ define(function (require, exports) {
      */
     var enterFreeTransformPathMode = function () {
         var propertyRef = {
-                _ref: "property",
-                _property: "freeTransformWholePath"
-            };
+            _ref: "property",
+            _property: "freeTransformWholePath"
+        };
         
         return new PlayObject("set", {
             "null": {

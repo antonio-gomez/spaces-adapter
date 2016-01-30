@@ -354,9 +354,9 @@ define(function (require, exports) {
     var setSize = function (ref, _w, _h, relative, _x, _y) {
         assert(referenceOf(ref) === "layer", "setHeight is passed a non-layer reference");
         var sizeDescriptor = {
-                "null": ref,
-                "snapToDocBounds": true
-            };
+            "null": ref,
+            "snapToDocBounds": true
+        };
 
         if (_w) {
             sizeDescriptor.width = inUnits.pixels(_w);

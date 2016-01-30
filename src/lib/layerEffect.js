@@ -279,16 +279,16 @@ define(function (require, exports) {
         
         if (!_isHiddenLayerProperties(properties)) {
             switch (effectType) {
-                case _INNER_SHADOW:
-                case _DROP_SHADOW:
-                    value = _shadowProperties(properties);
-                    break;
-                case _COLOR_OVERLAY:
-                    value = _colorOverlayProperties(properties);
-                    break;
-                case _STROKE:
-                    value = _strokeProperties(properties);
-                    break;
+            case _INNER_SHADOW:
+            case _DROP_SHADOW:
+                value = _shadowProperties(properties);
+                break;
+            case _COLOR_OVERLAY:
+                value = _colorOverlayProperties(properties);
+                break;
+            case _STROKE:
+                value = _strokeProperties(properties);
+                break;
             }
         }
         

@@ -100,8 +100,7 @@ define(function (require, exports, module) {
      */
     OS.prototype._eventHandler = function (err, event, payload) {
         if (err) {
-            // TODO: emit an error event, as in adapter.js
-            console.error("Failed to handle OS event: " + err);
+            this.emit("error", "Failed to handle OS event: " + err);
             return;
         }
         

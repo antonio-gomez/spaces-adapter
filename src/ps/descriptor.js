@@ -199,9 +199,9 @@ define(function (require, exports, module) {
      */
     var _makePropertyReference = function (reference, property) {
         var propertyDescriptor = {
-                _ref: "property",
-                _property: property
-            };
+            _ref: "property",
+            _property: property
+        };
 
         return Array.isArray(reference) ?
                 reference.concat(propertyDescriptor) :
@@ -443,16 +443,16 @@ define(function (require, exports, module) {
         // will disagree between batchPlay options, so it needs to be declared at beginTransaction level
         var txOptions = transactionInfo.txOptions,
             nextOptions = _.merge(transactionInfo.options, options, function (a, b, key) {
-            if (a === undefined) {
-                return b;
-            } else if (b === undefined) {
-                return a;
-            } else if (!txOptions.hasOwnProperty(key) && !_.isEqual(a, b)) {
-                throw new Error("Incompatible options in transaction.");
-            } else {
-                return a;
-            }
-        });
+                if (a === undefined) {
+                    return b;
+                } else if (b === undefined) {
+                    return a;
+                } else if (!txOptions.hasOwnProperty(key) && !_.isEqual(a, b)) {
+                    throw new Error("Incompatible options in transaction.");
+                } else {
+                    return a;
+                }
+            });
 
         transactionInfo.options = nextOptions;
         transactionInfo.commands = transactionInfo.commands.concat(commands);

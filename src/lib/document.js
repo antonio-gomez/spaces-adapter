@@ -75,14 +75,7 @@ define(function (require, exports) {
                 resolution: settings.resolution,
                 externalPreview: settings.externalPreview
             },
-            fileType,
-            strIndex = sourceRef._path.lastIndexOf("."),
             forceMRU = settings.forceMRU !== undefined ? settings.forceMRU : true;
-
-        if (strIndex !== -1) {
-            strIndex++;
-            fileType = sourceRef._path.substring(strIndex);
-        }
 
         var desc = {
             "null": sourceRef
@@ -177,10 +170,7 @@ define(function (require, exports) {
      */
     var saveDocument = function (path, settings) {
         var strIndex = path.lastIndexOf("."),
-            pathIndex = path.lastIndexOf("/"),
             fileType,
-            fileName,
-            filePath,
             desc,
             saveAs = {},
             saveTo = {},
@@ -200,11 +190,6 @@ define(function (require, exports) {
             strIndex++;
             fileType = path.substring(strIndex);
         }
-        if (pathIndex !== -1) {
-            pathIndex++;
-            fileName = path.substring(pathIndex);
-        }
-        filePath = path.replace(fileName, "");
 
         if (fileType === "gif") {
             saveAs = {
@@ -404,13 +389,13 @@ define(function (require, exports) {
      */
     var createWithPreset = function (presetName) {
         var desc = {
-                "new": {
-                    "_obj": "document",
-                    "_value": {
-                        preset: presetName
-                    }
+            "new": {
+                "_obj": "document",
+                "_value": {
+                    preset: presetName
                 }
-            };
+            }
+        };
         return new PlayObject(
             "make",
             desc
