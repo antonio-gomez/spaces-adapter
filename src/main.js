@@ -36,8 +36,8 @@ define(function (require, exports) {
      */
     var COMPATIBLE_PLUGIN_VERSION = {
         major: 2,
-        minor: 0,
-        patch: 15
+        minor: 1,
+        patch: 0
     };
 
     /**
