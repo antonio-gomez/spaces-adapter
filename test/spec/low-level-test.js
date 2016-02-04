@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Adobe Systems Incorporated. All rights reserved.
+ * Copyright (c) 2016 Adobe Systems Incorporated. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -829,78 +829,6 @@ define(function () {
             "_spaces._debug.descriptorIdentity() defined");
     });
 
-    /* _spaces._debug.descriptorIdentity(): timing test, multiple iterations
-     *
-     * https://developer.mozilla.org/en-US/docs/Web/API/Performance/now
-     *
-     * "The Performance.now() method returns a DOMHighResTimeStamp, measured
-     * in milliseconds, accurate to one thousandth of a millisecond."
-     */
-    asyncTest("_spaces._debug.descriptorIdentity(): timing test, multiple iterations", function () {
-        expect(1);
-        var iterations = 100;
-        // WARN for Avg/median timings > warnThreshold and < errorThreshold (console.warn())
-        // Test ERROR if either average or median is > errorThreshold
-        var warnThreshold = 10.0; // ms
-        var errorThreshold = 15.0; // ms
-        var callbacksReceived = 0;
-        var timings = new Array(iterations);
-
-        var callback = function (err, descriptor, reference) {
-            timings[callbacksReceived] = performance.now();
-            callbacksReceived++;
-            if (callbacksReceived < iterations) {
-                _spaces._debug.descriptorIdentity({}, {}, callback);
-            } else {
-                var elapsed = timings[timings.length - 1] - startTime;
-                var avgTime = elapsed / iterations;
-                var discreteTimings = timings.map(function (currentValue, index, array) {
-                    if (index === 0) return currentValue - startTime;
-                    return currentValue - array[index - 1];
-                });
-                var sortedTimings = discreteTimings.sort();
-                var maxTime = sortedTimings[sortedTimings.length - 1];
-                var minTime = sortedTimings[0];
-                var medianTime = sortedTimings[Math.floor(sortedTimings.length / 2)];
-                var reportAsWarning = avgTime > warnThreshold && avgTime < errorThreshold ||
-                    medianTime > warnThreshold && medianTime < errorThreshold;
-                var reportAsError = avgTime > errorThreshold || medianTime > errorThreshold;
-                var logstring = "ROUND TRIP TIMING TEST (";
-                logstring += iterations;
-                logstring += " iterations, times in ms. Thresholds: warn=";
-                logstring += warnThreshold;
-                logstring += ", error=";
-                logstring += errorThreshold;
-                logstring += "): avg: ";
-                logstring += avgTime.toFixed(2);
-                logstring += ", median: ";
-                logstring += medianTime.toFixed(2);
-                logstring += ", max: ";
-                logstring += maxTime.toFixed(2);
-                logstring += ", min: ";
-                logstring += minTime.toFixed(2);
-                // If reportAsError is true, the timings based on average and/or median
-                // have exceeded our threshold values and the test will FAIL.
-                // Note Performance.now() claims accuracy to 1 ms, so keep that
-                // in mind if we report average or median timings of less than
-                // 1 ms.
-                ok(!reportAsError, logstring);
-                if (!reportAsError) {
-                    // If not failing, just determine whether to log the
-                    // result as a warning if simple info
-                    if (reportAsWarning) {
-                        console.warn(logstring);
-                    } else {
-                        console.info(logstring);
-                    }
-                }
-                start();
-            }
-        };
-        var startTime = performance.now();
-        _spaces._debug.descriptorIdentity({}, {}, callback);
-    });
-
     /* _spaces._debug_testNativeDispatcherException() function
      */
     test("_spaces._debug_testNativeDispatcherException()", function () {
@@ -1161,65 +1089,6 @@ define(function () {
         });
     });
 
-    /* _spaces.ps.descriptor.play()
-     * functional (positive/valid input)
-     */
-    asyncTest("_spaces.ps.descriptor.play(): (positive/valid input)", function () {
-        expect(4);
-
-        ok(typeof _spaces.ps.descriptor.play === "function",
-            "_spaces.ps.descriptor.play() function defined");
-        _spaces.ps.descriptor.play("jsonAction", {}, {}, function (err, descriptor) {
-            _validateNotifierResult(err);
-            strictEqual(typeof descriptor, "object", "Result is a descriptor");
-            deepEqual(descriptor, {}, "Result object is empty");
-
-            start();
-        });
-    });
-
-    /* _spaces.ps.descriptor.play()
-     * functional (negative: argument failure)
-     */
-    asyncTest("_spaces.ps.descriptor.play(): argument failure", function () {
-        expect(2);
-
-        _spaces.ps.descriptor.play("jsonAction", 123, {}, function (err, descriptor) {
-            _validateNotifierResultError(err, _spaces.errorCodes.ARGUMENT_ERROR);
-            ok(!descriptor, "Call failed");
-
-            start();
-        });
-    });
-
-    /* _spaces.ps.descriptor.play()
-     * functional (negative: argument conversion failure)
-     */
-    asyncTest("_spaces.ps.descriptor.play(): (negative: argument conversion failure)", function () {
-        expect(2);
-
-        _spaces.ps.descriptor.play("jsonAction", { _ref: NaN }, {}, function (err, descriptor) {
-            _validateNotifierResultError(err, _spaces.errorCodes.CONVERSION_ERROR);
-            ok(!descriptor, "Call failed");
-
-            start();
-        });
-    });
-
-    /* _spaces.ps.descriptor.play()
-     * functional (negative: semantic failure)
-     */
-    asyncTest("_spaces.ps.descriptor.play(): (negative: semantic failure)", function () {
-        expect(2);
-
-        _spaces.ps.descriptor.play("ad-ref-does-not-exist-play-semantic-failure", {}, {}, function (err, descriptor) {
-            _validateNotifierResultError(err, _spaces.errorCodes.SUITEPEA_ERROR);
-            ok(!descriptor, "Call failed");
-
-            start();
-        });
-    });
-
     /* _spaces.ps.descriptor.batchPlay()
      * functional (positive/valid input)
      */
@@ -1422,6 +1291,27 @@ define(function () {
 
         _spaces.ps.descriptor.batchPlay(commands, options, function (err, descriptors, errors) {
             _validateNotifierResult(err);
+
+            start();
+        });
+    });
+
+    /* _spaces.ps.descriptor.batchPlay()
+     * functional (negative: argument conversion failure)
+     */
+    asyncTest("_spaces.ps.descriptor.batchPlay(): (negative: argument conversion failure)", function () {
+        expect(2);
+
+        var commands = [
+            {
+                name: "jsonAction",
+                descriptor: { _ref: NaN },
+                options: {}
+            }
+        ];
+        _spaces.ps.descriptor.batchPlay(commands, {}, function (err, descriptors, errors) {
+            _validateNotifierResultError(err, _spaces.errorCodes.CONVERSION_ERROR);
+            ok(!descriptors, "Call failed");
 
             start();
         });
@@ -3141,6 +3031,24 @@ define(function () {
         });
     });
 
+    /* _spaces.os.getMouseLocation()
+     * Synchronous call: returns current mouse location in screen space
+     * coordinates, but relative to the surface origin
+     * Validates: defined, type. retval and element size and type
+     */
+    test("_spaces.os.getMouseLocation(): defined, return type/value", function () {
+        ok(typeof _spaces.os.getMouseLocation === "function",
+           "_spaces.os.getMouseLocation function defined");
+        var options = undefined;
+        var location = _spaces.os.getMouseLocation(options);
+        ok(typeof location === "object" && location instanceof Array, "_spaces.os.getMouseLocation() retval type");
+        strictEqual(location.length, 2, "_spaces.os.getMouseLocation() retval Array length");
+        for (var i = 0; i < location.length; i++) {
+            ok(typeof location[i] === "number",
+               "_spaces.os.getMouseLocation() retval element " + i + " type");
+        }
+    });
+
     // -------------------------- _spaces.window ------------------------------
 
     /* _spaces.window property/object
@@ -3304,7 +3212,7 @@ define(function () {
 
         _spaces.window.setOverlayCloaking(info, options, function (err) {
             _validateNotifierResultError(err, _spaces.errorCodes.UNKNOWN_ERROR);
-            var expMessage = "key: top does not exist";
+            var expMessage = "key: left does not exist";
             var re = new RegExp("^(" + expMessage + ").*$");
             ok(re.test(err.message), "err.message");
             start();
@@ -3401,6 +3309,130 @@ define(function () {
         _spaces.window.invalidate(options, function (err) {
             _validateNotifierResult(err);
             start();
+        });
+    });
+
+
+    /** -----------------------------------------------------------------------
+     * TIMING AND ACTION DESCRIPTOR TESTS
+     *
+     * More specialized tests, going beyond API validation. This can include
+     * ActionDescriptor gestalt tests, timing tests, etec.
+     * THE KEY TO THEIR INCLUSION HERE rather than in the extended unit tests
+     * is that they execute quickly.
+     * ---------------------------------------------------------------------- /
+
+     /* _spaces._debug.descriptorIdentity(): timing test, multiple iterations
+     *
+     * https://developer.mozilla.org/en-US/docs/Web/API/Performance/now
+     *
+     * "The Performance.now() method returns a DOMHighResTimeStamp, measured
+     * in milliseconds, accurate to one thousandth of a millisecond."
+     */
+    asyncTest("_spaces._debug.descriptorIdentity(): timing test, multiple iterations", function () {
+        expect(1);
+        var iterations = 100;
+        // WARN for Avg/median timings > warnThreshold and < errorThreshold (console.warn())
+        // Test ERROR if either average or median is > errorThreshold
+        var warnThreshold = 10.0; // ms
+        var errorThreshold = 15.0; // ms
+        var callbacksReceived = 0;
+        var timings = new Array(iterations);
+
+        var callback = function (err, descriptor, reference) {
+            timings[callbacksReceived] = performance.now();
+            callbacksReceived++;
+            if (callbacksReceived < iterations) {
+                _spaces._debug.descriptorIdentity({}, {}, callback);
+            } else {
+                var elapsed = timings[timings.length - 1] - startTime;
+                var avgTime = elapsed / iterations;
+                var discreteTimings = timings.map(function (currentValue, index, array) {
+                    if (index === 0) return currentValue - startTime;
+                    return currentValue - array[index - 1];
+                });
+                var sortedTimings = discreteTimings.sort();
+                var maxTime = sortedTimings[sortedTimings.length - 1];
+                var minTime = sortedTimings[0];
+                var medianTime = sortedTimings[Math.floor(sortedTimings.length / 2)];
+                var reportAsWarning = avgTime > warnThreshold && avgTime < errorThreshold ||
+                    medianTime > warnThreshold && medianTime < errorThreshold;
+                var reportAsError = avgTime > errorThreshold || medianTime > errorThreshold;
+                var logstring = "ROUND TRIP TIMING TEST (";
+                logstring += iterations;
+                logstring += " iterations, times in ms. Thresholds: warn=";
+                logstring += warnThreshold;
+                logstring += ", error=";
+                logstring += errorThreshold;
+                logstring += "): avg: ";
+                logstring += avgTime.toFixed(2);
+                logstring += ", median: ";
+                logstring += medianTime.toFixed(2);
+                logstring += ", max: ";
+                logstring += maxTime.toFixed(2);
+                logstring += ", min: ";
+                logstring += minTime.toFixed(2);
+                // If reportAsError is true, the timings based on average and/or median
+                // have exceeded our threshold values and the test will FAIL.
+                // Note Performance.now() claims accuracy to 1 ms, so keep that
+                // in mind if we report average or median timings of less than
+                // 1 ms.
+                ok(!reportAsError, logstring);
+                if (!reportAsError) {
+                    // If not failing, just determine whether to log the
+                    // result as a warning if simple info
+                    if (reportAsWarning) {
+                        console.warn(logstring);
+                    } else {
+                        console.info(logstring);
+                    }
+                }
+                start();
+            }
+        };
+        var startTime = performance.now();
+        _spaces._debug.descriptorIdentity({}, {}, callback);
+    });
+
+
+    /* ActionDescriptor batchPlay gestalt
+     * Execute a simple File > New action and validate the result
+     */
+    asyncTest("_spaces.ps.descriptor.batchPlay('make'): new document and close", function () {
+        expect(7);
+        var makeCommands = [
+            {
+                name: "make",
+                descriptor: {"new":{"_obj":"document","preset":"iPad Mini (768, 1024)"}},
+                options: {}
+            }
+        ];
+        _spaces.ps.descriptor.batchPlay(makeCommands, {}, function (err, descriptors, errors) {
+            _validateNotifierResult(err);
+            // the returned descriptor should like this:
+            // {documentID: 200, new: Object}
+            strictEqual(descriptors.length, 1, "expect one descriptor to be returned");
+            strictEqual(errors.length, 1, "expect one errors value to be returned");
+            var descriptor = descriptors[0];
+            ok(typeof descriptor === "object", "descriptor type");
+            ok(descriptor.hasOwnProperty("documentID") && typeof descriptor.documentID === "number", "descriptor.documentID exists, type");
+            ok(descriptor.hasOwnProperty("new") && typeof descriptor.new === "object", "descriptor.new exists, type");
+            if (err === undefined && descriptor !== undefined) {
+                var closeCommands = [
+                    {
+                        name: "close",
+                        descriptor: {"documentID": descriptor.documentID, "forceNotify": true},
+                        options: {}
+                    }
+                ];
+                _spaces.ps.descriptor.batchPlay(closeCommands, {}, function (err, descriptors, errors) {
+                    _validateNotifierResult(err);
+                    start();
+
+                });
+            } else {
+                start();
+            }
         });
     });
 

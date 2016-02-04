@@ -606,9 +606,8 @@ _spaces.ps.descriptor.play = function (name, descriptor, options, callback) {
                                 be provided on a "null" key in the descriptor object.
 @param options (object)
     Options controlling the batch process. The following keys are accepted:
-    "interactionMode" (optional)
-        A value from _spaces.ps.descriptor.interactionMode.<some value>
-        The default value is SILENT
+    "canExecuteWhileModal" (optional, boolean).
+        @see the general objects section.
     "continueOnError" (boolean, optional)
         If true, then all commands are executed regardless of the return value of
         the individual commands. If false, then the command terminates if any of
@@ -624,15 +623,23 @@ _spaces.ps.descriptor.play = function (name, descriptor, options, callback) {
                 Default value is false.
            "suppressHistoryStateNotification" (bool) If true then the history state notification
                         associated with the "revert step" in coalescing is suppressed
-    "paintOptions" (object, optional).
-        Controls how the Photoshop canvas is updated after all commands have been executed.
-        @see the general objects section.
-    "canExecuteWhileModal" (optional, boolean).
-        @see the general objects section.
     "ignoreTargetWhenModal" (optional, boolean)
         when set to true, then any target reference in the provided descriptor is ignored
         if the host is in a modal dialog state, or in a modal tool state. This allows the
         request to be dispatched via the modal handler chain
+    "interactionMode" (optional)
+        A value from _spaces.ps.descriptor.interactionMode.<some value>
+        The default value is SILENT
+    "isUserInteractionCommand" (optional, boolean)
+        When set to true, then the command is treated as part of a tight user interaction/tracking
+        loop.
+        When this is the case, idle tasks are postponed.
+        Care should be taken to not mark all commands as user interaction commands as that
+        will prevent necessary idle tasks from completing.
+        Default value is false.
+    "paintOptions" (object, optional).
+        Controls how the Photoshop canvas is updated after all commands have been executed.
+        @see the general objects section.
     "synchronous" (optional, boolean)
         Default value is true.
         This option determines whethger or not the command is executed synchronously by the
@@ -1258,17 +1265,40 @@ _spaces.os.notifierKind = {
     */
     EXTERNAL_MOUSE_MOVE: "externalMouseMove",
 
-	/** A mousedown event occurred and was not routed to Spaces.
+	/** A mousedown event (left button) occurred and was not routed to Spaces.
     This is typically used to dismiss temporal UI such as popups inside
     the Spaces surface.
+	eventInfo provided is of the form:
+	{	eventKind:	_spaces.os.eventKind.LEFT_MOUSE_DOWN,
+		modifiers:	_spaces.os.eventModifiers,
+		clickCount: <int>
+		location:	[x, y] // list[2] of integer(win32) or double(osx) coords
+	}
+    location is relative to the Spaces surface and its origin is in the
+    top left corner.
     */
     EXTERNAL_MOUSE_DOWN: "externalMouseDown",
 
 	/** A mousedown event (right mouse button) occurred and was not routed to Spaces.
+	eventInfo provided is of the form:
+	{	eventKind:	_spaces.os.eventKind.RIGHT_MOUSE_DOWN,
+		modifiers:	_spaces.os.eventModifiers,
+		clickCount: <int>
+		location:	[x, y] // list[2] of integer(win32) or double(osx) coords
+	}
+    location is relative to the Spaces surface and its origin is in the
+    top left corner.
     */
     EXTERNAL_RMOUSE_DOWN: "externalRMouseDown",
 
 	/** A mousewheel event occurred and was not routed to Spaces.
+	eventInfo provided is of the form:
+	{	eventKind:	_spaces.os.eventKind.MOUSE_WHEEL,
+		modifiers:	_spaces.os.eventModifiers,
+		location:	[x, y] // list[2] of integer(win32) or double(osx) coords
+	}
+    location is relative to the Spaces surface and its origin is in the
+    top left corner.
 	*/
     EXTERNAL_MOUSE_WHEEL: "externalMouseWheel",
 
@@ -1426,6 +1456,16 @@ result of changing mouse policy, or as a result of a change to the modal state.
 _spaces.os.resetCursor = function (options, callback) {
     native function osResetCursor();
     return osResetCursor(options, callback);
+};
+
+/** Obtain the current mouse location.
+This method is un-synchronized with the main event queue. In stead the most
+recent hardware information is returned.
+@param options      (currently unused)
+*/
+_spaces.os.getMouseLocation = function (options) {
+    native function osGetMouseLocation();
+    return osGetMouseLocation(options);
 };
 
 /** Obtain a "temporary" filename.
