@@ -26,39 +26,16 @@
 define(function (require, exports) {
     "use strict";
 
-    var Promise = require("bluebird");
+    var Promise = require("bluebird"),
+        semver = require("semver");
 
     /**
-     * The minimum-compatible plugin version number. 
+     * A semver-specification for compatible plugin versions.
      *
      * @const
-     * @type {{major: number=, minor: number=, patch: number=}}
+     * @type {string}
      */
-    var COMPATIBLE_PLUGIN_VERSION = {
-        major: 2,
-        minor: 1,
-        patch: 0
-    };
-
-    /**
-     * Determine whether v1 is compatible to v2.
-     * 
-     * @private
-     * @param {{major: number=, minor: number=, patch: number=}} v1
-     * @param {{major: number=, minor: number=, patch: number=}} v2
-     * @return {boolean}
-     */
-    var _versionCompatible = function (v1, v2) {
-        if (v1.hasOwnProperty("major") && v1.major !== v2.major) {
-            return false;
-        }
-
-        if (v1.hasOwnProperty("minor") && v1.minor > v2.minor) {
-            return false;
-        }
-
-        return true;
-    };
+    const COMPATIBLE_PLUGIN_VERSIONS = "~2.1.0||~3.0.0";
 
     /**
      * Check if the current plugin version is compatible with the specified
@@ -67,9 +44,14 @@ define(function (require, exports) {
      * @return {boolean}
      */
     var isPluginCompatible = function () {
-        var pluginVersion = _spaces.version;
+        var pluginVersion = _spaces.version,
+            pluginVersionString = [
+                pluginVersion.major,
+                pluginVersion.minor,
+                pluginVersion.patch
+            ].join(".");
 
-        return _versionCompatible(COMPATIBLE_PLUGIN_VERSION, pluginVersion);
+        return semver.satisfies(pluginVersionString, COMPATIBLE_PLUGIN_VERSIONS);
     };
 
     /**
@@ -98,7 +80,7 @@ define(function (require, exports) {
          */
         "compatiblePluginVersion": {
             enumerable: true,
-            value: COMPATIBLE_PLUGIN_VERSION
+            value: COMPATIBLE_PLUGIN_VERSIONS
         },
 
         /**
