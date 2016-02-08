@@ -762,16 +762,6 @@ define(function () {
         });
     });
 
-    // -------------------------- _spaces.config ------------------------------
-
-    /* _spaces.config object
-     * Validates: defined, type
-     */
-    test("_spaces.config object defined, type", function () {
-        ok(!!_spaces.config, "_spaces.config defined");
-        ok(typeof _spaces.config === "object", "_spaces.config type");
-    });
-
     // ---------------------- _spaces._debug ------------------------------
 
     /* _spaces._debug
@@ -787,15 +777,6 @@ define(function () {
             "_spaces._debug.getRemoteDebuggingPort function defined");
         var port = _spaces._debug.getRemoteDebuggingPort();
         strictEqual(typeof port, "number", "_spaces._debug.getRemoteDebuggingPort() retval");
-    });
-
-    /* _spaces._debug.logMessage() function
-     *
-     */
-    test("_spaces._debug.logMessage()", function () {
-        ok(typeof _spaces._debug.logMessage === "function",
-            "_spaces._debug.logMessage function defined");
-        _spaces._debug.logMessage("_spaces._debug.logMessage function test");
     });
 
     /* _spaces._debug_showHideDevTools()

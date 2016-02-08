@@ -564,35 +564,6 @@ modal state.
 Used when an extended action reference is provided to a get, play, or batchPlay command.
 */
 
-/** play a single command in Photoshop (an action descriptor).
-@param name (string)
-    The Photoshop command to play.
-@param descriptor (object)
-    Arguments for the Photoshop command
-@param options (object)
-    Options related to how the command is executed. The following keys are
-    accepted:
-    "interactionMode" (optional)
-        A value from _spaces.ps.descriptor.interactionMode.<some value>
-        The default value is SILENT
-    "paintOptions" (object, optional)
-        Controls how the Photoshop canvas is updated after all commands have
-        been executed. @see the general objects section.
-    "canExecuteWhileModal" (optional, boolean)
-        @see the general objects section.
-    "useExtendedReference" (optional, boolean)
-        @see common descriptor options
-@param callback (function) A callback notifier with the signature described below.
-
-
-callback(err, descriptor)
-"descriptor"    The result descriptor from the play command.
-*/
-_spaces.ps.descriptor.play = function (name, descriptor, options, callback) {
-    native function psDescPlay();
-    return psDescPlay(name, descriptor, options, callback);
-};
-
 /** Play a list of commands
 @param commands (list)
     A list of commands to play. A command is an object conforming to the following
@@ -1642,12 +1613,6 @@ _spaces._debug.getRemoteDebuggingPort = function () {
     return pgDebugGetRemoteDebuggingPort();
 };
 
-/** log the provided string by using the host logging system */
-_spaces._debug.logMessage = function (message) {
-    native function pgDebugLogMessage(message);
-    return pgDebugLogMessage(message);
-};
-
 /** Show/Hide the developer tools
 @param doShow (boolean)     if true, then the dev tools will be shown.
                             if false then the dev tools will be hidden.
@@ -1665,8 +1630,8 @@ number of arguments while the last argument is still a notifier.
                 with an incorrect number of arguments error
 */
 _spaces._debug.forcePlayArgumentFailure = function (notifier) {
-    native function psDescPlay();
-    return psDescPlay(notifier);
+    native function psDescBatchPlay();
+    return psDescBatchPlay(notifier);
 };
 
 /** This method converts provided arguments from V8 to action descriptor types, and
@@ -1699,38 +1664,3 @@ _spaces._debug.enableDebugContextMenu = function (value, callback) {
      return pgDebugEnableDebugContextMenu(value, callback);
 };
 
-// ==========================================================================
-// _spaces.config
-// Various options that determine how Spaces/adapter layer operates
-
-if (!_spaces.config)
-   _spaces.config = {};
-
-// ==========================================================================
-// Deprecated functionality
-
-/** This API controls the execution parameters of the Spaces environment.
-* @param options    a dictionary of execution mode parameters:
-*                       "latentVisibility": <bool>
-*                   controls whether or not the Spaces surface is visible
-*                   when its ancestor hierarchy is visible.
-*                       "suspended": <bool>
-*                   When a Spaces is suspended, then its cpu resource usage is reduced.
-*                   The javascript environment can send messages while Spaces
-*                   is suspended
-* @param callback   Callback notifier with the following signature:
-*                   notifier(err, previousValue)
-*                        @param err         undefined, or 0 on success.
-*                        @param previousValue the mode value before the set call
-*/
-_spaces.setExecutionMode = function (options, callback) {
-    native function pgSetExecutionMode();
-    return pgSetExecutionMode(options, callback);
-};
-
-/** Return the current value of the execution mode
-*/
-_spaces.getExecutionMode = function (callback) {
-    native function pgGetExecutionMode();
-    return pgGetExecutionMode(callback);
-};
