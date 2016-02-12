@@ -35,7 +35,7 @@ define(function (require, exports) {
      * @const
      * @type {string}
      */
-    const COMPATIBLE_PLUGIN_VERSIONS = "~2.1.0||~3.0.0";
+    const COMPATIBLE_PLUGIN_VERSIONS = "^3.0.0";
 
     /**
      * Check if the current plugin version is compatible with the specified
