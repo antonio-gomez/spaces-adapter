@@ -190,14 +190,32 @@ define(function () {
      */
     test("_spaces.version Object property: defined, type, member names and types", function () {
         ok(_spaces.hasOwnProperty("version"), "_spaces object should have a 'version' property");
-        ok(typeof _spaces.version === "object", "_spaces.version type");
-        strictEqual(Object.keys(_spaces.version).length, 3, "_spaces.version should have 3 properties");
+        strictEqual(typeof _spaces.version, "object", "_spaces.version type");
+        strictEqual(Object.keys(_spaces.version).length, 3, "_spaces.version: number of properties");
         strictEqual(typeof _spaces.version.major, "number", "version.major type should be 'number'");
         ok(_spaces.version.major >= 0, "version.major value should be >= 0");
         strictEqual(typeof _spaces.version.minor, "number", "version.minor type should be 'number'");
         ok(_spaces.version.minor >= 0, "version.minor value should be >= 0");
         strictEqual(typeof _spaces.version.patch, "number", "version.patch type should be 'number'");
         ok(_spaces.version.patch >= 0, "version.patch value should be >= 0");
+    });
+
+    /* _spaces.feature_flags Object property
+     * Validates: defined, type, member names and types
+     * feature_flags is a definable property in manifest.json, for example:
+     * "feature_flags": {"use_animations":true, "some_other":false}
+     */
+    test("_spaces.feature_flags Object property: defined, type, member names and types", function () {
+        ok(_spaces.hasOwnProperty("feature_flags"), "_spaces object should have a 'feature_flags' property");
+        strictEqual(typeof _spaces.feature_flags, "object", "_spaces.feature_flags type");
+        ok(Object.keys(_spaces.feature_flags).length >= 0, "_spaces.feature_flags may have 0 or more properties");
+        if (Object.keys(_spaces.feature_flags).length > 0) {
+            for (var key in Object.keys(_spaces.feature_flags)) {
+                ok(typeof key === "string", "_spaces.feature_flags element key types: element='" + key + "'");
+                ok(typeof _spaces.feature_flags[key] === "string",
+                   "_spaces.feature_flags element value types: element='" + key + "'");
+            }
+        }
     });
 
     /* _spaces.errorCodes constants object

@@ -100,6 +100,20 @@ Object.defineProperty(_spaces, "version", {
     }
 });
 
+/** _spaces.feature_flags
+Returns feature-flags for the current context.
+This value is set in the manifest.json file.
+*/
+Object.defineProperty(_spaces, "feature_flags", {
+    writeable: false,
+    enumerable: true,
+    configurable: false,
+    get: function () {
+        native function pgGetFeatureFlags();
+        return pgGetFeatureFlags();
+    }
+});
+
 /* Error codes used by Spaces.
 Typically such information is returned in the err object to callback methods.
 @see description in "Common objects"
