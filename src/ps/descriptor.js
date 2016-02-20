@@ -51,6 +51,7 @@ define(function (require, exports, module) {
         EventEmitter.call(this);
 
         this._transactions = new Map();
+        this._getCache = new Map();
         this._psEventHandler = this._psEventHandler.bind(this);
         this._batchPlayAsync = Promise.promisify(_spaces.ps.descriptor.batchPlay, {
             context: _spaces.ps.descriptor,
@@ -89,6 +90,8 @@ define(function (require, exports, module) {
      * @type {Map.<number, {commands: Array.<object>, options: object}>}
      */
     Descriptor.prototype._transactions = null;
+
+    Descriptor.prototype._getCache = null;
 
     /**
      * Event handler for events from the native bridge.
@@ -223,9 +226,36 @@ define(function (require, exports, module) {
             options = {};
         }
 
-        var wrappedReference = _wrap(reference);
+        var cache = options.cache,
+            cacheSet,
+            cacheID,
+            result;
 
-        return this._getAsync(wrappedReference, options);
+        if (cache) {
+            cacheID = cache.id;
+            cacheSet = cache.set;
+
+            if (!cacheSet) {
+                result = this._getCache.get(cacheID);
+                if (result) {
+                    if (cache.delete) {
+                        this._getCache.delete(cacheID);
+                    }
+
+                    return result;
+                }
+            }
+        }
+
+        var wrappedReference = options.noWrap ? reference : _wrap(reference);
+
+        result = this._getAsync(wrappedReference, options);
+
+        if (cacheSet) {
+            this._getCache.set(cacheID, result);
+        }
+
+        return result;
     };
 
     /**
@@ -298,6 +328,8 @@ define(function (require, exports, module) {
             options = {};
         }
 
+        options.noWrap = true;
+
         var multiRef = {
             _multiGetRef: [
                 {
@@ -312,7 +344,7 @@ define(function (require, exports, module) {
             ]
         };
 
-        return this._getAsync(multiRef, options).get("list");
+        return this.get(multiRef, options).get("list");
     };
 
     /**
@@ -733,7 +765,9 @@ define(function (require, exports, module) {
             options = {};
         }
 
-        return this._getAsync(_wrap(reference, properties), options);
+        options.noWrap = true;
+
+        return this.get(_wrap(reference, properties), options);
     };
 
     /**
