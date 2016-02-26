@@ -114,6 +114,22 @@ Object.defineProperty(_spaces, "feature_flags", {
     }
 });
 
+/** _spaces.globalBounds
+Returns the global bounds of the HTML surface.
+The bounds are returned in a coordinate system that is native to the host os.
+On OSX the units are points.
+On Windows the units are pixels
+*/
+Object.defineProperty(_spaces, "globalBounds", {
+    writeable: false,
+    enumerable: true,
+    configurable: false,
+    get: function () {
+        native function pgGetGlobalBounds();
+        return pgGetGlobalBounds();
+    }
+});
+
 /* Error codes used by Spaces.
 Typically such information is returned in the err object to callback methods.
 @see description in "Common objects"
