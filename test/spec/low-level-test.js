@@ -30,12 +30,19 @@ define(function () {
 
     module("low-level");
 
+    console.log("SPACES LOW LEVEL API TESTS:",
+                "Adapter version",
+                _spaces.version.major + "." +
+                _spaces.version.minor + "." +
+                _spaces.version.patch);
+
     // QUnit per-test global timeout value in ms
     // tburbage (2015/07/21): Commenting out for now. Having this set causes test
     // execution to time out while debugging (unless you made it a big value),
     // but also the test seems to silently pass on timeout. That's definitely not
     // what we would want...
     // QUnit.config.testTimeout = 5000;
+
 
     // VALIDATION HELPERS
     // ------------------
@@ -244,6 +251,29 @@ define(function () {
             "_spaces.errorCodes.SUITEPEA_ERROR");
         ok(typeof _spaces.errorCodes.REENTRANCY_ERROR === "number",
             "_spaces.errorCodes.REENTRANCY_ERROR");
+    });
+
+    /* _spaces.globalBounds (rect) property
+     * Returns the global bounds of the HTML surface.
+     * The bounds are returned in a coordinate system that is native to the
+     * host os.On OSX the units are points. On Windows the units are pixels.
+     * Validates: property exists, type, data elements
+     */
+    test("_spaces.globalBounds Object property: defined, type, member names and types", function () {
+        ok(_spaces.hasOwnProperty("globalBounds") && typeof _spaces.globalBounds === "object",
+           "_spaces object should have a 'globalBounds' property");
+        ok(_spaces.globalBounds.hasOwnProperty("left") &&
+           typeof _spaces.globalBounds.left === "number" &&
+           _spaces.globalBounds.left >= 0, "existence/type/value of property 'left'");
+        ok(_spaces.globalBounds.hasOwnProperty("top") &&
+           typeof _spaces.globalBounds.top === "number" &&
+           _spaces.globalBounds.top >= 0, "existence/type/value of property 'top'");
+        ok(_spaces.globalBounds.hasOwnProperty("right") &&
+           typeof _spaces.globalBounds.right === "number" &&
+           _spaces.globalBounds.right > 0, "existence/type/value of property 'right'");
+        ok(_spaces.globalBounds.hasOwnProperty("bottom") &&
+           typeof _spaces.globalBounds.bottom === "number" &&
+           _spaces.globalBounds.bottom > 0, "existence/type/value of property 'bottom'");
     });
 
     /* _spaces.notifierGroup constants object
@@ -3336,24 +3366,24 @@ define(function () {
         var warnThreshold = 10.0; // ms
         var errorThreshold = 15.0; // ms
         var callbacksReceived = 0;
-        var timings = new Array(iterations);
+        var rawTimes = new Array(iterations);
 
         var callback = function (err, descriptor, reference) {
-            timings[callbacksReceived] = performance.now();
+            rawTimes[callbacksReceived] = performance.now();
             callbacksReceived++;
             if (callbacksReceived < iterations) {
                 _spaces._debug.descriptorIdentity({}, {}, callback);
             } else {
-                var elapsed = timings[timings.length - 1] - startTime;
+                var elapsed = rawTimes[rawTimes.length - 1] - startTime;
                 var avgTime = elapsed / iterations;
-                var discreteTimings = timings.map(function (currentValue, index, array) {
-                    if (index === 0) return currentValue - startTime;
-                    return currentValue - array[index - 1];
+                var timings = rawTimes.map(function (v, idx, a) {
+                    if (idx === 0) return v - startTime;
+                    return v - a[idx - 1];
                 });
-                var sortedTimings = discreteTimings.sort();
-                var maxTime = sortedTimings[sortedTimings.length - 1];
-                var minTime = sortedTimings[0];
-                var medianTime = sortedTimings[Math.floor(sortedTimings.length / 2)];
+                timings.sort(function (a, b) { return a - b; });
+                var maxTime = timings[timings.length - 1];
+                var minTime = timings[0];
+                var medianTime = timings[Math.floor(timings.length / 2)];
                 var reportAsWarning = avgTime > warnThreshold && avgTime < errorThreshold ||
                     medianTime > warnThreshold && medianTime < errorThreshold;
                 var reportAsError = avgTime > errorThreshold || medianTime > errorThreshold;
@@ -3436,9 +3466,4 @@ define(function () {
     });
 
     // END OF TESTS
-    console.log("Adapter version",
-                _spaces.version.major + "." +
-                _spaces.version.minor + "." +
-                _spaces.version.patch,
-                ": low level API tests completed");
 });
