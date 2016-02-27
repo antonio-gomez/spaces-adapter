@@ -77,9 +77,14 @@ define(function (require, exports) {
      * @return {PlayObject}
      */
     var makeCircularBoundsWorkPath = function (bounds) {
-        var cenX = (bounds.left + bounds.right) / 2,
-            cenY = (bounds.top + bounds.bottom) / 2,
-            radius = Math.min(bounds.bottom - cenY, bounds.right - cenX),
+        var left = bounds.left._value,
+            right = bounds.right._value,
+            top = bounds.top._value,
+            bottom = bounds.bottom._value;
+
+        var cenX = (left + right) / 2,
+            cenY = (top + bottom) / 2,
+            radius = Math.min(bottom - cenY, right - cenX),
             circleTop = unitLib.pixels(cenY - radius),
             circleLeft = unitLib.pixels(cenX - radius),
             circleRight = unitLib.pixels(cenX + radius),
