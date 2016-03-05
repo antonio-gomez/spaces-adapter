@@ -520,6 +520,13 @@ define(function (require, exports, module) {
     Descriptor.prototype.batchPlay = function (commands, options) {
         options = options || {};
 
+        if (commands.length === 0) {
+            // If options.continueOnError is true, returns an array that contains two empty arrays: the first
+            // array represents empty result, the second represents empty error.
+            // If false, return an empty array as result.
+            return Promise.resolve(options.continueOnError ? [[], []] : []);
+        }
+
         if (options.hasOwnProperty("transaction")) {
             return this._addToTransaction(options.transaction, commands, options);
         } else {
