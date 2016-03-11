@@ -25,4 +25,5 @@ define(function (require, exports) {
     exports.tool = require("./tool");
     exports.unit = require("./unit");
     exports.vectorMask = require("./vectorMask");
+    exports.owl = require("./owl");
 });

@@ -1277,7 +1277,7 @@ define(function () {
             start();
         });
     });
-// jesper
+    // jesper
     /* _spaces.ps.descriptor.batchPlay()
      * functional (positive invoke PS testCommand with echo)
      */
@@ -1346,7 +1346,7 @@ define(function () {
         });
     });
 
-// repsej
+    // repsej
 
     /* _spaces.ps.descriptor.sendDirectMessage() function
      * Validates: defined, type
@@ -3464,6 +3464,5 @@ define(function () {
             }
         });
     });
-
     // END OF TESTS
 });

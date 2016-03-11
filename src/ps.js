@@ -23,73 +23,67 @@
 
 /* global _spaces */
 
-define(function (require, exports) {
-    "use strict";
+import Promise from "bluebird";
 
-    var Promise = require("bluebird");
+/**
+ * Promisified version of _spaces.ps functions.
+ * @private
+ */
+const _ps = Promise.promisifyAll(_spaces.ps);
 
-    /**
-     * Promisified version of _spaces.ps functions.
-     * @private
-     */
-    var _ps = Promise.promisifyAll(_spaces.ps);
+/**
+ * Commit or cancel the current modal tool edit state.
+ *
+ * @param {boolean=} commit Commits if true; cancels otherwise
+ * @param {options=} options
+ * @return {Promise} Resolves once the modal state has ended
+ */
+export function endModalToolState (commit, options) {
+    commit = commit || false;
+    options = options || {
+        invalidateMenus: true
+    };
     
-    /**
-     * Commit or cancel the current modal tool edit state.
-     *
-     * @param {boolean=} commit Commits if true; cancels otherwise
-     * @param {options=} options
-     * @return {Promise} Resolves once the modal state has ended
-     */
-    var endModalToolState = function (commit, options) {
-        commit = commit || false;
-        options = options || {
-            invalidateMenus: true
-        };
-        
-        return _ps.endModalToolStateAsync(commit)
-            .then(function () {
-                return _ps.processQueuedCommandsAsync(options);
-            });
+    return _ps.endModalToolStateAsync(commit)
+        .then(function () {
+            return _ps.processQueuedCommandsAsync(options);
+        });
+}
+
+/**
+ * Execute a Photoshop menu command.
+ * Should only be used for items that are not yet implemented via ActionDescriptors
+ *
+ * @param {number} commandID Photoshop menu command ID
+ * @return {Promise.<*>} Promise representing execution state of the menu command
+ */
+export function performMenuCommand (commandID) {
+    return _ps.performMenuCommandAsync(commandID);
+}
+
+/**
+ * Log an analytics event using the Adobe Headlights API.
+ * 
+ * NOTE: This is an Adobe-private API that must not be used by third-party
+ * developers!
+ *
+ * @private
+ * @param {string} category
+ * @param {string} subcategory
+ * @param {string} event
+ * @return {Promise}
+ */
+export function logHeadlightsEvent (category, subcategory, event) {
+    const options = {
+        category: category,
+        subcategory: subcategory,
+        event: event
     };
 
-    /**
-     * Execute a Photoshop menu command.
-     * Should only be used for items that are not yet implemented via ActionDescriptors
-     *
-     * @param {number} commandID Photoshop menu command ID
-     * @return {Promise.<*>} Promise representing execution state of the menu command
-     */
-    var performMenuCommand = function (commandID) {
-        return _ps.performMenuCommandAsync(commandID);
-    };
+    return _ps.logHeadlightsEventAsync(options);
+}
 
-    /**
-     * Log an analytics event using the Adobe Headlights API.
-     * 
-     * NOTE: This is an Adobe-private API that must not be used by third-party
-     * developers!
-     *
-     * @private
-     * @param {string} category
-     * @param {string} subcategory
-     * @param {string} event
-     * @return {Promise}
-     */
-    var logHeadlightsEvent = function (category, subcategory, event) {
-        var options = {
-            category: category,
-            subcategory: subcategory,
-            event: event
-        };
+import ui from "./ps/ui";
+import descriptor from "./ps/descriptor";
 
-        return _ps.logHeadlightsEventAsync(options);
-    };
-
-    exports.endModalToolState = endModalToolState;
-    exports.performMenuCommand = performMenuCommand;
-    exports.logHeadlightsEvent = logHeadlightsEvent;
-
-    exports.ui = require("./ps/ui");
-    exports.descriptor = require("./ps/descriptor");
-});
+export { ui, descriptor };

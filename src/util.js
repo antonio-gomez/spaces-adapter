@@ -23,42 +23,28 @@
 
 /* global console */
 
-define(function (require, exports) {
-    "use strict";
+/**
+ * Inherit the prototype methods from one constructor into another.
+ *
+ * Modeled after Node's util.inherits, which is licensed under the MIT license
+ *   Implementation: https://github.com/joyent/node/blob/master/lib/util.js#L628
+ *   License: https://github.com/joyent/node/blob/master/LICENSE
+ *
+ * @param {function} ctor Constructor function which needs to inherit the prototype.
+ * @param {function} superCtor Constructor function to inherit prototype from.
+ */
+export function inherits (ctor, superCtor) {
+    ctor.super_ = superCtor;
+    Object.setPrototypeOf(ctor.prototype, superCtor.prototype);
+}
 
-    /**
-     * Inherit the prototype methods from one constructor into another. 
-     *
-     * Modeled after Node's util.inherits, which is licensed under the MIT license
-     *   Implementation: https://github.com/joyent/node/blob/master/lib/util.js#L628
-     *   License: https://github.com/joyent/node/blob/master/LICENSE
-     *
-     * @param {function} ctor Constructor function which needs to inherit the prototype.
-     * @param {function} superCtor Constructor function to inherit prototype from.
-     */
-    var inherits = function (ctor, superCtor) {
-        ctor.super_ = superCtor;
-        ctor.prototype = Object.create(superCtor.prototype, {
-            constructor: {
-                value: ctor,
-                enumerable: false,
-                writable: true,
-                configurable: true
-            }
-        });
-    };
-
-    /**
-     * Throw an exception with the given message if the provided value is not truthy.
-     *
-     * @param {boolean} expression
-     * @param {string} message
-     */
-    var assert = function (expression, message) {
-        /*eslint no-console:0*/
-        console.assert(expression, message);
-    };
-
-    exports.inherits = inherits;
-    exports.assert = assert;
-});
+/**
+ * Throw an exception with the given message if the provided value is not truthy.
+ *
+ * @param {boolean} expression
+ * @param {string} message
+ */
+export function assert (expression, message) {
+    /*eslint no-console:0*/
+    console.assert(expression, message);
+}

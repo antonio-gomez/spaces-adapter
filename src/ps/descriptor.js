@@ -23,72 +23,137 @@
 
 /* global _spaces */
 
-define(function (require, exports, module) {
-    "use strict";
+import EventEmitter from "events";
+import Promise from "bluebird";
+import _ from "lodash";
 
-    var EventEmitter = require("eventEmitter"),
-        Promise = require("bluebird"),
-        _ = require("lodash");
+/** 
+ * Wraps certain type of parameters making it easier to call Descriptor.prototype.get
+ * For arrays, returns the reference to array recursively mapping everything inside
+ * For string values, references to the currently active one
+ * For objects, leaves them as is.
+ * 
+ * @private
+ * @param {(string|Array.<object>|object)} reference object to reference to
+ * @param {Array.<string>=} multiGetProperties For multiGet references, the
+ *  list of properties to include in the wrapped reference.
+ * @return {object} Reference to the toWrap object in a form .get will accept
+ */
+const _wrap = function (reference, multiGetProperties) {
+    if (Array.isArray(reference)) {
+        reference = _.chain(_.cloneDeep(reference))
+            .map(function (ref) {
+                return _wrap(ref);
+            })
+            .reverse()
+            .value();
+    } else if (typeof reference === "string") {
+        reference = {
+            _ref: reference,
+            _enum: "ordinal",
+            _value: "targetEnum"
+        };
+    } else if (reference.hasOwnProperty("null")) {
+        // Special case for play objects
+        reference["null"] = _wrap(reference["null"]);
+    }
 
-    var util = require("../util");
+    if (multiGetProperties) {
+        reference = {
+            _multiGetRef: [{
+                _propertyList: multiGetProperties
+            }].concat(reference)
+        };
+    } else if (Array.isArray(reference)) {
+        reference = {
+            _ref: reference
+        };
+    }
 
-    /**
-     * The Descriptor object provides helper methods for dealing with the
-     * low-level native binding to Photoshop. This object will typically
-     * not be used by user-level code.
-     *
-     * Emits low-level Photoshop events such as "select" with
-     * the following parameters:
-     *    1. @param {?} info about the event, dependent on event type (Note:
-     *           this should become more specific as the native interface is
-     *           further defined.)
-     *
-     * @extends EventEmitter
-     * @constructor
-     * @private
-     */
-    var Descriptor = function () {
-        EventEmitter.call(this);
+    return reference;
+};
 
+/**
+ * Constructs a property reference from the given action reference and
+ * property name.
+ *
+ * @private
+ * @param {(string|Array.<object>|object)} reference
+ * @param {string} property
+ * @return {Array.<object>}
+ */
+const _makePropertyReference = function (reference, property) {
+    const propertyDescriptor = {
+        _ref: "property",
+        _property: property
+    };
+
+    return Array.isArray(reference) ?
+            reference.concat(propertyDescriptor) :
+            [reference, propertyDescriptor];
+};
+
+/**
+ * The Descriptor object provides helper methods for dealing with the
+ * low-level native binding to Photoshop. This object will typically
+ * not be used by user-level code.
+ *
+ * Emits low-level Photoshop events such as "select" with
+ * the following parameters:
+ *    1. @param {?} info about the event, dependent on event type (Note:
+ *           this should become more specific as the native interface is
+ *           further defined.)
+ *
+ * @extends EventEmitter
+ * @constructor
+ * @private
+ */
+class Descriptor extends EventEmitter {
+    constructor () {
+        super();
+
+        /**
+         * Transaction ID counter
+         * @private
+         * @type {number}
+         */
+        this._transactionIDCounter = 0;
+
+        /**
+         * Map of active transactions by transaction ID
+         * @private
+         * @type {Map.<number, {commands: Array.<object>, options: object}>}
+         */
         this._transactions = new Map();
-        this._psEventHandler = this._psEventHandler.bind(this);
+
+        /**
+         * Low-level promisified batchPlay function.
+         * @private
+         * @type {function():Promise}
+         */
         this._batchPlayAsync = Promise.promisify(_spaces.ps.descriptor.batchPlay, {
             context: _spaces.ps.descriptor,
             multiArgs: true
         });
+        
+        /**
+         * Low-level promisified get function.
+         * @private
+         * @type {function():Promise}
+         */
         this._getAsync = Promise.promisify(_spaces.ps.descriptor.get, {
             context: _spaces.ps.descriptor
         });
-    };
-    util.inherits(Descriptor, EventEmitter);
 
-    /**
-     * Low-level promisified get function.
-     * @private
-     * @type {function():Promise}
-     */
-    Descriptor.prototype._getAsync = null;
-
-    /**
-     * Low-level promisified batchPlay function.
-     * @private
-     * @type {function():Promise}
-     */
-    Descriptor.prototype._batchPlayAsync = null;
-
-    /**
-     * Transaction ID counter
-     * @private
-     * @type {number}
-     */
-    Descriptor.prototype._transactionIDCounter = 0;
-
-    /**
-     * Map of active transactions by transaction ID
-     * @private
-     * @type {Map.<number, {commands: Array.<object>, options: object}>}
-     */
-    Descriptor.prototype._transactions = null;
+        /**
+         * Defines an enumeration of three constants that control dialog display
+         * while executing action descriptors: DONT_DISPLAY, DISPLAY and SILENT.
+         * 
+         * @const
+         * @type {Object.<string, number>}
+         */
+        this.interactionMode = _spaces.ps.descriptor.interactionMode;
+    }
 
     /**
      * Event handler for events from the native bridge.
@@ -98,7 +163,7 @@ define(function (require, exports, module) {
      * @param {String} eventID typeID for event type
      * @param {Object} payload serialized ActionDescriptor for the event, dependent on event type
      */
-    Descriptor.prototype._psEventHandler = function (err, eventID, payload) {
+    _psEventHandler (err, eventID, payload) {
         if (err) {
             this.emit("error", "Failed to handle Photoshop event: " + err);
             return;
@@ -106,7 +171,19 @@ define(function (require, exports, module) {
 
         this.emit("all", eventID, payload);
         this.emit(eventID, payload);
-    };
+    }
+
+    /**
+     * Adding this because some clients use off instead of removeListener and it's a wolfy87-eventemitter
+     * artifact
+     *
+     * @param {string} event
+     * @param {function} listener
+     * @return {Descriptor} Returns a reference to the instance
+     */
+    off (event, listener) {
+        return this.removeListener(event, listener);
+    }
 
     /**
      * Emit the named event with the given arguments as parameters. Throws if the
@@ -117,7 +194,7 @@ define(function (require, exports, module) {
      * @param {Array=} args Optional array of arguments to be passed to each listener
      * @return {object} Current instance for chaining
      */
-    Descriptor.prototype.emitEvent = function (event, args) {
+    emitEvent (event, args) {
         if (event === "error") {
             var listeners = this.getListeners(event);
 
@@ -137,76 +214,10 @@ define(function (require, exports, module) {
             }
         }
 
-        Descriptor.super_.prototype.emitEvent.call(this, event, args);
+        this.emitEvent.call(event, args);
 
         return this;
-    };
-
-    /** 
-     * Wraps certain type of parameters making it easier to call Descriptor.prototype.get
-     * For arrays, returns the reference to array recursively mapping everything inside
-     * For string values, references to the currently active one
-     * For objects, leaves them as is.
-     * 
-     * @private
-     * @param {(string|Array.<object>|object)} reference object to reference to
-     * @param {Array.<string>=} multiGetProperties For multiGet references, the
-     *  list of properties to include in the wrapped reference.
-     * @return {object} Reference to the toWrap object in a form .get will accept
-     */
-    var _wrap = function (reference, multiGetProperties) {
-        if (Array.isArray(reference)) {
-            reference = _.chain(_.cloneDeep(reference))
-                .map(function (ref) {
-                    return _wrap(ref);
-                })
-                .reverse()
-                .value();
-        } else if (typeof reference === "string") {
-            reference = {
-                _ref: reference,
-                _enum: "ordinal",
-                _value: "targetEnum"
-            };
-        } else if (reference.hasOwnProperty("null")) {
-            // Special case for play objects
-            reference["null"] = _wrap(reference["null"]);
-        }
-
-        if (multiGetProperties) {
-            reference = {
-                _multiGetRef: [{
-                    _propertyList: multiGetProperties
-                }].concat(reference)
-            };
-        } else if (Array.isArray(reference)) {
-            reference = {
-                _ref: reference
-            };
-        }
-
-        return reference;
-    };
-
-    /**
-     * Constructs a property reference from the given action reference and
-     * property name.
-     *
-     * @private
-     * @param {(string|Array.<object>|object)} reference
-     * @param {string} property
-     * @return {Array.<object>}
-     */
-    var _makePropertyReference = function (reference, property) {
-        var propertyDescriptor = {
-            _ref: "property",
-            _property: property
-        };
-
-        return Array.isArray(reference) ?
-                reference.concat(propertyDescriptor) :
-                [reference, propertyDescriptor];
-    };
+    }
 
     /**
      * Executes a low-level "get" call using an ActionReference.
@@ -218,15 +229,15 @@ define(function (require, exports, module) {
      * @param {object=} options
      * @return {Promise.<?>} The value of the reference, dependent on reference type
      */
-    Descriptor.prototype.get = function (reference, options) {
+    get (reference, options) {
         if (options === undefined) {
             options = {};
         }
 
-        var wrappedReference = _wrap(reference);
+        const wrappedReference = _wrap(reference);
 
         return this._getAsync(wrappedReference, options);
-    };
+    }
 
     /**
      * Retrieves a property of a reference
@@ -236,8 +247,8 @@ define(function (require, exports, module) {
      * @param {object=} options
      * @return {Promise.<?>} The value of the property, dependent on reference type
      */
-    Descriptor.prototype.getProperty = function (reference, property, options) {
-        var propertyReference = _makePropertyReference(reference, property);
+    getProperty (reference, property, options) {
+        const propertyReference = _makePropertyReference(reference, property);
 
         return this.get(propertyReference, options)
             .then(function (obj) {
@@ -247,7 +258,7 @@ define(function (require, exports, module) {
 
                 return obj[property];
             });
-    };
+    }
 
     /**
      * Executes a "set" call on the given property of the reference to set to value.
@@ -258,13 +269,13 @@ define(function (require, exports, module) {
      * @param {Object=} options options, defaults to "silent"
      * @return {Promise.<object>} Resolves when property is set
      */
-    Descriptor.prototype.setProperty = function (reference, property, value, options) {
+    setProperty (reference, property, value, options) {
         if (!reference.hasOwnProperty("_ref")) {
             throw new Error("You must pass a full reference to setProperty or else PS will crash!");
         }
 
         // We need to reverse this because for play calls _makePropertyReference orders it wrong
-        var propertyReference = _makePropertyReference(reference, property).reverse(),
+        const propertyReference = _makePropertyReference(reference, property).reverse(),
             propertyValue = {
                 "_obj": property,
                 "_value": value
@@ -275,7 +286,7 @@ define(function (require, exports, module) {
             };
 
         return this.play("set", propertyDescriptor, options);
-    };
+    }
 
     /**
      * Get a list of properties on a continguous range of references, (e.g.,
@@ -289,16 +300,16 @@ define(function (require, exports, module) {
      * @param {object=} options
      * @return {Promise.<Array.<Object.<string, *>>>}
      */
-    Descriptor.prototype.getPropertiesRange = function (reference, rangeOpts, properties, options) {
-        var range = rangeOpts.range,
-            index = rangeOpts.hasOwnProperty("index") ? rangeOpts.index : 1,
-            count = rangeOpts.hasOwnProperty("count") ? rangeOpts.count : -1;
+    getPropertiesRange (reference, rangeOpts, properties, options) {
+        const range = rangeOpts.range;
+        const index = rangeOpts.hasOwnProperty("index") ? rangeOpts.index : 1;
+        const count = rangeOpts.hasOwnProperty("count") ? rangeOpts.count : -1;
 
         if (options === undefined) {
             options = {};
         }
 
-        var multiRef = {
+        const multiRef = {
             _multiGetRef: [
                 {
                     _propertyList: properties
@@ -313,7 +324,7 @@ define(function (require, exports, module) {
         };
 
         return this._getAsync(multiRef, options).get("list");
-    };
+    }
 
     /**
      * Get a single property on a continguous range of references, (e.g.,
@@ -326,21 +337,12 @@ define(function (require, exports, module) {
      * @param {object=} options
      * @return {Promise.<Array.<*>>}
      */
-    Descriptor.prototype.getPropertyRange = function (reference, rangeOpts, property, options) {
+    getPropertyRange (reference, rangeOpts, property, options) {
         return this.getPropertiesRange(reference, rangeOpts, [property], options)
             .then(function (results) {
                 return _.pluck(results, property);
             });
-    };
-
-    /**
-     * Defines an enumeration of three constants that control dialog display
-     * while executing action descriptors: DONT_DISPLAY, DISPLAY and SILENT.
-     * 
-     * @const
-     * @type {Object.<string, number>}
-     */
-    Descriptor.prototype.interactionMode = _spaces.ps.descriptor.interactionMode;
+    }
 
     /**
      * Executes a low-level "play" call on the specified ActionDescriptor.
@@ -354,14 +356,14 @@ define(function (require, exports, module) {
      * @return {Promise.<object>} Resolves when the call is complete (Note: eventually, this will
      *     return the value resulting from the execution of the ActionDescriptor, if any).
      */
-    Descriptor.prototype.play = function (name, descriptor, options) {
-        var commands = [{
+    play (name, descriptor, options) {
+        const commands = [{
             name: name,
             descriptor: descriptor || {}
         }];
 
         return this.batchPlay(commands, options).get(0);
-    };
+    }
 
     /**
      * Executes a low-level "play" call on the PlayObject by unwrapping it
@@ -370,10 +372,10 @@ define(function (require, exports, module) {
      * @param {object=} options Overrides any options in the playObject
      * @returns {Promise} Resolves to the result of the call
      */
-    Descriptor.prototype.playObject = function (playObject, options) {
+    playObject (playObject, options) {
         return this.batchPlayObjects([playObject], options).get(0);
-    };
-    
+    }
+
     /**
      * Executes a low-level "batchPlay" call on the given commands immediately
      * skipping transaction collection
@@ -385,7 +387,7 @@ define(function (require, exports, module) {
      *      with either an adapter error, or a single command error if not continueOnError mode. In
      *      continueOnError mode, always resolve with both the results and errors arrays.
      */
-    Descriptor.prototype._batchPlayImmediate = function (commands, options) {
+    _batchPlayImmediate (commands, options) {
         if (!options.hasOwnProperty("interactionMode")) {
             options.interactionMode = this.interactionMode.SILENT;
         }
@@ -413,7 +415,7 @@ define(function (require, exports, module) {
                 // if there are no errors, resolve with just the results
                 return response[0];
             });
-    };
+    }
 
     /**
      * Adds the given commands with the options to the given existing transaction
@@ -428,7 +430,7 @@ define(function (require, exports, module) {
      * @return {Promise.<Array>} An empty array with the expected length for selection dance
      * to function correctly
      */
-    Descriptor.prototype._addToTransaction = function (tid, commands, options) {
+    _addToTransaction (tid, commands, options) {
         var transactionInfo = this._transactions.get(tid);
         if (!transactionInfo) {
             throw new Error("Invalid transaction ID: " + tid);
@@ -458,7 +460,7 @@ define(function (require, exports, module) {
         transactionInfo.commands = transactionInfo.commands.concat(commands);
 
         return Promise.resolve(new Array(commands.length));
-    };
+    }
 
     /**
      * Initiates a transaction, saving all batchPlay calls being added to this transaction
@@ -468,7 +470,7 @@ define(function (require, exports, module) {
      * transaction to apply
      * @return {number} Initiated transaction ID
      */
-    Descriptor.prototype.beginTransaction = function (options) {
+    beginTransaction (options) {
         var transactionID = this._transactionIDCounter++,
             transactionInfo = {
                 txOptions: options || {},
@@ -479,7 +481,7 @@ define(function (require, exports, module) {
         this._transactions.set(transactionID, transactionInfo);
 
         return transactionID;
-    };
+    }
 
     /**
      * Finalizes a transaction, playing all accumulated batchPlay objects
@@ -490,7 +492,7 @@ define(function (require, exports, module) {
      *      with either an adapter error, or a single command error if not continueOnError mode. In
      *      continueOnError mode, always resolve with both the results and errors arrays.
      */
-    Descriptor.prototype.endTransaction = function (tid) {
+    endTransaction (tid) {
         var transactionInfo = this._transactions.get(tid);
         if (!transactionInfo) {
             throw new Error("Invalid transaction ID: " + tid);
@@ -503,7 +505,7 @@ define(function (require, exports, module) {
             .tap(function () {
                 this._transactions.delete(tid);
             });
-    };
+    }
 
     /**
      * Executes a low-level "batchPlay" call on the specified ActionDescriptors.
@@ -517,7 +519,7 @@ define(function (require, exports, module) {
      *      with either an adapter error, or a single command error if not continueOnError mode. In
      *      continueOnError mode, always resolve with both the results and errors arrays.
      */
-    Descriptor.prototype.batchPlay = function (commands, options) {
+    batchPlay (commands, options) {
         options = options || {};
 
         if (commands.length === 0) {
@@ -532,7 +534,7 @@ define(function (require, exports, module) {
         } else {
             return this._batchPlayImmediate(commands, options);
         }
-    };
+    }
 
     /**
      * Executes a low-level "batchPlay" call on the specified PlayObjects.
@@ -541,7 +543,7 @@ define(function (require, exports, module) {
      * @param {{continueOnError: boolean=}=} options Options applied to the execution of the batchPlay
      * @return {Promise.<Array.<object>>} Resolves with the list of ActionDescriptor results. 
      */
-    Descriptor.prototype.batchPlayObjects = function (objects, options) {
+    batchPlayObjects (objects, options) {
         var commands = objects.map(function (object) {
             var command = {
                 name: object.command,
@@ -556,7 +558,7 @@ define(function (require, exports, module) {
         });
 
         return this.batchPlay(commands, options);
-    };
+    }
 
     /**
      * Executes a sequence of low-level "get" calls using batchPlay.
@@ -572,7 +574,7 @@ define(function (require, exports, module) {
      * @param {object=} options
      * @return {Promise.<Array.<object>>} Resolves with an array of results.
      */
-    Descriptor.prototype.batchGet = function (references, options) {
+    batchGet (references, options) {
         var commands = references.map(function (reference) {
             return {
                 name: "get",
@@ -583,7 +585,7 @@ define(function (require, exports, module) {
         });
 
         return this.batchPlay(commands, options);
-    };
+    }
 
     /**
      * Executes a sequence of low-level "getProperty" calls using batchPlay.
@@ -595,7 +597,7 @@ define(function (require, exports, module) {
      * @param {object=} options
      * @return {Promise.<Array.<object>>} Resolves with an array of property results.
      */
-    Descriptor.prototype.batchGetProperties = function (refObjs, options) {
+    batchGetProperties (refObjs, options) {
         options = options || {};
 
         var propertyReferences = refObjs.map(function (refObj) {
@@ -617,7 +619,7 @@ define(function (require, exports, module) {
                     return result[property];
                 });
             });
-    };
+    }
 
     /**
      * Fetch optional properties, which might not exist, and ignore errors.
@@ -627,7 +629,7 @@ define(function (require, exports, module) {
      * @return {Promise.<object>} Always resolves to an object, but keys that
      *  don't exist are omitted from the resolved value.
      */
-    Descriptor.prototype.batchGetOptionalProperties = function (reference, properties) {
+    batchGetOptionalProperties (reference, properties) {
         var makeRefObj = function (property) {
             return {
                 reference: reference,
@@ -652,7 +654,7 @@ define(function (require, exports, module) {
                     return result;
                 }, {});
             });
-    };
+    }
 
     /**
      * Executes a sequence of low-level "getProperty" calls for a single property
@@ -665,7 +667,7 @@ define(function (require, exports, module) {
      * @param {object=} options
      * @return {Promise.<Array.<object>>} Resolves with an array of property results.
      */
-    Descriptor.prototype.batchGetProperty = function (references, property, options) {
+    batchGetProperty (references, property, options) {
         var refObjs = references.map(function (reference) {
             return {
                 reference: reference,
@@ -674,7 +676,7 @@ define(function (require, exports, module) {
         });
 
         return this.batchGetProperties(refObjs, options);
-    };
+    }
 
     /**
      * Efficiently get a set of properties on an arbitrary set of references.
@@ -685,7 +687,7 @@ define(function (require, exports, module) {
      *  not be returned
      * @return {Promise.<Array.<Object.<string, *>>>}
      */
-    Descriptor.prototype.batchMultiGetProperties = function (references, properties, options) {
+    batchMultiGetProperties (references, properties, options) {
         if (properties.length === 0) {
             return Promise.resolve([{}]);
         }
@@ -719,7 +721,7 @@ define(function (require, exports, module) {
                     return response;
                 }
             });
-    };
+    }
 
     /**
      * Efficiently get a set of properties on a single reference. Not all
@@ -731,7 +733,7 @@ define(function (require, exports, module) {
      *  not be returned
      * @return {Promise.<Object.<string, *>>}
      */
-    Descriptor.prototype.multiGetOptionalProperties = function (reference, properties, options) {
+    multiGetOptionalProperties (reference, properties, options) {
         if (properties.length === 0) {
             return Promise.resolve({});
         }
@@ -741,7 +743,7 @@ define(function (require, exports, module) {
         }
 
         return this._getAsync(_wrap(reference, properties), options);
-    };
+    }
 
     /**
      * Effeciently get a set of properties on a single reference.
@@ -752,7 +754,7 @@ define(function (require, exports, module) {
      *  not be returned
      * @return {Promise.<Object.<string, *>>}
      */
-    Descriptor.prototype.multiGetProperties = function (reference, properties, options) {
+    multiGetProperties (reference, properties, options) {
         if (options === undefined) {
             options = {};
         }
@@ -770,16 +772,16 @@ define(function (require, exports, module) {
                     }
                 });
             });
-    };
+    }
+}
 
-    /**
-     * The Descriptor singleton
-     * @type {Descriptor} 
-     */
-    var descriptor = new Descriptor();
+/**
+ * The Descriptor singleton
+ * @type {Descriptor} 
+ */
+const theDescriptor = new Descriptor();
 
-    // bind native Photoshop event handler to our handler function
-    _spaces.setNotifier(_spaces.notifierGroup.PHOTOSHOP, {}, descriptor._psEventHandler);
-    
-    module.exports = descriptor;
-});
+// bind native Photoshop event handler to our handler function
+_spaces.setNotifier(_spaces.notifierGroup.PHOTOSHOP, {}, theDescriptor._psEventHandler.bind(theDescriptor));
+
+export default theDescriptor;

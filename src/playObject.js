@@ -21,22 +21,20 @@
  * 
  */
 
-define(function (require, exports, module) {
-    "use strict";
+import Descriptor from "./ps/descriptor";
 
-    var Descriptor = require("./ps/descriptor");
-
-    /**
-     * In Spaces-adapter, all library functions return PlayObjects. 
-     * These PlayObjects can be called in Photoshop by passing them into 
-     * ps/descriptor's playObject function.
-     * 
-     * @constructor
-     * @param {!string} command Command name to be played
-     * @param {!Object} descriptor Arguments for the command
-     * @param {Object} options Options for Photoshop while playing this command
-     */
-    var PlayObject = function (command, descriptor, options) {
+/**
+ * In Spaces-adapter, all library functions return PlayObjects. 
+ * These PlayObjects can be called in Photoshop by passing them into 
+ * ps/descriptor's playObject function.
+ * 
+ * @constructor
+ * @param {!string} command Command name to be played
+ * @param {!Object} descriptor Arguments for the command
+ * @param {Object} options Options for Photoshop while playing this command
+ */
+export default class PlayObject {
+    constructor (command, descriptor, options) {
         this.command = command;
         this.descriptor = descriptor;
         this.options = {
@@ -48,22 +46,5 @@ define(function (require, exports, module) {
                 this.options[property] = options[property];
             }, this);
         }
-    };
-
-    /**
-     * @type {string}
-     */
-    PlayObject.prototype.command = null;
-
-    /**
-     * @type {Object}
-     */
-    PlayObject.prototype.descriptor = null;
-
-    /**
-     * @type {Object}
-     */
-    PlayObject.prototype.options = null;
-
-    module.exports = PlayObject;
-});
+    }
+}

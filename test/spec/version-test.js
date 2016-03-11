@@ -19,14 +19,14 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
  * DEALINGS IN THE SOFTWARE.
  * 
- */
+*/
 
 /* global module, test, ok */
 
 define(function (require) {
     "use strict";
 
-    var adapter = require("adapter");
+    var adapter = require("spaces-adapter");
 
     module("version");
 
@@ -38,3 +38,4 @@ define(function (require) {
         ok(typeof version.patch === "number", "type of adapter patch version is a number");
     });
 });
+

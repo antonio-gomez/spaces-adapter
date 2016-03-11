@@ -22,16 +22,13 @@
  */
 
 /* global require, QUnit */
-
 require.config({
     paths: {
         "bluebird": "../node_modules/bluebird/js/browser/bluebird",
         "eventEmitter": "../node_modules/wolfy87-eventemitter/EventEmitter",
-        "lodash": "../node_modules/lodash/index"
-    },
-    packages: [
-        { name: "adapter", location: "../src" }
-    ]
+        "lodash": "../node_modules/lodash/index",
+        "spaces-adapter": "../build/spaces-adapter"
+    }
 });
 
 define(function (require) {

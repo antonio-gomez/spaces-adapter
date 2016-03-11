@@ -23,55 +23,89 @@
 
 /* global _spaces */
 
-define(function (require, exports, module) {
-    "use strict";
+import EventEmitter from "events";
+import Promise from "bluebird";
 
-    var EventEmitter = require("eventEmitter"),
-        util = require("../util"),
-        Promise = require("bluebird");
+/**
+ * Promisified version of low-level keyboard focus functions
+ */
+const _ui = Promise.promisifyAll(_spaces.ps.ui);
 
-    /**
-     * Promisified version of low-level keyboard focus functions
-     */
-    var _ui = Promise.promisifyAll(_spaces.ps.ui),
-        _setOverlayCloaking = Promise.promisify(_spaces.window.setOverlayCloaking);
+const _setOverlayCloaking = Promise.promisify(_spaces.window.setOverlayCloaking);
 
-    /* jshint bitwise: false */
-    /**
-     * Bitmask of all of the classic UI widgets we want to hide in DesignShop mode
-     *
-     * @const
-     * @type {number}
-     */
-    var ALL_NONWINDOW_WIDGETS_BITMASK =
-        _ui.widgetTypes.CONTROLBAR |
-        _ui.widgetTypes.DOCUMENT_TABS |
-        _ui.widgetTypes.PALETTE |
-        _ui.widgetTypes.TOOLBAR;
-    /* jshint bitwise: true */
+/* jshint bitwise: false */
+/**
+ * Bitmask of all of the classic UI widgets we want to hide in DesignShop mode
+ *
+ * @const
+ * @type {number}
+ */
+var ALL_NONWINDOW_WIDGETS_BITMASK =
+    _ui.widgetTypes.CONTROLBAR |
+    _ui.widgetTypes.DOCUMENT_TABS |
+    _ui.widgetTypes.PALETTE |
+    _ui.widgetTypes.TOOLBAR;
+/* jshint bitwise: true */
 
-    /**
-     * The UI object provides helper methods for dealing with the
-     * low-level native binding to Photoshop. This object will typically
-     * not be used by user-level code.
-     *
-     * Emits low-level Photoshop events such as "select" with
-     * the following parameters:
-     *    1. @param {?} info about the event, dependent on event type (Note:
-     *           this should become more specific as the native interface is
-     *           further defined.)
-     *
-     * @extends EventEmitter
-     * @constructor
-     * @private
-     */
-    var UI = function () {
-        EventEmitter.call(this);
+/**
+ * The UI object provides helper methods for dealing with the
+ * low-level native binding to Photoshop. This object will typically
+ * not be used by user-level code.
+ *
+ * Emits low-level Photoshop events such as "select" with
+ * the following parameters:
+ *    1. @param {?} info about the event, dependent on event type (Note:
+ *           this should become more specific as the native interface is
+ *           further defined.)
+ *
+ * @extends EventEmitter
+ * @constructor
+ * @private
+ */
+class UI extends EventEmitter {
+    constructor () {
+        super();
 
-        this._menuEventHandler = this._menuEventHandler.bind(this);
-        this._interactionEventHandler = this._interactionEventHandler.bind(this);
-    };
-    util.inherits(UI, EventEmitter);
+        /**
+         * Overscroll modes
+         * 
+         * @const
+         * @type {Object.<string, number>}
+         */
+        this.overscrollMode = _spaces.ps.ui.overscrollMode;
+
+        /**
+         * Pointer propagation modes - Used for the default mouse policy
+         * PROPAGATE_BY_ALPHA: Default behavior, events will be sent to Spaces
+         * if they're clicking on a Spaces view
+         * PROPAGATE_TO_PHOTOSHOP: Spaces will never get a pointer event
+         * PROPAGATE_TO_BROWSER: Spaces consumes all pointer events
+         */
+        this.pointerPropagationMode = _spaces.ps.ui.pointerPropagationMode;
+
+        /**
+         * Keyboard propagation modes - Used for the default keyboard policy
+         * PROPAGATE_BY_FOCUS: Default behavior, events will be sent to in focus element
+         * PROPAGATE_TO_PHOTOSHOP: Spaces will never get a keyboard event
+         * PROPAGATE_TO_BROWSER: Spaces consumes all keyboard events
+         */
+        this.keyboardPropagationMode = _spaces.ps.ui.keyboardPropagationMode;
+
+        /**
+         * Policy action modes - Used for custom policies
+         * Numerically, they're identical for keyboard and pointer
+         * PROPAGATE_BY_ALPHA (applies as PROPAGATE_BY_FOCUS on Keyboard events)
+         * PROPAGATE_TO_PHOTOSHOP
+         * PROPAGATE_TO_BROWSER
+         */
+        this.policyAction = _spaces.ps.ui.policyAction;
+
+        /**
+         * Command kinds - Used for certain commands that are also used in
+         * OS dialogs (like copy/paste), with USER_DEFINED as extra
+         */
+        this.commandKind = _spaces.ps.ui.commandKind;
+    }
 
     /**
      * Event handler for menu events from the native bridge.
@@ -81,7 +115,7 @@ define(function (require, exports, module) {
      * @param {string} menuCommand
      * @param {object} info
      */
-    UI.prototype._menuEventHandler = function (err, menuCommand, info) {
+    _menuEventHandler (err, menuCommand, info) {
         if (err) {
             this.emit("error", "Failed to handle menu event: " + err);
             return;
@@ -91,7 +125,7 @@ define(function (require, exports, module) {
             command: menuCommand,
             info: info
         });
-    };
+    }
 
     /**
      * Event handler for interaction events (e.g., display of progress, error
@@ -102,7 +136,7 @@ define(function (require, exports, module) {
      * @param {number} type
      * @param {object} info
      */
-    UI.prototype._interactionEventHandler = function (err, type, info) {
+    _interactionEventHandler (err, type, info) {
         if (err) {
             this.emit("error", "Failed to handle interaction event: " + err);
             return;
@@ -132,15 +166,7 @@ define(function (require, exports, module) {
         this.emit(eventKind, {
             info: info
         });
-    };
-
-    /**
-     * Overscroll modes
-     * 
-     * @const
-     * @type {Object.<string, number>}
-     */
-    UI.prototype.overscrollMode = _spaces.ps.ui.overscrollMode;
+    }
 
     /**
      * Get the current Photoshop overscroll mode.
@@ -148,9 +174,9 @@ define(function (require, exports, module) {
      * @see UI.prototype.overscrollMode
      * @return {Promise.<number>} Resolves with the overscroll mode
      */
-    UI.prototype.getOverscrollMode = function () {
+    getOverscrollMode () {
         return _ui.getOverscrollModeAsync();
-    };
+    }
 
     /**
      * Set the current Photoshop overscroll mode.
@@ -159,22 +185,22 @@ define(function (require, exports, module) {
      * @param {number} mode The desired overscroll model
      * @return {Promise.<number>} Resolves once the overscroll mode is set
      */
-    UI.prototype.setOverscrollMode = function (mode) {
+    setOverscrollMode (mode) {
         var options = {
             mode: mode
         };
 
         return _ui.setOverscrollModeAsync(options);
-    };
+    }
 
     /**
      * Determines whether the scrollbars are currently suppressed.
      * 
      * @return {Promise.<boolean>}
      */
-    UI.prototype.getSuppressScrollbars = function () {
+    getSuppressScrollbars () {
         return _ui.getSuppressScrollbarsAsync();
-    };
+    }
 
     /**
      * Sets whether or not the scrollbars should be suppressed.
@@ -182,18 +208,18 @@ define(function (require, exports, module) {
      * @param {boolean} suppress Whether or not the scrollbars should be suppressed
      * @return {Promise}
      */
-    UI.prototype.setSuppressScrollbars = function (suppress) {
+    setSuppressScrollbars (suppress) {
         return _ui.setSuppressScrollbarsAsync(suppress);
-    };
+    }
 
     /**
      * Determines whether target path drawing is currently suppressed.
      * 
      * @return {Promise.<boolean>}
      */
-    UI.prototype.getSuppressTargetPaths = function () {
+    getSuppressTargetPaths () {
         return _ui.getSuppressTargetPathsAsync();
-    };
+    }
 
     /**
      * Sets whether or not target path drawing should be suppressed.
@@ -201,9 +227,9 @@ define(function (require, exports, module) {
      * @param {boolean} suppress Whether or not target path drawing should be suppressed
      * @return {Promise}
      */
-    UI.prototype.setSuppressTargetPaths = function (suppress) {
+    setSuppressTargetPaths (suppress) {
         return _ui.setSuppressTargetPathsAsync(suppress);
-    };
+    }
 
     /**
      * Sets whether or not the Photoshop classic chrome is visible
@@ -211,43 +237,11 @@ define(function (require, exports, module) {
      * @param {boolean} visible Whether or not the chrome should be visible
      * @return {Promise}
      */
-    UI.prototype.setClassicChromeVisibility = function (visible) {
+    setClassicChromeVisibility (visible) {
         return this.setSuppressScrollbars(!visible).then(function () {
             return _ui.setWidgetTypeVisibilityAsync(ALL_NONWINDOW_WIDGETS_BITMASK, visible);
         });
-    };
-
-    /**
-     * Pointer propagation modes - Used for the default mouse policy
-     * PROPAGATE_BY_ALPHA: Default behavior, events will be sent to Spaces
-     * if they're clicking on a Spaces view
-     * PROPAGATE_TO_PHOTOSHOP: Spaces will never get a pointer event
-     * PROPAGATE_TO_BROWSER: Spaces consumes all pointer events
-     */
-    UI.prototype.pointerPropagationMode = _spaces.ps.ui.pointerPropagationMode;
-
-    /**
-     * Keyboard propagation modes - Used for the default keyboard policy
-     * PROPAGATE_BY_FOCUS: Default behavior, events will be sent to in focus element
-     * PROPAGATE_TO_PHOTOSHOP: Spaces will never get a keyboard event
-     * PROPAGATE_TO_BROWSER: Spaces consumes all keyboard events
-     */
-    UI.prototype.keyboardPropagationMode = _spaces.ps.ui.keyboardPropagationMode;
-
-    /**
-     * Policy action modes - Used for custom policies
-     * Numerically, they're identical for keyboard and pointer
-     * PROPAGATE_BY_ALPHA (applies as PROPAGATE_BY_FOCUS on Keyboard events)
-     * PROPAGATE_TO_PHOTOSHOP
-     * PROPAGATE_TO_BROWSER
-     */
-    UI.prototype.policyAction = _spaces.ps.ui.policyAction;
-
-    /**
-     * Command kinds - Used for certain commands that are also used in
-     * OS dialogs (like copy/paste), with USER_DEFINED as extra
-     */
-    UI.prototype.commandKind = _spaces.ps.ui.commandKind;
+    }
 
     /**
      * Gets the mode of pointer propagation determining the rules of
@@ -255,9 +249,9 @@ define(function (require, exports, module) {
      * 
      * @return {Promise.<number>} Resolves to a value in pointerPropagationMode
      */
-    UI.prototype.getPointerPropagationMode = function () {
+    getPointerPropagationMode () {
         return _ui.getPointerPropagationModeAsync();
-    };
+    }
 
     /**
      * Set the pointer propagation mode
@@ -266,9 +260,9 @@ define(function (require, exports, module) {
      *  possible values defined in UI.prototype.pointerPropagationMode
      * @return {Promise}
      */
-    UI.prototype.setPointerPropagationMode = function (mode) {
+    setPointerPropagationMode (mode) {
         return _ui.setPointerPropagationModeAsync(mode);
-    };
+    }
 
     /**
      * Gets the mode of keyboard propagation determining the rules of
@@ -276,9 +270,9 @@ define(function (require, exports, module) {
      * 
      * @return {Promise.<number>} Resolves to a value in keyboardPropagationMode
      */
-    UI.prototype.getKeyboardPropagationMode = function () {
+    getKeyboardPropagationMode () {
         return _ui.getKeyboardPropagationModeAsync();
-    };
+    }
 
     /**
      * Set the keyboard propagation mode
@@ -287,9 +281,9 @@ define(function (require, exports, module) {
      *  possible values defined in UI.prototype.keyboardPropagationMode
      * @return {Promise}
      */
-    UI.prototype.setKeyboardPropagationMode = function (mode) {
+    setKeyboardPropagationMode (mode) {
         return _ui.setKeyboardPropagationModeAsync(mode);
-    };
+    }
 
     /**
      * Installs the given list of pointer event policies into Photoshop
@@ -302,9 +296,9 @@ define(function (require, exports, module) {
      *
      * @param {Array.<{eventKind: number, modifiers: number, keyCode: number, action: number}>} policyList
      */
-    UI.prototype.setPointerEventPropagationPolicy = function (policyList) {
+    setPointerEventPropagationPolicy (policyList) {
         return _ui.setPointerEventPropagationPolicyAsync({ policyList: policyList });
-    };
+    }
 
     /**
      * Installs the given list of keyboard event policies into Photoshop
@@ -317,9 +311,9 @@ define(function (require, exports, module) {
      *
      * @param {Array.<{eventKind: number, modifiers: number, keyCode: number, action: number}>} policyList
      */
-    UI.prototype.setKeyboardEventPropagationPolicy = function (policyList) {
+    setKeyboardEventPropagationPolicy (policyList) {
         return _ui.setKeyboardEventPropagationPolicyAsync({ policyList: policyList });
-    };
+    }
 
     /**
      * Install a menu bar, which consists of an array of MenuEntry objects, an
@@ -350,14 +344,14 @@ define(function (require, exports, module) {
      * @param {object=} options Currently unused
      * @param {{id: string, menu: Array.<MenuEntry>}} description Menu description
      */
-    UI.prototype.installMenu = function (options, description) {
+    installMenu (options, description) {
         if (description === undefined) {
             description = options;
             options = {};
         }
 
         return _ui.installMenuAsync(options, description);
-    };
+    }
 
     /**
      * Define the bounds of the non-UI portion of the application window.
@@ -365,11 +359,11 @@ define(function (require, exports, module) {
      * @param {{top: number, left: number, right:number, bottom: number}} offset
      * @return {Promise.<{top: number, left: number, right:number, bottom: number}>}
      */
-    UI.prototype.setOverlayOffsets = function (offset) {
+    setOverlayOffsets (offset) {
         return _ui.setOverlayOffsetsAsync({
             offset: offset
         });
-    };
+    }
 
     /**
      * Defines an area that will be erased immediately on given notifications
@@ -385,45 +379,45 @@ define(function (require, exports, module) {
      * or manually only when this API is called with an empty area
      * @return {Promise}
      */
-    UI.prototype.setOverlayCloaking = function (area, enablers, disabler) {
+    setOverlayCloaking (area, enablers, disabler) {
         return _setOverlayCloaking({
             list: area ? [area] : [],
             debug: false, // If this is set to true, we'll see red rectangles on blit areas
             enable: enablers,
             disable: disabler
         }, {});
-    };
+    }
 
     /**
      * Starts a modal edit state with the current active tool
      *
      * @return {Promise}
      */
-    UI.prototype.startEditWithCurrentModalTool = function () {
+    startEditWithCurrentModalTool () {
         return _ui.startEditWithCurrentModalToolAsync();
-    };
+    }
+}
 
-    /**
-     * The UI singleton
-     * @type {UI}
-     */
-    var ui = new UI();
+/**
+ * The UI singleton
+ * @type {UI}
+ */
+const theUI = new UI();
 
-    // Install the menu notifier group handler
-    _spaces.setNotifier(_spaces.notifierGroup.MENU, {}, ui._menuEventHandler);
+// Install the menu notifier group handler
+_spaces.setNotifier(_spaces.notifierGroup.MENU, {}, theUI._menuEventHandler.bind(theUI));
 
-    // Install the interaction notifier group handler. For now, listen to "options" and
-    // "context" and "error" events, but not "progress" events, because listening for
-    // a particular class of events also suppresses the corresponding interaction dialog.
-    // In the case of "error" events, only an internally black-listed set of dialogs are
-    // suppresesed.
-    var _interactionOpts = _spaces.notifierOptions.interaction;
-    _spaces.setNotifier(_spaces.notifierGroup.INTERACTION, {
-        notificationKind:
-            _interactionOpts.OPTIONS +
-            _interactionOpts.CONTEXT +
-            _interactionOpts.ERROR
-    }, ui._interactionEventHandler);
+// Install the interaction notifier group handler. For now, listen to "options" and
+// "context" and "error" events, but not "progress" events, because listening for
+// a particular class of events also suppresses the corresponding interaction dialog.
+// In the case of "error" events, only an internally black-listed set of dialogs are
+// suppresesed.
+let _interactionOpts = _spaces.notifierOptions.interaction;
+_spaces.setNotifier(_spaces.notifierGroup.INTERACTION, {
+    notificationKind:
+        _interactionOpts.OPTIONS +
+        _interactionOpts.CONTEXT +
+        _interactionOpts.ERROR
+}, theUI._interactionEventHandler.bind(theUI));
 
-    module.exports = ui;
-});
+export default theUI;
