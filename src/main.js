@@ -23,127 +23,110 @@
 
 /* global _spaces */
 
-define(function (require, exports) {
-    "use strict";
+import Promise from "bluebird";
+import semver from "semver";
 
-    var Promise = require("bluebird"),
-        semver = require("semver");
+/**
+ * A semver-specification for compatible plugin versions.
+ *
+ * @const
+ * @type {string}
+ */
+const COMPATIBLE_PLUGIN_VERSIONS = "^3.0.0";
 
-    /**
-     * A semver-specification for compatible plugin versions.
-     *
-     * @const
-     * @type {string}
-     */
-    const COMPATIBLE_PLUGIN_VERSIONS = "^3.0.0";
+/**
+ * Promisified version of _spaces.
+ */
+const _main = Promise.promisifyAll(_spaces);
 
-    /**
-     * Check if the current plugin version is compatible with the specified
-     * minimum-compatible plugin version.
-     * 
-     * @return {boolean}
-     */
-    var isPluginCompatible = function () {
-        var pluginVersion = _spaces.version,
-            pluginVersionString = [
-                pluginVersion.major,
-                pluginVersion.minor,
-                pluginVersion.patch
-            ].join(".");
+/**
+ * Version of the Spaces adapter plugin API.
+ * Follows Semver 2.0.0 conventions: http://semver.org/spec/v2.0.0.html
+ *
+ * @const
+ * @type {{major: number, minor: number, patch: number}}
+ */
+export const version = _spaces.version;
 
-        return semver.satisfies(pluginVersionString, COMPATIBLE_PLUGIN_VERSIONS);
-    };
+/**
+ * Compatible version spec for the Spaces plugin.
+ *
+ * @const
+ * @type {{major: number=, minor: number=, patch: number=}}
+ */
+export const compatiblePluginVersion = COMPATIBLE_PLUGIN_VERSIONS;
 
-    /**
-     * Promisified version of _spaces.
-     */
-    var _main = Promise.promisifyAll(_spaces);
+/**
+ * Abort the current application and return control to Classic Photoshop.
+ * If a message is supplied, Classic Photoshop may display it to the user,
+ * e.g., in a dialog.
+ * 
+ * @param {{message: string=}}
+ * @return {Promise}
+ */
+export const abort = _main.abortAsync;
 
-    Object.defineProperties(exports, {
-        /**
-         * Version of the Spaces adapter plugin API.
-         * Follows Semver 2.0.0 conventions: http://semver.org/spec/v2.0.0.html
-         *
-         * @const
-         * @type {{major: number, minor: number, patch: number}}
-         */
-        "version": {
-            enumerable: true,
-            value: _spaces.version
-        },
+/**
+ * Check if the current plugin version is compatible with the specified
+ * minimum-compatible plugin version.
+ * 
+ * @return {boolean}
+ */
+export function isPluginCompatible () {
+    const pluginVersion = _spaces.version,
+        pluginVersionString = [
+            pluginVersion.major,
+            pluginVersion.minor,
+            pluginVersion.patch
+        ].join(".");
 
-        /**
-         * Compatible version spec for the Spaces plugin.
-         *
-         * @const
-         * @type {{major: number=, minor: number=, patch: number=}}
-         */
-        "compatiblePluginVersion": {
-            enumerable: true,
-            value: COMPATIBLE_PLUGIN_VERSIONS
-        },
+    return semver.satisfies(pluginVersionString, COMPATIBLE_PLUGIN_VERSIONS);
+}
 
-        /**
-         * Abort the current application and return control to Classic Photoshop.
-         * If a message is supplied, Classic Photoshop may display it to the user,
-         * e.g., in a dialog.
-         * 
-         * @param {{message: string=}}
-         * @return {Promise}
-         */
-        "abort": {
-            enumerable: true,
-            value: _main.abortAsync
-        }
-    });
+/**
+ * Asynchronously get the value of a Photoshop property.
+ *
+ * @param {string} name
+ * @return {Promise}
+ */
+export function getPropertyValue (name) {
+    return _main.getPropertyValueAsync(name, {});
+}
 
-    /**
-     * Asynchronously get the value of a Photoshop property.
-     *
-     * @param {string} name
-     * @return {Promise}
-     */
-    var getPropertyValue = function (name) {
-        return _main.getPropertyValueAsync(name, {});
-    };
+/**
+ * Asynchronously set the value of a Photoshop property.
+ *
+ * @param {string} name
+ * @param {string} value
+ * @return {Promise}
+ */
+export function setPropertyValue (name, value) {
+    return _main.setPropertyValueAsync(name, value, {});
+}
 
-    /**
-     * Asynchronously set the value of a Photoshop property.
-     *
-     * @param {string} name
-     * @param {string} value
-     * @return {Promise}
-     */
-    var setPropertyValue = function (name, value) {
-        return _main.setPropertyValueAsync(name, value, {});
-    };
+/**
+ * Opens the given URL in the user's default browser.
+ *
+ * @param {string} url The URL to open in the user's default browser.
+ * @return {Promise}
+ */
+export function openURLInDefaultBrowser (url) {
+    return _main.openURLInDefaultBrowserAsync(url);
+}
 
-    /**
-     * Opens the given URL in the user's default browser.
-     *
-     * @param {string} url The URL to open in the user's default browser.
-     * @return {Promise}
-     */
-    var openURLInDefaultBrowser = function (url) {
-        return _main.openURLInDefaultBrowserAsync(url);
-    };
-
-    // TODO: Currently it is VERY hard to pinpoint the origin of Bluebird
-    // warnings. When that improves, we should enable this and then fix the
-    // sources of the warnings.
-    Promise.config({
-        warnings: false,
-        cancellation: true
-    });
-
-    exports.isPluginCompatible = isPluginCompatible;
-    exports.openURLInDefaultBrowser = openURLInDefaultBrowser;
-    exports.getPropertyValue = getPropertyValue;
-    exports.setPropertyValue = setPropertyValue;
-    
-    exports.lib = require("./lib/index");
-    exports.os = require("./os");
-    exports.ps = require("./ps");
-    exports.util = require("./util");
-    exports.PlayObject = require("./playObject");
+// TODO: Currently it is VERY hard to pinpoint the origin of Bluebird
+// warnings. When that improves, we should enable this and then fix the
+// sources of the warnings.
+Promise.config({
+    warnings: false,
+    cancellation: true
 });
+
+import * as ps from "./ps";
+import * as util from "./util";
+import * as window from "./window";
+import os from "./os";
+import PlayObject from "./playObject";
+import lib from "./lib";
+
+export { os, ps, util, PlayObject, lib, window };

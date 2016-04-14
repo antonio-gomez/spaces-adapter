@@ -3,7 +3,7 @@
         "node_modules/jscs-trailing-whitespace-in-source/rules/*.js"
     ],
     "disallowEmptyBlocks": true,
-    "disallowFunctionDeclarations": true,
+    "disallowFunctionDeclarations": false,
     "disallowImplicitTypeConversion": [
         "numeric",
         "binary",

@@ -26,7 +26,7 @@
 define(function (require) {
     "use strict";
 
-    var reference = require("adapter/lib/reference");
+    var reference = require("spaces-adapter").lib.reference;
 
     // This module contains tests for files in src/lib
     module("library");

@@ -20,7 +20,6 @@
  * DEALINGS IN THE SOFTWARE.
  * 
  */
-
 define(function (require, exports) {
     "use strict";
 

@@ -22,73 +22,68 @@
  */
 
 /* global _spaces, console */
+import EventEmitter from "events";
+import Promise from "bluebird";
 
-define(function (require, exports, module) {
-    "use strict";
+/**
+ * Promisified version of low-level os functions
+ */
+var _os = Promise.promisifyAll(_spaces.os);
 
-    var EventEmitter = require("eventEmitter"),
-        util = require("./util"),
-        Promise = require("bluebird");
+/**
+ * Promisified version of low-level keyboard focus functions
+ */
+var _keyboardFocus = Promise.promisifyAll(_spaces.os.keyboardFocus);
 
-    /**
-     * Promisified version of low-level os functions
-     */
-    var _os = Promise.promisifyAll(_spaces.os);
+/**
+ * Promisified version of low-level keyboard focus functions
+ */
+var _clipboard = Promise.promisifyAll(_spaces.os.clipboard);
 
-    /**
-     * Promisified version of low-level keyboard focus functions
-     */
-    var _keyboardFocus = Promise.promisifyAll(_spaces.os.keyboardFocus);
+/**
+ * The OS object provides helper methods for dealing with operating
+ * system by way of Photoshop.
+ *
+ * @extends EventEmitter
+ * @constructor
+ * @private
+ */
+class OS extends EventEmitter {
+    constructor () {
+        super();
 
-    /**
-     * Promisified version of low-level keyboard focus functions
-     */
-    var _clipboard = Promise.promisifyAll(_spaces.os.clipboard);
+        /**
+         * OS notifier kinds
+         * 
+         * @const
+         * @type {Object.<string, number>}
+         */
+        this.notifierKind = _os.notifierKind;
 
-    /**
-     * The OS object provides helper methods for dealing with operating
-     * system by way of Photoshop.
-     *
-     * @extends EventEmitter
-     * @constructor
-     * @private
-     */
-    var OS = function () {
-        EventEmitter.call(this);
-    };
-    util.inherits(OS, EventEmitter);
+        /**
+         * OS event kinds
+         * 
+         * @const
+         * @type {Object.<string, number>}
+         */
+        this.eventKind = _os.eventKind;
 
-    /**
-     * OS notifier kinds
-     * 
-     * @const
-     * @type {Object.<string, number>}
-     */
-    OS.prototype.notifierKind = _os.notifierKind;
+        /**
+         * OS event modifiers
+         * 
+         * @const
+         * @type {Object.<string, number>}
+         */
+        this.eventModifiers = _os.eventModifiers;
 
-    /**
-     * OS event kinds
-     * 
-     * @const
-     * @type {Object.<string, number>}
-     */
-    OS.prototype.eventKind = _os.eventKind;
-
-    /**
-     * OS event modifiers
-     * 
-     * @const
-     * @type {Object.<string, number>}
-     */
-    OS.prototype.eventModifiers = _os.eventModifiers;
-
-    /**
-     * OS event keyCodes
-     * 
-     * @const
-     * @type {Object.<string, number>}
-     */
-    OS.prototype.eventKeyCode = _os.eventKeyCode;
+        /**
+         * OS event keyCodes
+         * 
+         * @const
+         * @type {Object.<string, number>}
+         */
+        this.eventKeyCode = _os.eventKeyCode;
+    }
 
     /**
      * Event handler for events from the native bridge.
@@ -98,7 +93,7 @@ define(function (require, exports, module) {
      * @param {String} event Name of the event
      * @param {*} payload
      */
-    OS.prototype._eventHandler = function (err, event, payload) {
+    _eventHandler (err, event, payload) {
         if (err) {
             this.emit("error", "Failed to handle OS event: " + err);
             return;
@@ -106,7 +101,7 @@ define(function (require, exports, module) {
         
         this.emit("all", event, payload);
         this.emit(event, payload);
-    };
+    }
 
     /**
      * Determine whether or not CEF currently has keyboard focus.
@@ -114,11 +109,11 @@ define(function (require, exports, module) {
      * @param {object=} options Options passed directly to the low-level call
      * @return {Promise} Resolves once the status of focus has been determined.
      */
-    OS.prototype.hasKeyboardFocus = function (options) {
+    hasKeyboardFocus (options) {
         options = options || {};
 
         return _keyboardFocus.isActiveAsync(options);
-    };
+    }
 
     /**
      * Request that keyboard focus be transferred from Photoshop to CEF. 
@@ -126,11 +121,11 @@ define(function (require, exports, module) {
      * @param {object=} options Options passed directly to the low-level aquire call
      * @return {Promise} Resolves once focus has been transferred.
      */
-    OS.prototype.acquireKeyboardFocus = function (options) {
+    acquireKeyboardFocus (options) {
         options = options || {};
 
         return _keyboardFocus.acquireAsync(options);
-    };
+    }
 
     /**
      * Request that keyboard focus be transferred from CEF to Photoshop.
@@ -138,46 +133,46 @@ define(function (require, exports, module) {
      * @param {object=} options Options passed directly to the low-level release call
      * @return {Promise} Resolves once focus has been transferred.
      */
-    OS.prototype.releaseKeyboardFocus = function (options) {
+    releaseKeyboardFocus (options) {
         options = options || {};
 
         return _keyboardFocus.releaseAsync(options);
-    };
+    }
 
     /**
      * @return {Promise}
      */
-    OS.prototype.postEvent = function (eventInfo, options) {
+    postEvent (eventInfo, options) {
         options = options || {};
 
         return _os.postEventAsync(eventInfo, options);
-    };
+    }
 
     /**
      * @param {Array.<string>=} formats
      * @return {Promise.<{data: *, format: string}>}
      */
-    OS.prototype.clipboardRead = function (formats) {
-        var options = {
+    clipboardRead (formats) {
+        const options = {
             formats: formats || ["string"]
         };
 
         return _clipboard.readAsync(options);
-    };
+    }
 
     /**
      * @param {*} data
      * @param {string=} format
      * @return {Promise}
      */
-    OS.prototype.clipboardWrite = function (data, format) {
-        var options = {
+    clipboardWrite (data, format) {
+        const options = {
             data: data,
             format: format || "string"
         };
 
         return _clipboard.writeAsync(options);
-    };
+    }
 
     /**
      * Set the tooltip label, or invalidate the tooltip if the label is empty.
@@ -185,11 +180,11 @@ define(function (require, exports, module) {
      * @param {string} label
      * @return {Promise}
      */
-    OS.prototype.setTooltip = function (label) {
+    setTooltip (label) {
         return _os.setTooltipAsync({
             label: label
         });
-    };
+    }
 
     /**
      * Resets the mouse cursor, letting it catch up without a mouse move event
@@ -197,10 +192,10 @@ define(function (require, exports, module) {
      * @param {object} options Currently unused
      * @return {Promise}
      */
-    OS.prototype.resetCursor = function (options) {
+    resetCursor (options) {
         options = options || {};
         return _os.resetCursorAsync(options);
-    };
+    }
 
     /**
      * Gets a temporary file location, with a given name if provided
@@ -209,13 +204,13 @@ define(function (require, exports, module) {
      *
      * @return {Promise.<string>} Resolves to the temporary path
      */
-    OS.prototype.getTempFilename = function (name) {
-        var options = {
+    getTempFilename (name) {
+        const options = {
             name: name || ""
         };
 
         return _os.getTempFilenameAsync(options);
-    };
+    }
 
     /**
      * Returns the current mouse location synchronously
@@ -223,18 +218,32 @@ define(function (require, exports, module) {
      *
      * @return {Array.<number>} X and Y locations of the mouse
      */
-    OS.prototype.getMouseLocation = function () {
+    getMouseLocation () {
         return _spaces.os.getMouseLocation();
-    };
+    }
 
     /**
-     * The OS singleton
-     * @type {OS}
+     * Return information about attached displays
+     *
+     * @param {Object} options
+     * @param {boolean=} options.physicalResolution gets physical resolution data
+     *
+     * @return {Array.<Object>} List of attached displays
      */
-    var theOS = new OS();
+    getDisplayConfiguration (options) {
+        options = options || { physicalResolution: true };
 
-    // bind native phtooshop event handler to our handler function
-    _spaces.setNotifier(_spaces.notifierGroup.OS, {}, theOS._eventHandler.bind(theOS));
-    
-    module.exports = theOS;
-});
+        return _spaces.os.getDisplayConfigurationAsync(options);
+    }
+}
+
+/**
+ * The OS singleton
+ * @type {OS}
+ */
+const theOS = new OS();
+
+// bind native Photoshop event handler to our handler function
+_spaces.setNotifier(_spaces.notifierGroup.OS, {}, theOS._eventHandler.bind(theOS));
+
+export default theOS;

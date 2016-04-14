@@ -1,31 +1,26 @@
 {
   "name": "spaces-adapter",
-  "version": "1.2.4",
+  "version": "2.0.0",
   "dependencies": {
     "bluebird": {
-      "version": "3.1.1",
-      "from": "https://registry.npmjs.org/bluebird/-/bluebird-3.1.1.tgz",
-      "resolved": "https://registry.npmjs.org/bluebird/-/bluebird-3.1.1.tgz"
+      "version": "3.3.4",
+      "from": "bluebird@>=3.0.5 <4.0.0",
+      "resolved": "https://registry.npmjs.org/bluebird/-/bluebird-3.3.4.tgz"
     },
     "lodash": {
       "version": "3.10.1",
-      "from": "https://registry.npmjs.org/lodash/-/lodash-3.10.1.tgz",
+      "from": "lodash@>=3.10.1 <4.0.0",
       "resolved": "https://registry.npmjs.org/lodash/-/lodash-3.10.1.tgz"
     },
     "qunitjs": {
-      "version": "1.20.0",
-      "from": "https://registry.npmjs.org/qunitjs/-/qunitjs-1.20.0.tgz",
-      "resolved": "https://registry.npmjs.org/qunitjs/-/qunitjs-1.20.0.tgz"
+      "version": "1.22.0",
+      "from": "qunitjs@>=1.20.0 <2.0.0",
+      "resolved": "https://registry.npmjs.org/qunitjs/-/qunitjs-1.22.0.tgz"
     },
     "semver": {
       "version": "5.1.0",
-      "from": "semver@*",
+      "from": "semver@>=5.1.0 <6.0.0",
       "resolved": "https://registry.npmjs.org/semver/-/semver-5.1.0.tgz"
-    },
-    "wolfy87-eventemitter": {
-      "version": "4.3.0",
-      "from": "https://registry.npmjs.org/wolfy87-eventemitter/-/wolfy87-eventemitter-4.3.0.tgz",
-      "resolved": "https://registry.npmjs.org/wolfy87-eventemitter/-/wolfy87-eventemitter-4.3.0.tgz"
     }
   }
 }
