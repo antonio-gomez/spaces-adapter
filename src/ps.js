@@ -83,6 +83,25 @@ export function logHeadlightsEvent (category, subcategory, event) {
     return _ps.logHeadlightsEventAsync(options);
 }
 
+/**
+ * Log an analytics datagroup using Adobe Headlights API
+ * Category will be "Scripting"
+ * Subcategory will be user's locale
+ * Event name will be defined in info with the "eventRecord" key
+ * If "eventRecord" is not available, this is a no-op
+ *
+ * NOTE: This is an Adobe-private API that must not be used by third-party
+ * developers!
+ *
+ * @private
+ * @param {object} info Contains the flat group of key value pairs to be logged
+ * @param {string} info.eventRecord Name of the data group, is required
+ * @return {Promise}
+ */
+export function logHeadlightsDataGroup (info) {
+    return _ps.logHeadlightsDataGroupAsync(info);
+}
+
 import ui from "./ps/ui";
 import descriptor from "./ps/descriptor";
 
