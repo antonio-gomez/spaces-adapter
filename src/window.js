@@ -44,10 +44,11 @@ export function getVisibility () {
  * Sets the latent visibility of the contextual UI
  *
  * @param {boolean} visibility True if the UI will be visible to the user
+ * @param {object=} options API options
  * @return {Promise} Resolves when visibility is set by Photoshop
  */
-export function setVisibility (visibility) {
-    return _window.setVisibilityAsync(visibility, {});
+export function setVisibility (visibility, options = {}) {
+    return _window.setVisibilityAsync(visibility, options);
 }
 
 /**
