@@ -96,10 +96,11 @@ export function logHeadlightsEvent (category, subcategory, event) {
  * @private
  * @param {object} info Contains the flat group of key value pairs to be logged
  * @param {string} info.eventRecord Name of the data group, is required
+ * @param {object=} options
  * @return {Promise}
  */
-export function logHeadlightsDataGroup (info) {
-    return _ps.logHeadlightsDataGroupAsync(info);
+export function logHeadlightsDataGroup (info, options = {}) {
+    return _ps.logHeadlightsDataGroupAsync(info, options);
 }
 
 import ui from "./ps/ui";
