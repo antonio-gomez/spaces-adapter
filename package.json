@@ -1,0 +1,40 @@
+{
+  "name": "spaces-adapter",
+  "version": "2.4.0",
+  "authors": [
+    "Barkin Aygun <baaygun@adobe.com>",
+    "Joel Brandt <jobrandt@adobe.com>",
+    "Jeffrey Cohen <jecohen@adobe.com>",
+    "Eric Haseltine <ehaselti@adobe.com>",
+    "Shaoshing Lee <shaoshing@adobe.com>",
+    "Cory McIlroy <mcilroy@adobe.com>",
+    "Kaori Mikawa <kmikawa@adobe.com>",
+    "Divya Prabhakar <dprabhak@adobe.com>",
+    "Tim Riot Riherd <triherd@adobe.com>",
+    "Chad Rolfs <crolfs@adobe.com>",
+    "Seth Walker <sewalker@adobe.com>",
+    "Ian Wehrman <wehrman@adobe.com>"
+  ],
+  "description": "JavaScript adapter for the Adobe Photoshop Spaces plugin",
+  "scripts": {
+    "prepublish": "webpack -p",
+    "test": "eslint src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://git.corp.adobe.com/photoshop/spaces-adapter"
+  },
+  "license": "MIT",
+  "main": "dist/spaces-adapter.js",
+  "homepage": "https://git.corp.adobe.com/photoshop/spaces-adapter",
+  "dependencies": {
+    "semver": "^5.1.0"
+  },
+  "peerDependencies": {
+    "bluebird": "^3",
+    "lodash": ">=3"
+  },
+  "devDependencies": {
+    "eslint": "^2.10.2"
+  }
+}

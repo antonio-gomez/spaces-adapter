@@ -1,0 +1,28 @@
+{
+  "extends": "eslint:recommended",
+  "parser": "babel-eslint",
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "globals": {
+    "_spaces": true,
+    "define": true,
+    "Set": true,
+    "Map": true,
+    "Promise": true
+  },
+  "rules": {
+    "no-console": 2,
+    "new-cap": 0,
+    "strict": 0,
+    "no-underscore-dangle": 0,
+    "no-use-before-define": 0,
+    "eol-last": 2,
+    "quotes": [2, "double"],
+    "semi": [2, "always"],
+    "indent": [2, 4],
+    "jsx-quotes": 1,
+    "no-multiple-empty-lines": [2, {"max": 1}]
+  }
+}
