@@ -17,7 +17,6 @@
   ],
   "description": "JavaScript adapter for the Adobe Photoshop Spaces plugin",
   "scripts": {
-    "prepublish": "webpack -p",
     "test": "eslint src"
   },
   "repository": {
@@ -25,7 +24,7 @@
     "url": "https://git.corp.adobe.com/photoshop/spaces-adapter"
   },
   "license": "MIT",
-  "main": "dist/spaces-adapter.js",
+  "main": "src/index.js",
   "homepage": "https://git.corp.adobe.com/photoshop/spaces-adapter",
   "dependencies": {
     "semver": "^5.1.0"

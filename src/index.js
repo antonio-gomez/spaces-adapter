@@ -121,13 +121,3 @@ Promise.config({
     warnings: false,
     cancellation: true
 });
-
-let lib = require.context("./lib");
-
-import * as ps from "./ps";
-import * as util from "./util";
-import * as window from "./window";
-import os from "./os";
-import PlayObject from "./playObject";
-
-export { os, ps, util, PlayObject, lib, window };
