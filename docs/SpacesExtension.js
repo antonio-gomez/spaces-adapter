@@ -28,9 +28,14 @@ General objects
 This following section describes common objects and patterns used by the
 interface.
 
-"err"
-The err argument is returned as the first argument in a completion callback
-provided to a command.
+Most functions are asynchronous and take a callback function that is invoked when the
+function completes.
+Callbacks are not executed if the URL is reloaded before the function has completed, or if
+the host application is shut down before completion.
+An asynchronous method returns a task ID. The task ID is unique within a session.
+
+A completion callback will take one or more arguments.
+The first argument to a completion callback is always an "err" argument.
 If a command succeeds then the value of the err object is undefined, or
 it is an object with a "number" key whose value is 0.
 When the command fails, then an object is returned. The returned object has the
@@ -555,6 +560,23 @@ _spaces.ps.logHeadlightsEvent = function (options, callback) {
     return psLogHeadlightsEvent(options, callback);
 };
 
+/** Logs a data group to the Photoshop Headlights database.
+    Category will be "Scripting", and sub category will be defined by "eventRecord"
+        in the passed in object, rest of the key values in the descriptor 
+        are used for data group
+Note: Do not dynamically generate values for fields, use a small set of possible values
+
+@param datagroup (object)
+    An object with any number of key/value string pairs, one of them being
+    "eventRecord" (string)  The Headlights event name for this data group to be collected under
+@param options (object)
+    Options controlling the execution of the request (currently unused)
+@param callback (function)  A callback notifier with an err argument.
+*/
+_spaces.ps.logHeadlightsDataGroup = function (datagroup, options, callback) {
+    native function psLogHeadlightsDataGroup();
+    return psLogHeadlightsDataGroup(datagroup, options, callback);
+};
 
 // ==========================================================================
 // _spaces.ps.descriptor  -  Functionality related to executing
@@ -1524,6 +1546,33 @@ _spaces.os.keyboardFocus.isActive = function (options, callback) {
     return osKeyboardFocusIsActive(options, callback);
 };
 
+/* Return information abouty attached displays
+@param options              Describes which information to return.
+                            Use the following to get information about physical resolution
+                                "physicalResolution":true
+@param callback (function)  A callback notifier with the signature described below.
+
+callback(err, info)
+@param info (list)
+list of attached displays. Each display inclucdes the following information:
+    globalBounds (object with: left, top, right, bottom)
+            This is the entire area of the display.
+    globalWorkingBounds (object with: left, top, right, bottom)
+            This is the area of the display that can be used by applications. This area excludes
+            areas covered by system menus, docks and other system UI
+    isPrimary (boolean)
+            True if the display is the primaryu display for the system
+    scaleFactor (number)
+            The scale factor for the display
+    physicalResolution (object with: horizontal, vertical)
+            Only included if the original request included "physicalResolution:true" in the options.
+            Resolution in pixels per inch of the display.
+*/
+_spaces.os.getDisplayConfiguration = function (options, callback) {
+    native function osGetDisplayConfiguration();
+    return osGetDisplayConfiguration(options, callback);
+};
+
 // ==========================================================================
 // _spaces.os.isConvertibleSlateMode
 
@@ -1546,6 +1595,48 @@ _spaces.os.isConvertibleSlateMode = function (callback) {
 
 if (!_spaces.window)
    _spaces.window = {};
+
+/* Obtain latent visibility of the HTML surface.
+This is only valid for the contextual UI use case.
+
+The visibility property controls whether the HTML window is presented to
+the user when its parent OS window is visible.  When false, application and OS overhead
+associated wth rendering and compositing the HTML window is not incurred, although
+JavaScript execution may continue.
+
+@param options (object)
+    Currently unused
+@param callback (function)
+    A callback notifier with the signature described below.
+
+callback(err, visibility)
+@param visibility (boolean)   The result value.
+    value is true when window is visible when its OS parent window is visible.
+    value is false when window is not visible even though its parent OS window is visible.
+*/
+_spaces.window.getVisibility = function (options, callback) {
+    native function windowGetVisibility();
+    return windowGetVisibility(options, callback);
+};
+
+/* Set the visibility of the HTML surface.
+This is only valid for the contextual UI use case
+@param visibility (boolean)
+    true indicates window will be visible when its OS parent window is visible.
+@param options      (object)
+    Specifies zero or more options for the operation. Possible keys are:
+        "clearSurface" (bool)   Specifies whether or not the contents of the HTML surface
+            should be cleared as part of the operation. This argument is only used when
+            hiding the surface. The default value is false.
+            An example where the caller should request that the surface is reset when hiding,
+            is when a subsequent show should start with a different appearance.
+@param callback (function)
+    A callback notifier with an err argument.
+*/
+_spaces.window.setVisibility = function (visibility, options, callback) {
+    native function windowSetVisibility();
+    return windowSetVisibility(visibility, options, callback);
+};
 
 /* Obtain the bounds of the HTML surface.
 This is only valid for the contextual UI use case
@@ -1573,7 +1664,32 @@ _spaces.window.getBounds = function (options, callback) {
     return windowGetBounds(options, callback);
 };
 
-/* Change the owner relative bounds of the HTML surface.
+/* Set the owner relative bounds of the HTML surface.
+This is only valid for the contextual UI use case
+@param bounds (object)
+    This object must contain one of the following sub-objects:
+    "bounds" (object)   This object contains bounds of the surface relative to the
+                    owner of the contextual UI surface. These bounds are in logical
+                    coordinates (uysing the same scale factor as the owner).
+                    Bounds are expressed as: "left", "top", "right", "bottom"
+    "globalBounds" (object) This object contains the global bounds of the surface.
+                    These bounds are expressed in the global coordinate system that
+                    is native to the host OS:
+                    On OSX the global bounds are expressed in points
+                    On Windows the global bounds are expressed in pixels
+                    Bounds are expressed as: "left", "top", "right", "bottom"
+@param options (object)
+    Currently unused
+@param callback (function)
+    A callback notifier with an err argument.
+*/
+_spaces.window.setBounds = function (info, options, callback) {
+    native function windowSetBounds();
+    return windowSetBounds(info, options, callback);
+};
+
+/* DEPRECATED: Use window.setBounds()
+Change the owner relative bounds of the HTML surface.
 This is only valid for the contextual UI use case
 @param bounds (object)
     This object must contain one of the following sub-objects:
@@ -1593,8 +1709,9 @@ This is only valid for the contextual UI use case
     A callback notifier with an err argument.
 */
 _spaces.window.changeBounds = function (info, options, callback) {
-    native function windowChangeBounds();
-    return windowChangeBounds(info, options, callback);
+    console.log("using deprecated function changeBounds(), please use setBounds()")
+    native function windowSetBounds();
+    return windowSetBounds(info, options, callback);
 };
 
 /* Set overlay cloaking properties on the HTML surface.
@@ -1622,13 +1739,6 @@ This is only valid for main-UI use cases.
 _spaces.window.setOverlayCloaking = function (info, options, callback) {
     native function windowSetOverlayCloaking();
     return windowSetOverlayCloaking(info, options, callback);
-};
-
-/** Requests that the adapter invalidates the current HTML texture
-*/
-_spaces.window.invalidate = function (options, callback) {
-    native function windowInvalidate();
-    return windowInvalidate(options, callback);
 };
 
 // ==========================================================================
@@ -1674,7 +1784,7 @@ _spaces._debug.descriptorIdentity = function (descriptor, reference, callback) {
     native function psDebugDescIdentity();
     return psDebugDescIdentity(descriptor, reference, callback);
 };
-        
+
 /** This method forces a C++ exception to occur in the native method dispatching.
 Expected result: This method should throw a javascript exception
 */
