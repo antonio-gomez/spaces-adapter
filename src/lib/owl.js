@@ -124,6 +124,18 @@ export function getToolList () {
 }
 
 /**
+ * Gets the user specified settings on all the tools from Photoshop
+ *
+ * @return {PlayObject}
+ */
+export function getCurrentToolbarSpecification () {
+    return new PlayObject("uiInfo", {
+        "null": referenceBy.current,
+        "command": "getCurrentToolbarSpecification"
+    });
+}
+
+/**
  * Gets information on the given tool
  *
  * @param {string} toolID OSType of the tool e.g. `$pntb`
