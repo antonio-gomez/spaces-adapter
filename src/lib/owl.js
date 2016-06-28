@@ -151,6 +151,30 @@ export function getToolInfo (toolID) {
 }
 
 /**
+ * Gets menu commands in PS
+ *
+ * @return {PlayObject}
+ */
+export function getMenuCommands () {
+    var descriptor = {
+        "null": {_ref: 
+            [{
+                _ref:null, 
+                _property:"menuBarInfo"
+            },
+            {
+                _ref: "application", 
+                _enum: "ordinal", 
+                _value: "targetEnum"
+            }]
+        }};
+
+    return new PlayObject("get", descriptor);
+}
+
+
+
+/**
  * Returns information on a view with the given viewID in the given panel
  * including it's bounds, whether it's shown or not and it's control state
  *
