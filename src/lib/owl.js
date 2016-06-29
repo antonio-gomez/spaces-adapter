@@ -156,9 +156,9 @@ export function getToolInfo (toolID) {
  * @return {PlayObject}
  */
 export function getMenuCommands () {
-    var descriptor = {
-        "null": {_ref: 
-            [{
+    var descriptor = { "null": {
+        _ref: [
+            {
                 _ref:null, 
                 _property:"menuBarInfo"
             },
@@ -166,13 +166,12 @@ export function getMenuCommands () {
                 _ref: "application", 
                 _enum: "ordinal", 
                 _value: "targetEnum"
-            }]
-        }};
+            }
+        ]
+    }};
 
     return new PlayObject("get", descriptor);
 }
-
-
 
 /**
  * Returns information on a view with the given viewID in the given panel
