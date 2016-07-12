@@ -21,11 +21,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://git.corp.adobe.com/photoshop/spaces-adapter"
+    "url": "https://www.github.com/adobe-photoshop/spaces-adapter"
   },
   "license": "MIT",
   "main": "src/index.js",
-  "homepage": "https://git.corp.adobe.com/photoshop/spaces-adapter",
+  "homepage": "https://www.github.com/adobe-photoshop/spaces-adapter",
   "dependencies": {
     "semver": "^5.1.0"
   },
