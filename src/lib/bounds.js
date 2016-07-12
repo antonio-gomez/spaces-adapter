@@ -23,22 +23,16 @@
  
  // This is a wrapper to create unit descriptors
 
-define(function (require, exports) {
-    "use strict";
+import { pixels } from "./unit";
 
-    var inUnits = require("./unit");
-
-    /** 
-     * function to create PS style bounds 
-     */
-    var bounds = function (bounds) {
-        return {
-            "top": inUnits.pixels(bounds.top),
-            "bottom": inUnits.pixels(bounds.bottom),
-            "left": inUnits.pixels(bounds.left),
-            "right": inUnits.pixels(bounds.right)
-        };
+/**
+ * function to create PS style bounds
+ */
+export function bounds (bounds) {
+    return {
+        "top": pixels(bounds.top),
+        "bottom": pixels(bounds.bottom),
+        "left": pixels(bounds.left),
+        "right": pixels(bounds.right)
     };
-    
-    exports.bounds = bounds;
-});
+}

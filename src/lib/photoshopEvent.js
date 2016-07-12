@@ -21,27 +21,21 @@
  * 
  */
 
-define(function (require, exports) {
-    "use strict";
-
-    /**
-     * Returns the target of the event by parsing the action descriptor
-     * 
-     * @param {ActionDescriptor} event
-     * @return {?string} Target of the event
-     */
-    var targetOf = function (event) {
-        if (event.hasOwnProperty("new")) {
-            // Case for "document"
-            return event.new._obj;
-        } else if (event.hasOwnProperty("null")) {
-            // Case for layer
-            // Case for tool
-            return event.null._ref;
-        } else {
-            return null;
-        }
-    };
-    
-    exports.targetOf = targetOf;
-});
+/**
+ * Returns the target of the event by parsing the action descriptor
+ * 
+ * @param {ActionDescriptor} event
+ * @return {?string} Target of the event
+ */
+export function targetOf (event) {
+    if (event.hasOwnProperty("new")) {
+        // Case for "document"
+        return event.new._obj;
+    } else if (event.hasOwnProperty("null")) {
+        // Case for layer
+        // Case for tool
+        return event.null._ref;
+    } else {
+        return null;
+    }
+}

@@ -20,33 +20,25 @@
  * DEALINGS IN THE SOFTWARE.
  * 
  */
-
-define(function (require, exports) {
-    "use strict";
     
-    var PlayObject = require("../playObject");
+import PlayObject from "../playObject";
 
-    var stepBackward = new PlayObject("select", {
-        "null": {
-            "_enum": "ordinal",
-            "_ref": "historyState",
-            "_value": "previous"
-        }
-    });
+export const stepBackward = new PlayObject("select", {
+    "null": {
+        "_enum": "ordinal",
+        "_ref": "historyState",
+        "_value": "previous"
+    }
+});
 
-    var stepForward = new PlayObject("select", {
-        "null": {
-            "_enum": "ordinal",
-            "_ref": "historyState",
-            "_value": "next"
-        }
-    });
+export const stepForward = new PlayObject("select", {
+    "null": {
+        "_enum": "ordinal",
+        "_ref": "historyState",
+        "_value": "next"
+    }
+});
 
-    var revert = new PlayObject("revert", {
-        forceNotify: true
-    });
-
-    exports.stepBackward = stepBackward;
-    exports.stepForward = stepForward;
-    exports.revert = revert;
+export const revert = new PlayObject("revert", {
+    forceNotify: true
 });

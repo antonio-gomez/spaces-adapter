@@ -21,33 +21,27 @@
  *
  */
 
-define(function (require, exports) {
-    "use strict";
+import PlayObject from "../playObject";
 
-    var PlayObject = require("../playObject");
-
-    /**
-     * Removes the pixel selection
-     *
-     * @return {PlayObject}
-     */
-    var deselectAll = function () {
-        return new PlayObject(
-            "set",
-            {
-                "null": {
-                    "_ref": [{
-                        "_ref": "channel",
-                        "_property": "selection"
-                    }]
-                },
-                "to": {
-                    "_enum": "ordinal",
-                    "_value": "none"
-                }
+/**
+ * Removes the pixel selection
+ *
+ * @return {PlayObject}
+ */
+export function deselectAll () {
+    return new PlayObject(
+        "set",
+        {
+            "null": {
+                "_ref": [{
+                    "_ref": "channel",
+                    "_property": "selection"
+                }]
+            },
+            "to": {
+                "_enum": "ordinal",
+                "_value": "none"
             }
-        );
-    };
-
-    exports.deselectAll = deselectAll;
-});
+        }
+    );
+}

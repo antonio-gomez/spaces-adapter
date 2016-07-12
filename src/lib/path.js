@@ -21,145 +21,132 @@
  *
  */
 
-define(function (require, exports) {
-    "use strict";
-    
-    var PlayObject = require("../playObject");
-    
-    /**
-     * Combines the paths in the current layer using ADD/UNION
-     *
-     * @return {PlayObject}
-     */
-    var combinePathsUnion = function () {
-        return new PlayObject(
-            "changePathDetails",
-            {
-                "keyActionMode": 0,
-                "keyOriginType": 3
-            }
-        );
-    };
+import PlayObject from "../playObject";
 
-    /**
-     * Combines the paths in the current layer using SUBTRACT
-     *
-     * @return {PlayObject}
-     */
-    var combinePathsSubtract = function () {
-        return new PlayObject(
-            "changePathDetails",
-            {
-                "keyActionMode": 1,
-                "keyOriginType": 3
-            }
-        );
-    };
+/**
+ * Combines the paths in the current layer using ADD/UNION
+ *
+ * @return {PlayObject}
+ */
+export function combinePathsUnion () {
+    return new PlayObject(
+        "changePathDetails",
+        {
+            "keyActionMode": 0,
+            "keyOriginType": 3
+        }
+    );
+}
 
-    /**
-     * Combines the paths in the current layer using INTERSECT
-     *
-     * @return {PlayObject}
-     */
-    var combinePathsIntersect = function () {
-        return new PlayObject(
-            "changePathDetails",
-            {
-                "keyActionMode": 2,
-                "keyOriginType": 3
-            }
-        );
-    };
+/**
+ * Combines the paths in the current layer using SUBTRACT
+ *
+ * @return {PlayObject}
+ */
+export function combinePathsSubtract () {
+    return new PlayObject(
+        "changePathDetails",
+        {
+            "keyActionMode": 1,
+            "keyOriginType": 3
+        }
+    );
+}
 
-    /**
-     * Combines the paths in the current layer using DIFFERENCE/EXCLUDE
-     *
-     * @return {PlayObject}
-     */
-    var combinePathsDifference = function () {
-        return new PlayObject(
-            "changePathDetails",
-            {
-                "keyActionMode": 3,
-                "keyOriginType": 3
-            }
-        );
-    };
+/**
+ * Combines the paths in the current layer using INTERSECT
+ *
+ * @return {PlayObject}
+ */
+export function combinePathsIntersect () {
+    return new PlayObject(
+        "changePathDetails",
+        {
+            "keyActionMode": 2,
+            "keyOriginType": 3
+        }
+    );
+}
 
-    /**
-     * Combines the layers using ADD/UNION
-     *
-     * @return {PlayObject}
-     */
-    var combineLayersUnion = function () {
-        return new PlayObject(
-            "mergeLayersNew",
-            {
-                "shapeOperation": {
-                    "_enum": "shapeOperation",
-                    "_value": "add"
-                }
-            }
-        );
-    };
+/**
+ * Combines the paths in the current layer using DIFFERENCE/EXCLUDE
+ *
+ * @return {PlayObject}
+ */
+export function combinePathsDifference () {
+    return new PlayObject(
+        "changePathDetails",
+        {
+            "keyActionMode": 3,
+            "keyOriginType": 3
+        }
+    );
+}
 
-    /**
-     * Combines the layers using SUBTRACT
-     *
-     * @return {PlayObject}
-     */
-    var combineLayersSubtract = function () {
-        return new PlayObject(
-            "mergeLayersNew",
-            {
-                "shapeOperation": {
-                    "_enum": "shapeOperation",
-                    "_value": "subtract"
-                }
+/**
+ * Combines the layers using ADD/UNION
+ *
+ * @return {PlayObject}
+ */
+export function combineLayersUnion () {
+    return new PlayObject(
+        "mergeLayersNew",
+        {
+            "shapeOperation": {
+                "_enum": "shapeOperation",
+                "_value": "add"
             }
-        );
-    };
+        }
+    );
+}
 
-    /**
-     * Combines the layers using INTERSECT
-     *
-     * @return {PlayObject}
-     */
-    var combineLayersIntersect = function () {
-        return new PlayObject(
-            "mergeLayersNew",
-            {
-                "shapeOperation": {
-                    "_enum": "shapeOperation",
-                    "_value": "interfaceIconFrameDimmed"
-                }
+/**
+ * Combines the layers using SUBTRACT
+ *
+ * @return {PlayObject}
+ */
+export function combineLayersSubtract () {
+    return new PlayObject(
+        "mergeLayersNew",
+        {
+            "shapeOperation": {
+                "_enum": "shapeOperation",
+                "_value": "subtract"
             }
-        );
-    };
+        }
+    );
+}
 
-    /**
-     * Combines the layers using DIFFERENCE/EXCLUDE
-     *
-     * @return {PlayObject}
-     */
-    var combineLayersDifference = function () {
-        return new PlayObject(
-            "mergeLayersNew",
-            {
-                "shapeOperation": {
-                    "_enum": "shapeOperation",
-                    "_value": "xor"
-                }
+/**
+ * Combines the layers using INTERSECT
+ *
+ * @return {PlayObject}
+ */
+export function combineLayersIntersect () {
+    return new PlayObject(
+        "mergeLayersNew",
+        {
+            "shapeOperation": {
+                "_enum": "shapeOperation",
+                "_value": "interfaceIconFrameDimmed"
             }
-        );
-    };
+        }
+    );
+}
 
-    exports.combinePathsUnion = combinePathsUnion;
-    exports.combinePathsSubtract = combinePathsSubtract;
-    exports.combinePathsIntersect = combinePathsIntersect;
-    exports.combinePathsDifference = combinePathsDifference;
-    exports.combineLayersUnion = combineLayersUnion;
-    exports.combineLayersSubtract = combineLayersSubtract;
-    exports.combineLayersIntersect = combineLayersIntersect;
-    exports.combineLayersDifference = combineLayersDifference;
-});
+/**
+ * Combines the layers using DIFFERENCE/EXCLUDE
+ *
+ * @return {PlayObject}
+ */
+export function combineLayersDifference () {
+    return new PlayObject(
+        "mergeLayersNew",
+        {
+            "shapeOperation": {
+                "_enum": "shapeOperation",
+                "_value": "xor"
+            }
+        }
+    );
+}

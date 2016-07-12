@@ -8,6 +8,42 @@ This repository contains:
 
 These modules are a dependency of the Photoshop Design Space application. For more information, see the [spaces-design repository](https://github.com/adobe-photoshop/spaces-design/).
 
+Usage
+-----
+
+This repository is meant only as code storage. There is no bundled file / usable ES5 javascript.
+To use these files in your ES6 project, one way is to use Webpack.
+
+First, add spaces-adapter sources as a resolve alias:
+
+```
+{
+    resolve: {
+        alias: {
+            "spaces-adapter": path.join(__dirname, "node_modules/spaces-adapter/src")
+        }
+    }
+}
+```
+
+In your webpack config, change babel-loader exclude rule to ignore `node_modules/spaces-adapter` folder.
+
+```
+{
+    module: {
+        loaders: {
+            // ES6 transpiling
+            test: /\.jsx?$/,
+            exclude: /((node_modules)\/(?!spaces-adapter))/,
+            loader: "babel",
+            query: {
+                presets: ["es2015"]
+            }
+        }
+    }
+}
+```
+
 Contributing
 ------------
 

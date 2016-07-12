@@ -21,72 +21,68 @@
  * 
  */
 
-define(function (require, exports) {
-    "use strict";
-    
-    var PlayObject = require("../playObject");
+import PlayObject from "../playObject";
 
-    /**
-     * _ref object for the generator status property
-     *
-     * @private
-     * @type {object}
-     */
-    var _generatorStatusRef = {
-        _ref: [
-            { _ref: "property", _property: "generatorStatus" },
-            { _ref: "application", _enum: "ordinal", _value: "targetEnum" }
-        ]
+/**
+ * _ref object for the generator status property
+ *
+ * @private
+ * @const
+ * @type {object}
+ */
+const _generatorStatusRef = {
+    _ref: [
+        { _ref: "property", _property: "generatorStatus" },
+        { _ref: "application", _enum: "ordinal", _value: "targetEnum" }
+    ]
+};
+
+/**
+ * _ref object for the generator "pluginPicker" property
+ *
+ * @private
+ * @const
+ * @type {object}
+ */
+const _pluginPickerRef = {
+    _ref: [
+        { _ref: "property", _property: "pluginPicker" },
+        { _ref: "application", _enum: "ordinal", _value: "targetEnum" }
+    ]
+};
+
+/**
+ * Build a PlayObject that will query the current status of Generator
+ *
+ * The resolved response can be tested for an "enabled" status as:
+ * `status.generatorStatus.generatorStatus === 1`
+ *
+ * @return {PlayObject}
+ */
+export function getGeneratorStatus () {
+    var desc = {
+        "null": _generatorStatusRef
     };
 
-    /**
-     * _ref object for the generator "pluginPicker" property
-     *
-     * @private
-     * @type {object}
-     */
-    var _pluginPickerRef = {
-        _ref: [
-            { _ref: "property", _property: "pluginPicker" },
-            { _ref: "application", _enum: "ordinal", _value: "targetEnum" }
-        ]
-    };
+    return new PlayObject("get", desc);
+}
 
-    /**
-     * Build a PlayObject that will query the current status of Generator
-     *
-     * The resolved response can be tested for an "enabled" status as:
-     * `status.generatorStatus.generatorStatus === 1`
-     *
-     * @return {PlayObject}
-     */
-    var getGeneratorStatus = function () {
-        var desc = {
-            "null": _generatorStatusRef
-        };
-        return new PlayObject("get", desc);
-    };
-
-    /**
-     * Build a play object that will attempt to set generator to enabled/disabled
-     *
-     * @param {boolean} desiredStatus If truthy, enabled generator. Otherwise disable generator.
-     * @return {PlayObject}
-     */
-    var setGeneratorStatus = function (desiredStatus) {
-        var desc = {
-            null: _pluginPickerRef,
-            to: {
-                _obj: "pluginPicker",
-                _value: {
-                    generatorEnabled: desiredStatus
-                }
+/**
+ * Build a play object that will attempt to set generator to enabled/disabled
+ *
+ * @param {boolean} desiredStatus If truthy, enabled generator. Otherwise disable generator.
+ * @return {PlayObject}
+ */
+export function setGeneratorStatus (desiredStatus) {
+    var desc = {
+        null: _pluginPickerRef,
+        to: {
+            _obj: "pluginPicker",
+            _value: {
+                generatorEnabled: desiredStatus
             }
-        };
-
-        return new PlayObject("set", desc);
+        }
     };
 
-    exports.getGeneratorStatus = getGeneratorStatus;
-    exports.setGeneratorStatus = setGeneratorStatus;
-});
+    return new PlayObject("set", desc);
+}

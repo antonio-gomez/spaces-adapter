@@ -41,7 +41,7 @@ import _ from "lodash";
  */
 const _wrap = function (reference, multiGetProperties) {
     if (Array.isArray(reference)) {
-        reference = _.chain(_.cloneDeep(reference))
+        reference = _(_.cloneDeep(reference))
             .map(function (ref) {
                 return _wrap(ref);
             })
@@ -340,7 +340,7 @@ class Descriptor extends EventEmitter {
     getPropertyRange (reference, rangeOpts, property, options) {
         return this.getPropertiesRange(reference, rangeOpts, [property], options)
             .then(function (results) {
-                return _.pluck(results, property);
+                return _.map(results, property);
             });
     }
 
