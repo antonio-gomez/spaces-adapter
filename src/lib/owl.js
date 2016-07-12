@@ -156,19 +156,21 @@ export function getToolInfo (toolID) {
  * @return {PlayObject}
  */
 export function getMenuCommands () {
-    var descriptor = { "null": {
-        _ref: [
-            {
-                _ref:null, 
-                _property:"menuBarInfo"
-            },
-            {
-                _ref: "application", 
-                _enum: "ordinal", 
-                _value: "targetEnum"
-            }
-        ]
-    }};
+    var descriptor = {
+        "null": {
+            _ref: [
+                {
+                    _ref: null,
+                    _property: "menuBarInfo"
+                },
+                {
+                    _ref: "application",
+                    _enum: "ordinal",
+                    _value: "targetEnum"
+                }
+            ]
+        }
+    };
 
     return new PlayObject("get", descriptor);
 }

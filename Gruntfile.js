@@ -74,17 +74,6 @@ module.exports = function (grunt) {
                 newlineMaximum: 1
             }
         },
-        webpack: {
-            options: require("./webpack.config.js"),
-            compile: {
-                watch: false
-            },
-            watch: {
-                watch: true,
-                keepalive: true,
-                failOnError: false
-            }
-        },
         concurrent: {
             test: ["eslint", "jscs", "jsdoc", "jsonlint", "lintspaces"]
         }
@@ -95,13 +84,11 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks("grunt-jsdoc");
     grunt.loadNpmTasks("grunt-jsonlint");
     grunt.loadNpmTasks("grunt-lintspaces");
-    grunt.loadNpmTasks("grunt-webpack");
 
     grunt.loadNpmTasks("grunt-concurrent");
 
     grunt.registerTask("seqtest", ["eslint", "jscs", "jsdoc", "jsonlint", "lintspaces"]);
     grunt.registerTask("test", ["concurrent:test"]);
-    grunt.registerTask("build", ["webpack:compile"]);
 
     grunt.registerTask("default", ["test"]);
 };
