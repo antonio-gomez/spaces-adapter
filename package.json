@@ -25,7 +25,7 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/adobe-photoshop-spaces-adapter/issues"
+    "url": "https://www.github.com/adobe-photoshop/spaces-adapter/issues"
   },
   "main": "src/index.js",
   "homepage": "https://www.github.com/adobe-photoshop/spaces-adapter",
