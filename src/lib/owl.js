@@ -22,9 +22,9 @@
  */
 
 import PlayObject from "../playObject";
-import * as reference from "./reference";
+import { wrapper } from "./reference";
 
-const referenceBy = reference.wrapper("application");
+const referenceBy = wrapper("application");
 
 /**
  * Gets the list of all OWL panel IDs
@@ -124,6 +124,18 @@ export function getToolList () {
 }
 
 /**
+ * Gets the user specified information on all the tools from Photoshop
+ *
+ * @return {PlayObject}
+ */
+export function getCurrentToolbarSpecification () {
+    return new PlayObject("uiInfo", {
+        "null": referenceBy.current,
+        "command": "getCurrentToolbarSpecification"
+    });
+}
+
+/**
  * Gets information on the given tool
  *
  * @param {string} toolID OSType of the tool e.g. `$pntb`
@@ -136,6 +148,31 @@ export function getToolInfo (toolID) {
         "command": "getToolInfo",
         "toolKey": toolID
     });
+}
+
+/**
+ * Gets menu commands in PS
+ *
+ * @return {PlayObject}
+ */
+export function getMenuCommands () {
+    var descriptor = {
+        "null": {
+            _ref: [
+                {
+                    _ref: null,
+                    _property: "menuBarInfo"
+                },
+                {
+                    _ref: "application",
+                    _enum: "ordinal",
+                    _value: "targetEnum"
+                }
+            ]
+        }
+    };
+
+    return new PlayObject("get", descriptor);
 }
 
 /**

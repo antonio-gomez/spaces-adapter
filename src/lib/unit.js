@@ -21,36 +21,41 @@
  * 
  */
  
-define(function (require, exports) {
-    "use strict";
-
-    /** 
-     * Private function to create the Action Descriptor for the given unit
-     */
-    var _unit = function (kind, val) {
-        return {
-            _unit: kind + "Unit",
-            _value: val
-        };
+/** 
+ * Private function to create the Action Descriptor for the given unit
+ *
+ * @private
+ * @param {string} kind
+ * @param {number} val
+ */
+function _unit (kind, val) {
+    return {
+        _unit: kind + "Unit",
+        _value: val
     };
+}
 
-    exports.density = _unit.bind(null, "density");
-    exports.pixels = exports.px = _unit.bind(null, "pixels");
-    exports.percent = _unit.bind(null, "percent");
-    exports.angle = _unit.bind(null, "angle");
-    
-    exports.inches = exports.in = _unit.bind(null, "inches");
-    exports.centimeters = exports.cm = _unit.bind(null, "centimeters");
-    exports.picas = _unit.bind(null, "picas");
-    exports.degrees = _unit.bind(null, "degrees");
-    
-    exports.number = _unit.bind(null, "number");
-    exports.seconds = _unit.bind(null, "seconds");
-    
-    // Type uses these
-    exports.points = exports.pt = _unit.bind(null, "points");
-    exports.millimeters = exports.mm = _unit.bind(null, "millimeters");
-    
-    // Guides use this
-    exports.distance = _unit.bind(null, "distance");
-});
+export const density = _unit.bind(null, "density");
+export const pixels = _unit.bind(null, "pixels");
+export const px = pixels;
+export const percent = _unit.bind(null, "percent");
+export const angle = _unit.bind(null, "angle");
+
+export const inches = _unit.bind(null, "inches");
+// export const in = inches;
+export const centimeters = _unit.bind(null, "centimeters");
+export const cm = centimeters;
+export const picas = _unit.bind(null, "picas");
+export const degrees = _unit.bind(null, "degrees");
+
+export const number = _unit.bind(null, "number");
+export const seconds = _unit.bind(null, "seconds");
+
+// Type uses these
+export const points = _unit.bind(null, "points");
+export const pt = points;
+export const millimeters = _unit.bind(null, "millimeters");
+export const mm = millimeters;
+
+// Guides use this
+export const distance = _unit.bind(null, "distance");

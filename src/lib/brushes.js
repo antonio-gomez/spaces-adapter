@@ -21,42 +21,37 @@
  * 
  */
 
-define(function (require, exports) {
-    "use strict";
-    
-    var PlayObject = require("../playObject"),
-        referenceBy = require("./reference").wrapper("brushes"),
-        inUnits = require("./unit");
-    
-    /**
-     * Sets the current brush tip to given parameters
-     *
-     * @param {number} diameter
-     * @param {number} hardness
-     * @param {number} angle
-     * @param {number} roundness
-     * @param {number} spacing
-     *
-     * @returns {PlayObject}
-     */
-    var setBrushTip = function (diameter, hardness, angle, roundness, spacing) {
-        return new PlayObject(
-            "set",
-            {
-                "null": referenceBy.current,
-                "to": {
-                    "_obj": "computedBrush",
-                    "_value": {
-                        "diameter": inUnits.pixels(diameter),
-                        "hardness": inUnits.percent(hardness || 100),
-                        "angle": inUnits.angle(angle || 0),
-                        "roundness": inUnits.percent(roundness || 100),
-                        "spacing": inUnits.percent(spacing || 1)
-                    }
+import PlayObject from "../playObject";
+import { wrapper } from "./reference";
+import * as unit from "./unit";
+
+export const referenceBy = wrapper("brushes");
+
+/**
+ * Sets the current brush tip to given parameters
+ *
+ * @param {number} diameter
+ * @param {number} hardness
+ * @param {number} angle
+ * @param {number} roundness
+ * @param {number} spacing
+ * @return {PlayObject}
+ */
+export function setBrushTip (diameter, hardness, angle, roundness, spacing) {
+    return new PlayObject(
+        "set",
+        {
+            "null": referenceBy.current,
+            "to": {
+                "_obj": "computedBrush",
+                "_value": {
+                    "diameter": unit.pixels(diameter),
+                    "hardness": unit.percent(hardness || 100),
+                    "angle": unit.angle(angle || 0),
+                    "roundness": unit.percent(roundness || 100),
+                    "spacing": unit.percent(spacing || 1)
                 }
             }
-        );
-    };
-
-    exports.setBrushTip = setBrushTip;
-});
+        }
+    );
+}

@@ -21,63 +21,57 @@
  * 
  */
 
-define(function (require, exports) {
-    "use strict";
+import PlayObject from "../playObject";
 
-    var PlayObject = require("../playObject");
+/**
+ * _ref object for photoshop custom settings
+ *
+ * @private
+ * @const
+ * @type {Object}
+ */
+const _customPrefRef = {
+    _ref: [
+        { _ref: "property", _property: "customPreference" },
+        { _ref: "application", _enum: "ordinal", _value: "targetEnum" }
+    ]
+};
 
-    /**
-     * _ref object for photoshop custom settings
-     *
-     * @private
-     * @type {Object}
-     */
-    var _customPrefRef = {
-        _ref: [
-            { _ref: "property", _property: "customPreference" },
-            { _ref: "application", _enum: "ordinal", _value: "targetEnum" }
-        ]
+/**
+ * Build a play object that will fetch a Photoshop custom preference at the given key
+ *
+ * @param {string} key
+ * @return {PlayObject}
+ */
+export function getCustomPreference (key) {
+    var desc = {
+        null: _customPrefRef,
+        keyword: key
     };
+    return new PlayObject("get", desc);
+}
 
-    /**
-     * Build a play object that will fetch a Photoshop custom preference at the given key
-     *
-     * @param {string} key
-     * @return {PlayObject}
-     */
-    var getCustomPreference = function (key) {
-        var desc = {
+/**
+ * Build a play object that will set a Photoshop custom preference key value pair
+ *
+ * The value is expected to be a simple object
+ *
+ * @param {string} key
+ * @param {object} value
+ * @param {boolean=} persistent Optional, defaults to true
+ * @return {PlayObject}
+ */
+export function setCustomPreference (key, value, persistent) {
+    var desc = {
             null: _customPrefRef,
-            keyword: key
+            keyword: key,
+            persistent: persistent === undefined ? true : !!persistent
+        },
+        obj = {
+            _obj: "object",
+            _value: value
         };
-        return new PlayObject("get", desc);
-    };
 
-    /**
-     * Build a play object that will set a Photoshop custom preference key value pair
-     *
-     * The value is expected to be a simple object
-     *
-     * @param {string} key
-     * @param {object} value
-     * @param {boolean=} persistent Optional, defaults to true
-     * @return {PlayObject}
-     */
-    var setCustomPreference = function (key, value, persistent) {
-        var desc = {
-                null: _customPrefRef,
-                keyword: key,
-                persistent: persistent === undefined ? true : !!persistent
-            },
-            obj = {
-                _obj: "object",
-                _value: value
-            };
-
-        desc[key] = obj;
-        return new PlayObject("set", desc);
-    };
-
-    exports.getCustomPreference = getCustomPreference;
-    exports.setCustomPreference = setCustomPreference;
-});
+    desc[key] = obj;
+    return new PlayObject("set", desc);
+}

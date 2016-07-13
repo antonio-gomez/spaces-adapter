@@ -23,17 +23,18 @@
 
 import Descriptor from "./ps/descriptor";
 
-/**
- * In Spaces-adapter, all library functions return PlayObjects. 
- * These PlayObjects can be called in Photoshop by passing them into 
- * ps/descriptor's playObject function.
- * 
- * @constructor
- * @param {!string} command Command name to be played
- * @param {!Object} descriptor Arguments for the command
- * @param {Object} options Options for Photoshop while playing this command
- */
 export default class PlayObject {
+
+    /**
+     * In Spaces-adapter, all library functions return PlayObjects. 
+     * These PlayObjects can be called in Photoshop by passing them into 
+     * ps/descriptor's playObject function.
+     * 
+     * @constructor
+     * @param {!string} command Command name to be played
+     * @param {!Object} descriptor Arguments for the command
+     * @param {Object} options Options for Photoshop while playing this command
+     */
     constructor (command, descriptor, options) {
         this.command = command;
         this.descriptor = descriptor;
@@ -46,5 +47,14 @@ export default class PlayObject {
                 this.options[property] = options[property];
             }, this);
         }
+    }
+
+    /**
+     * Play this PlayObject.
+     *
+     * @return {Promise}
+     */
+    play () {
+        return Descriptor.playObject(this);
     }
 }

@@ -9,7 +9,8 @@
     "_spaces": true,
     "define": true,
     "Set": true,
-    "Map": true
+    "Map": true,
+    "Promise": true
   },
   "rules": {
     "no-console": 2,
@@ -17,10 +18,11 @@
     "strict": 0,
     "no-underscore-dangle": 0,
     "no-use-before-define": 0,
-    "eol-last": 0,
+    "eol-last": 2,
     "quotes": [2, "double"],
     "semi": [2, "always"],
     "indent": [2, 4],
-    "jsx-quotes": 1
+    "jsx-quotes": 1,
+    "no-multiple-empty-lines": [2, {"max": 1}]
   }
 }

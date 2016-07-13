@@ -21,67 +21,60 @@
  *
  */
 
-define(function (require, exports) {
-    "use strict";
+import PlayObject from "../playObject";
 
-    var PlayObject = require("../playObject");
-
-    /**
-     * Set Photoshop to use the ruler unit preference of our choice
-     *
-     * @param {string} type -  ruler unit type ie "rulerPixels"
-     * @return {PlayObject} 
-     */
-    var setRulerUnits = function (type) {
-        return new PlayObject("set", {
-            "null": {
-                "_ref": [
-                    {
-                        "_property": "unitsPrefs",
-                        "_ref": "property"
-                    },
-                    {
-                        "_enum": "ordinal",
-                        "_ref": "application",
-                        "_value": "targetEnum"
-                    }
-                ]
-            },
-            "to": {
-                "_obj": "unitsPrefs",
-                "rulerUnits": {
-                    "_enum": "rulerUnits",
-                    "_value": type
+/**
+ * Set Photoshop to use the ruler unit preference of our choice
+ *
+ * @param {string} type -  ruler unit type ie "rulerPixels"
+ * @return {PlayObject} 
+ */
+export function setRulerUnits (type) {
+    return new PlayObject("set", {
+        "null": {
+            "_ref": [
+                {
+                    "_property": "unitsPrefs",
+                    "_ref": "property"
+                },
+                {
+                    "_enum": "ordinal",
+                    "_ref": "application",
+                    "_value": "targetEnum"
                 }
+            ]
+        },
+        "to": {
+            "_obj": "unitsPrefs",
+            "rulerUnits": {
+                "_enum": "rulerUnits",
+                "_value": type
             }
-        });
-    };
+        }
+    });
+}
 
-    /**
-     * FIXME: Needs explanation.
-     *
-     * @param {boolean} visible
-     * @return {PlayObject}
-     */
-    var setRulerVisibility = function (visible) {
-        return new PlayObject("set", {
-            "null": {
-                "_ref": [
-                    {
-                        "_ref": null,
-                        "_property": "toggleRulers"
-                    },
-                    {
-                        "_ref": "document",
-                        "_enum": "ordinal",
-                        "_value": "targetEnum"
-                    }
-                ]
-            },
-            "visible": visible
-        });
-    };
-
-    exports.setRulerUnits = setRulerUnits;
-    exports.setRulerVisibility = setRulerVisibility;
-});
+/**
+ * FIXME: Needs explanation.
+ *
+ * @param {boolean} visible
+ * @return {PlayObject}
+ */
+export function setRulerVisibility (visible) {
+    return new PlayObject("set", {
+        "null": {
+            "_ref": [
+                {
+                    "_ref": null,
+                    "_property": "toggleRulers"
+                },
+                {
+                    "_ref": "document",
+                    "_enum": "ordinal",
+                    "_value": "targetEnum"
+                }
+            ]
+        },
+        "visible": visible
+    });
+}
