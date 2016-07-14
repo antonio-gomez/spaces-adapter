@@ -112,6 +112,31 @@ export function getDocumentArea () {
 }
 
 /**
+ * Gets document presets in PS
+ *
+ * @return {PlayObject}
+ */
+export function getDocumentPresets () {
+    var descriptor = {
+        "null": {
+            _ref: [
+                {
+                    _ref: null,
+                    _property: "newDocPresetJSON"
+                },
+                {
+                    _ref: "application",
+                    _enum: "ordinal",
+                    _value: "targetEnum"
+                }
+            ]
+        }
+    };
+
+    return new PlayObject("get", descriptor);
+}
+
+/**
  * Gets the information on all the tools from Photoshop
  *
  * @return {PlayObject}

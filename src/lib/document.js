@@ -25,7 +25,7 @@ import _ from "lodash";
 
 import PlayObject from "../playObject";
 import { wrapper, refersTo } from "./reference";
-import unitsIn from "./unit";
+import { distance, density, pixels } from "./unit";
 import { assert } from "../util";
 
 export const referenceBy = wrapper("document");
@@ -355,9 +355,9 @@ export function createDocument (settings) {
     var newObj = {
         "_obj": "document",
         "_value": {
-            "width": unitsIn.distance(params.width),
-            "height": unitsIn.distance(params.height),
-            "resolution": unitsIn.density(params.resolution),
+            "width": distance(params.width),
+            "height": distance(params.height),
+            "resolution": density(params.resolution),
             "fill": {
                 "_enum": "fill",
                 "_value": params.fill
@@ -501,7 +501,7 @@ export function insertGuide (sourceRef, orientation, position, isArtboardGuide) 
                     "_enum": "orientation",
                     "_value": orientation
                 },
-                "position": unitsIn.pixels(position)
+                "position": pixels(position)
             }
         };
 
