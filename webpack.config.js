@@ -3,7 +3,7 @@ var path = require("path");
 
 module.exports = {
     entry: {
-        adapter: "./src/main.js"
+        adapter: "./src/index.js"
     },
     output: {
         libraryTarget: "umd",
