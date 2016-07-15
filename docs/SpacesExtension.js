@@ -208,6 +208,9 @@ Notifier groups are used with _spaces.setNotifier.
 _spaces.notifierGroup = {
 
     /** Used for notifications from Photoshop.
+    The options argument that is provided to _spaces.setNotifier must have a key
+    specifying which Photoshop events to sign up for.
+        "events": array of event notifiers
     The callback will have the following signature
     callback(err, notificationKind, info).
     - notificationKind is a string describing the Photoshop event.
@@ -329,6 +332,23 @@ _spaces.notifierOptions.interaction = {
 _spaces.setNotifier = function (notifierGroup, options, callback) {
     native function pgSetNotifier();
     return pgSetNotifier(notifierGroup, options, callback);
+};
+
+/** Send a notification to a particular notifier group.
+@param notifierGroup (string)   The group that the notification should be sent to.
+                                Typically this is a custom group that some other JavaScript
+                                instance has registered a listener for.
+@param notification (string)    The notification name.
+@param notificationInfo (object) Additional data related to the notification. If no data is
+                                appropriate for the notification, then an empty object should
+                                be passed in. You cannot use undefined, or null.
+@param options                  Options pertaining to sending the notification.
+@param callback                 Result notifier.
+
+*/
+_spaces.sendNotification = function (notifierGroup, notification, notificationInfo, options, callback) {
+    native function pgSendNotification();
+    return pgSendNotification(notifierGroup, notification, notificationInfo, options, callback);
 };
 
 /** Properties.
@@ -1596,6 +1616,27 @@ _spaces.os.isConvertibleSlateMode = function (callback) {
 if (!_spaces.window)
    _spaces.window = {};
 
+/* Obtain the render mode of the window.
+
+@param options (object)
+    Currently unused
+@param callback (function)
+    A callback notifier with the signature described below.
+
+callback(err, renderMode)
+@param renderMode (object)   The result value.
+    key "renderMode" (string):
+        "osr" indicates that the window is using offscreen render mode. In this mode
+            functionality that depends on the GPU may not be available or may not
+            perform with the expected speed.
+        "direct" if the window is using hardware accelerated rendering to an on screen
+            gpu surface.
+*/
+_spaces.window.getRenderMode = function (options, callback) {
+    native function windowGetRenderMode();
+    return windowGetRenderMode(options, callback);
+};
+
 /* Obtain latent visibility of the HTML surface.
 This is only valid for the contextual UI use case.
 
@@ -1639,7 +1680,6 @@ _spaces.window.setVisibility = function (visibility, options, callback) {
 };
 
 /* Obtain the bounds of the HTML surface.
-This is only valid for the contextual UI use case
 @param options (object)
     Currently unused
 @param callback (function)
@@ -1649,9 +1689,11 @@ callback(err, result)
 "result" (object)   An object describing the request values. This objects contain
     two structures:
     "bounds" (object)   This object contains bounds of the surface relative to the
-                    owner of the contextual UI surface. These bounds are in logical
-                    coordinates (uysing the same scale factor as the owner).
-                    Bounds are expressed as: "left", "top", "right", "bottom"
+                    owner of the surface. These bounds are in logical
+                    coordinates (using the same scale factor as the owner).
+                    Bounds are expressed as: "left", "top", "right", "bottom".
+                    If the surface does not have an owner, then the "bounds"
+                    property is omitted from the result.
     "globalBounds" (object) This object contains the global bounds of the surface.
                     These bounds are expressed in the global coordinate system that
                     is native to the host OS:
@@ -1670,7 +1712,7 @@ This is only valid for the contextual UI use case
     This object must contain one of the following sub-objects:
     "bounds" (object)   This object contains bounds of the surface relative to the
                     owner of the contextual UI surface. These bounds are in logical
-                    coordinates (uysing the same scale factor as the owner).
+                    coordinates (using the same scale factor as the owner).
                     Bounds are expressed as: "left", "top", "right", "bottom"
     "globalBounds" (object) This object contains the global bounds of the surface.
                     These bounds are expressed in the global coordinate system that
@@ -1742,6 +1784,11 @@ _spaces.window.setOverlayCloaking = function (info, options, callback) {
 };
 
 // ==========================================================================
+// _spaces.ims
+if (!_spaces.ims)
+   _spaces.ims = {};
+
+// ==========================================================================
 // _spaces.debug
 // prefix with "_" to signify that this area is for internal Adobe use only
 
@@ -1804,3 +1851,19 @@ _spaces._debug.enableDebugContextMenu = function (value, callback) {
      return pgDebugEnableDebugContextMenu(value, callback);
 };
 
+/** Convinience function that can be used to log results from a callback */
+_spaces._debug.printResult = function () {
+    var argCount = arguments.length;
+    if (argCount < 1) {
+        throw "Malformed callback notification. Missing 'err' argument";
+    }
+    var err = arguments[0];
+    if (err === undefined || err.number == 0) {
+        for (index = 1; index < argCount; ++index) {
+            console.log("Argument #" + index + ": " + JSON.stringify(arguments[index]));
+        }
+    }
+    else {
+        console.log("Error: " + JSON.stringify(err));
+    }
+};
