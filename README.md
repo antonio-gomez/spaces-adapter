@@ -11,8 +11,10 @@ These modules are a dependency of the Photoshop Design Space application. For mo
 Usage
 -----
 
-This repository is meant only as code storage. There is no bundled file / usable ES5 javascript.
-To use these files in your ES6 project, one way is to use Webpack.
+If you install through NPM, you can directly import "spaces-adapter" and you will get the Adapter object with
+everything attached.
+
+To use these files directly in your ES6 project, one way is to use Webpack.
 
 First, add spaces-adapter sources as a resolve alias:
 
