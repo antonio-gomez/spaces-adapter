@@ -153,6 +153,16 @@ class Descriptor extends EventEmitter {
          * @type {Object.<string, number>}
          */
         this.interactionMode = _spaces.ps.descriptor.interactionMode;
+
+        /**
+         * Promisified version of sendDirectMessage
+         *
+         * @private
+         * @type {function():Promise}
+         */
+        this._sendDirectMessageAsync = Promise.promisify(_spaces.ps.descriptor.sendDirectMessage, {
+            context: _spaces.ps.descriptor
+        });
     }
 
     /**
@@ -183,6 +193,18 @@ class Descriptor extends EventEmitter {
      */
     off (event, listener) {
         return this.removeListener(event, listener);
+    }
+
+    /**
+     * Send a direct message to Photoshop.
+     *
+     * @param {string} name
+     * @param {object} payload
+     * @param {object=} options
+     * @return {Promise}
+     */
+    sendDirectMessage (name, payload, options = {}) {
+        return this._sendDirectMessageAsync(name, payload, options);
     }
 
     /**
