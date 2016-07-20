@@ -137,6 +137,18 @@ export function getDocumentPresets () {
 }
 
 /**
+ * Get the global bounds of the application frame.
+ *
+ * @return {PlayObject}
+ */
+export function getApplicationFrameInfo () {
+    return new PlayObject("owlAction", {
+        "null": referenceBy.current,
+        "owlCommand": "getApplicationFrameInfo"
+    });
+}
+
+/**
  * Gets the information on all the tools from Photoshop
  *
  * @return {PlayObject}
