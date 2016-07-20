@@ -35,7 +35,7 @@ export const referenceOf = refersTo;
  * Open a document (psd, png, jpg, ai, gif)
  * 
  * @param {ActionDescriptor} sourceRef document reference
- * @param {object} settings
+ * @param {object=} settings
  * @param {string} settings.pdfSelection "page" or "image"
  * @param {number} settings.pageNumber The number of the page
  * @param {boolean} settings.suppressWarnings true or false
@@ -58,7 +58,7 @@ export const referenceOf = refersTo;
  * @return {PlayObject}
  *
  */
-export function openDocument (sourceRef, settings) {
+export function openDocument (sourceRef, settings = {}) {
     var params = {
             pdfSelection: settings.pdfSelection || "page",
             pageNumber: settings.pageNumber || 1,
