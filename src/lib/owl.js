@@ -213,6 +213,20 @@ export function getMenuCommands () {
 }
 
 /**
+ * Get a list of all available views.
+ *
+ * @param {string} panel
+ * @return {PlayObject}
+ */
+export function getViewList (panel) {
+    return new PlayObject("uiInfo", {
+        "null": referenceBy.current,
+        "command": "getViewList",
+        "panel": panel
+    });
+}
+
+/**
  * Returns information on a view with the given viewID in the given panel
  * including it's bounds, whether it's shown or not and it's control state
  *
