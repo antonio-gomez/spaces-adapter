@@ -229,3 +229,18 @@ export function getViewInfo (panel, viewID) {
         "viewID": viewID
     });
 }
+
+/**
+ * Returns information on whether the command with the given command ID is 
+ * currently enabled in Photoshop
+ *
+ * @param {number} commandID
+ * @return {PlayObject}
+ */
+export function getCommandEnabled (commandID) {
+    return new PlayObject("uiInfo", {
+        "null": referenceBy.current,
+        "command": "getCommandEnabled",
+        "commandID": commandID
+    });
+}
