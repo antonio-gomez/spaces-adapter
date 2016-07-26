@@ -396,6 +396,16 @@ class UI extends EventEmitter {
     startEditWithCurrentModalTool () {
         return _ui.startEditWithCurrentModalToolAsync();
     }
+
+    /**
+     * Visually identify a rectangular area in the UI.
+     *
+     * @param {{left: number, top: number, right: number, bottom: number}} globalBounds
+     * @return {Promise}
+     */
+    performIdentify (globalBounds) {
+        return _ui.performIdentifyAsync({ globalBounds }, {});
+    }
 }
 
 /**
