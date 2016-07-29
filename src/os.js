@@ -225,7 +225,7 @@ class OS extends EventEmitter {
     /**
      * Return information about attached displays
      *
-     * @param {Object} options
+     * @param {object} options
      * @param {boolean=} options.physicalResolution gets physical resolution data
      *
      * @return {Array.<Object>} List of attached displays
@@ -234,6 +234,35 @@ class OS extends EventEmitter {
         options = options || { physicalResolution: true };
 
         return _spaces.os.getDisplayConfigurationAsync(options);
+    }
+
+    /**
+     * Write contents to a file.
+     *
+     * @param {object} options
+     * @param {string} options.filePath
+     * @param {string} options.contents
+     * @param {string=} options.format Describes the data type of the contents. Default is "utf8".
+     *                                 Use "binary" for base64 encoded contents.
+     *
+     * @return {Promise}
+     */
+    writeFile (options) {
+        return _os.writeFileAsync(options);
+    }
+
+    /**
+     * Read contents from a file.
+     *
+     * @param {object} options
+     * @param {string} options.filePath
+     * @param {string=} options.format Describes the expected format of the returned contents. By default it returns
+     *                                 a "utf8" string. Use "binary" to return a base64 encoded string.
+     *
+     * @return {Promise.<string>} Contents of the file
+     */
+    readFile (options) {
+        return _os.readFileAsync(options);
     }
 }
 
