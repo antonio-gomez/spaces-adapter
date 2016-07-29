@@ -225,7 +225,7 @@ class OS extends EventEmitter {
     /**
      * Return information about attached displays
      *
-     * @param {Object} options
+     * @param {object} options
      * @param {boolean=} options.physicalResolution gets physical resolution data
      *
      * @return {Array.<Object>} List of attached displays
@@ -239,7 +239,7 @@ class OS extends EventEmitter {
     /**
      * Write contents to a file.
      *
-     * @param {Object} options
+     * @param {object} options
      * @param {string} options.filePath
      * @param {string} options.contents
      * @param {string=} options.format Describes the data type of the contents. Default is "utf8".
@@ -254,7 +254,7 @@ class OS extends EventEmitter {
     /**
      * Read contents from a file.
      *
-     * @param {Object} options
+     * @param {object} options
      * @param {string} options.filePath
      * @param {string=} options.format Describes the expected format of the returned contents. By default it returns
      *                                 a "utf8" string. Use "binary" to return a base64 encoded string.
