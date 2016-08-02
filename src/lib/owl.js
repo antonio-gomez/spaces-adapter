@@ -215,14 +215,12 @@ export function getMenuCommands () {
 /**
  * Get a list of all available views.
  *
- * @param {string} panel
  * @return {PlayObject}
  */
-export function getViewList (panel) {
+export function getViewList () {
     return new PlayObject("uiInfo", {
         "null": referenceBy.current,
-        "command": "getViewList",
-        "panel": panel
+        "command": "getViewList"
     });
 }
 
