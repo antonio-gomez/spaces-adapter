@@ -1,24 +1,24 @@
 /*
  * Copyright (c) 2014 Adobe Systems Incorporated. All rights reserved.
- *  
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"), 
- * to deal in the Software without restriction, including without limitation 
- * the rights to use, copy, modify, merge, publish, distribute, sublicense, 
- * and/or sell copies of the Software, and to permit persons to whom the 
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- *  
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *  
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- * 
+ *
  */
 
 /* global _spaces, console */
@@ -54,7 +54,7 @@ class OS extends EventEmitter {
 
         /**
          * OS notifier kinds
-         * 
+         *
          * @const
          * @type {Object.<string, number>}
          */
@@ -62,7 +62,7 @@ class OS extends EventEmitter {
 
         /**
          * OS event kinds
-         * 
+         *
          * @const
          * @type {Object.<string, number>}
          */
@@ -70,7 +70,7 @@ class OS extends EventEmitter {
 
         /**
          * OS event modifiers
-         * 
+         *
          * @const
          * @type {Object.<string, number>}
          */
@@ -78,7 +78,7 @@ class OS extends EventEmitter {
 
         /**
          * OS event keyCodes
-         * 
+         *
          * @const
          * @type {Object.<string, number>}
          */
@@ -98,7 +98,7 @@ class OS extends EventEmitter {
             this.emit("error", "Failed to handle OS event: " + err);
             return;
         }
-        
+
         this.emit("all", event, payload);
         this.emit(event, payload);
     }
@@ -116,7 +116,7 @@ class OS extends EventEmitter {
     }
 
     /**
-     * Request that keyboard focus be transferred from Photoshop to CEF. 
+     * Request that keyboard focus be transferred from Photoshop to CEF.
      *
      * @param {object=} options Options passed directly to the low-level aquire call
      * @return {Promise} Resolves once focus has been transferred.
@@ -263,6 +263,17 @@ class OS extends EventEmitter {
      */
     readFile (options) {
         return _os.readFileAsync(options);
+    }
+
+    /**
+     * Get standard folder path. For example, the path of the Application Support folder.
+     *
+     * @param {object} options
+     * @param {string} options.kind "UserApplicationSupport" is the only supported kind currently.
+     * @return {Promise.<string>}
+     */
+    getStandardFolderPath (options) {
+        return _os.getStandardFolderPathAsync(options);
     }
 }
 

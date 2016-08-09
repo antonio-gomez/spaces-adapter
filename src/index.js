@@ -125,8 +125,9 @@ Promise.config({
 import * as ps from "./ps";
 import * as util from "./util";
 import * as window from "./window";
+import * as ims from "./ims";
 import os from "./os";
 import PlayObject from "./playObject";
 import lib from "./lib";
 
-export { os, ps, util, PlayObject, lib, window };
+export { os, ps, util, PlayObject, lib, window, ims };
