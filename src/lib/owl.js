@@ -1,24 +1,24 @@
 /*
  * Copyright (c) 2016 Adobe Systems Incorporated. All rights reserved.
- *  
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"), 
- * to deal in the Software without restriction, including without limitation 
- * the rights to use, copy, modify, merge, publish, distribute, sublicense, 
- * and/or sell copies of the Software, and to permit persons to whom the 
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- *  
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *  
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- * 
+ *
  */
 
 import PlayObject from "../playObject";
@@ -39,7 +39,7 @@ export function getPanelList () {
 }
 
 /**
- * Gets information about the OWL containment hierarchy 
+ * Gets information about the OWL containment hierarchy
  * leading up to the given panel
  *
  * @param {string} panelID
@@ -100,43 +100,6 @@ export function identifyPanel (panelID) {
 }
 
 /**
- * Returns the current globalBounds of visible document area
- *
- * @return {PlayObject}
- */
-export function getDocumentArea () {
-    return new PlayObject("owlAction", {
-        "null": referenceBy.current,
-        "owlCommand": "getDocumentArea"
-    });
-}
-
-/**
- * Gets document presets in PS
- *
- * @return {PlayObject}
- */
-export function getDocumentPresets () {
-    var descriptor = {
-        "null": {
-            _ref: [
-                {
-                    _ref: null,
-                    _property: "newDocPresetJSON"
-                },
-                {
-                    _ref: "application",
-                    _enum: "ordinal",
-                    _value: "targetEnum"
-                }
-            ]
-        }
-    };
-
-    return new PlayObject("get", descriptor);
-}
-
-/**
  * Get the global bounds of the application frame.
  *
  * @return {PlayObject}
@@ -188,31 +151,6 @@ export function getToolInfo (toolID) {
 }
 
 /**
- * Gets menu commands in PS
- *
- * @return {PlayObject}
- */
-export function getMenuCommands () {
-    var descriptor = {
-        "null": {
-            _ref: [
-                {
-                    _ref: null,
-                    _property: "menuBarInfo"
-                },
-                {
-                    _ref: "application",
-                    _enum: "ordinal",
-                    _value: "targetEnum"
-                }
-            ]
-        }
-    };
-
-    return new PlayObject("get", descriptor);
-}
-
-/**
  * Get a list of all available views.
  *
  * @return {PlayObject}
@@ -243,7 +181,7 @@ export function getViewInfo (panel, viewID) {
 }
 
 /**
- * Returns information on whether the command with the given command ID is 
+ * Returns information on whether the command with the given command ID is
  * currently enabled in Photoshop
  *
  * @param {number} commandID
