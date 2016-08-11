@@ -1,24 +1,24 @@
 /*
  * Copyright (c) 2015 Adobe Systems Incorporated. All rights reserved.
- *  
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"), 
- * to deal in the Software without restriction, including without limitation 
- * the rights to use, copy, modify, merge, publish, distribute, sublicense, 
- * and/or sell copies of the Software, and to permit persons to whom the 
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- *  
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *  
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- * 
+ *
  */
 
 import PlayObject from "../playObject";
@@ -34,7 +34,7 @@ export const referenceBy = wrapper("application");
  */
 export function getFontList (englishOnly) {
     var native = !englishOnly;
-    
+
     return new PlayObject("get", {
         "null": {
             "_ref": [
@@ -131,9 +131,9 @@ export function setAddCopyToLayerNames (add) {
 
 /**
  * Sets the global preferences of given objects
- * 
+ *
  * @param {object} preferences An object containing key/value pairs of preferences to set
- * 
+ *
  * @return {PlayObject}
  */
 export function setGlobalPreferences (preferences) {
@@ -155,4 +155,54 @@ export function setGlobalPreferences (preferences) {
             }
         }
     );
+}
+
+/**
+ * Gets document presets in PS
+ *
+ * @return {PlayObject}
+ */
+export function getDocumentPresets () {
+    var descriptor = {
+        "null": {
+            _ref: [
+                {
+                    _ref: null,
+                    _property: "newDocPresetJSON"
+                },
+                {
+                    _ref: "application",
+                    _enum: "ordinal",
+                    _value: "targetEnum"
+                }
+            ]
+        }
+    };
+
+    return new PlayObject("get", descriptor);
+}
+
+/**
+ * Gets menu commands in PS
+ *
+ * @return {PlayObject}
+ */
+export function getMenuCommands () {
+    var descriptor = {
+        "null": {
+            _ref: [
+                {
+                    _ref: null,
+                    _property: "menuBarInfo"
+                },
+                {
+                    _ref: "application",
+                    _enum: "ordinal",
+                    _value: "targetEnum"
+                }
+            ]
+        }
+    };
+
+    return new PlayObject("get", descriptor);
 }
