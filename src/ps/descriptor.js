@@ -108,9 +108,17 @@ const _makePropertyReference = function (reference, property) {
  * @constructor
  * @private
  */
-class Descriptor extends EventEmitter {
+export class Descriptor extends EventEmitter {
     constructor () {
         super();
+
+        /**
+         * The Set of enabled Photoshop descriptor event, or null if all events are enabled.
+         *
+         * @private
+         * @type {?Set.<string>}
+         */
+        this._enabledEvents = null;
 
         /**
          * Transaction ID counter
@@ -146,15 +154,6 @@ class Descriptor extends EventEmitter {
         });
 
         /**
-         * Defines an enumeration of three constants that control dialog display
-         * while executing action descriptors: DONT_DISPLAY, DISPLAY and SILENT.
-         * 
-         * @const
-         * @type {Object.<string, number>}
-         */
-        this.interactionMode = _spaces.ps.descriptor.interactionMode;
-
-        /**
          * Promisified version of sendDirectMessage
          *
          * @private
@@ -164,6 +163,16 @@ class Descriptor extends EventEmitter {
             context: _spaces.ps.descriptor
         });
     }
+
+    /**
+     * Defines an enumeration of three constants that control dialog display
+     * while executing action descriptors: DONT_DISPLAY, DISPLAY and SILENT.
+     * 
+     * @const
+     * @type {Object.<string, number>}
+     */
+
+    static get interactionMode () { return _spaces.ps.descriptor.interactionMode; }
 
     /**
      * Event handler for events from the native bridge.
@@ -181,6 +190,25 @@ class Descriptor extends EventEmitter {
 
         this.emit("all", eventID, payload);
         this.emit(eventID, payload);
+    }
+
+    /**
+     * Override the method to verify that the listener is being added for an
+     * enabled event, lest the client wait for an event that shall never come.
+     *
+     * Related methods on, once and addOnceListener are implemented with this
+     * method.
+     *
+     * @param {string|RegExp} event
+     * @param {*} rest
+     * @return {*}
+     */
+    addListener (event, ...rest) {
+        if (typeof event === "string" && this._enabledEvents && !this._enabledEvents.has(event)) {
+            throw new Error(`Event ${event} is not enabled in this Descriptor instance.`);
+        }
+
+        return super.addListener(event, ...rest);
     }
 
     /**
@@ -411,7 +439,7 @@ class Descriptor extends EventEmitter {
      */
     _batchPlayImmediate (commands, options) {
         if (!options.hasOwnProperty("interactionMode")) {
-            options.interactionMode = this.interactionMode.SILENT;
+            options.interactionMode = Descriptor.interactionMode.SILENT;
         }
 
         return this._batchPlayAsync(commands, options)
@@ -798,12 +826,30 @@ class Descriptor extends EventEmitter {
 }
 
 /**
- * The Descriptor singleton
- * @type {Descriptor} 
+ * Construct a Descriptor object with the given options.
+ *
+ * @param {object=} options
+ * @param {?Array.<string>=} options.events Null to allow all events.
+ * @return {Descriptor}
  */
-const theDescriptor = new Descriptor();
+export function makeDescriptor (options = {}) {
+    let descriptor = new Descriptor();
 
-// bind native Photoshop event handler to our handler function
-_spaces.setNotifier(_spaces.notifierGroup.PHOTOSHOP, {}, theDescriptor._psEventHandler.bind(theDescriptor));
+    if (!options.hasOwnProperty("events")) {
+        /* eslint no-console: 0 */
+        console.warn("Listening for all Photoshop descriptor events is a potential performance problem.");
+    } else if (options.events && options.events.length > 0) {
+        // Used to verify at runtime that listeners are only added for enabled events.
+        descriptor._enabledEvents = options.events.reduce(function (set, event) {
+            return set.add(event);
+        }, new Set());
+    } else {
+        // To allow all events, remove the events property from the batchPlay options
+        delete options.events;
+    }
 
-export default theDescriptor;
+    // bind native Photoshop event handler to our handler function
+    _spaces.setNotifier(_spaces.notifierGroup.PHOTOSHOP, options, descriptor._psEventHandler.bind(descriptor));
+
+    return descriptor;
+}

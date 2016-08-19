@@ -21,10 +21,21 @@
  * 
  */
 
-import Descriptor from "./ps/descriptor";
+import { Descriptor } from "./ps/descriptor";
+
+/**
+ * Dummy instance that only hosts the play method.
+ *
+ * FIXME: Ideally Descriptor methods like playObject would be available
+ * statically, but that isn't a simple change because those methods aren't
+ * actually stateless due to the transaction infrastructure.
+ *
+ * @private
+ * @type {Descriptor}
+ */
+const _descriptor = new Descriptor();
 
 export default class PlayObject {
-
     /**
      * In Spaces-adapter, all library functions return PlayObjects. 
      * These PlayObjects can be called in Photoshop by passing them into 
@@ -52,9 +63,10 @@ export default class PlayObject {
     /**
      * Play this PlayObject.
      *
+     * @param {object=} options
      * @return {Promise}
      */
-    play () {
-        return Descriptor.playObject(this);
+    play (options) {
+        return _descriptor.playObject(this, options);
     }
 }

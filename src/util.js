@@ -24,21 +24,6 @@
 /* global console */
 
 /**
- * Inherit the prototype methods from one constructor into another.
- *
- * Modeled after Node's util.inherits, which is licensed under the MIT license
- *   Implementation: https://github.com/joyent/node/blob/master/lib/util.js#L628
- *   License: https://github.com/joyent/node/blob/master/LICENSE
- *
- * @param {function} ctor Constructor function which needs to inherit the prototype.
- * @param {function} superCtor Constructor function to inherit prototype from.
- */
-export function inherits (ctor, superCtor) {
-    ctor.super_ = superCtor;
-    Object.setPrototypeOf(ctor.prototype, superCtor.prototype);
-}
-
-/**
  * Throw an exception with the given message if the provided value is not truthy.
  *
  * @param {boolean} expression
