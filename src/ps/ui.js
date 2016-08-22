@@ -62,50 +62,50 @@ var ALL_NONWINDOW_WIDGETS_BITMASK =
  * @constructor
  * @private
  */
-class UI extends EventEmitter {
+export class UI extends EventEmitter {
     constructor () {
         super();
-
-        /**
-         * Overscroll modes
-         * 
-         * @const
-         * @type {Object.<string, number>}
-         */
-        this.overscrollMode = _spaces.ps.ui.overscrollMode;
-
-        /**
-         * Pointer propagation modes - Used for the default mouse policy
-         * PROPAGATE_BY_ALPHA: Default behavior, events will be sent to Spaces
-         * if they're clicking on a Spaces view
-         * PROPAGATE_TO_PHOTOSHOP: Spaces will never get a pointer event
-         * PROPAGATE_TO_BROWSER: Spaces consumes all pointer events
-         */
-        this.pointerPropagationMode = _spaces.ps.ui.pointerPropagationMode;
-
-        /**
-         * Keyboard propagation modes - Used for the default keyboard policy
-         * PROPAGATE_BY_FOCUS: Default behavior, events will be sent to in focus element
-         * PROPAGATE_TO_PHOTOSHOP: Spaces will never get a keyboard event
-         * PROPAGATE_TO_BROWSER: Spaces consumes all keyboard events
-         */
-        this.keyboardPropagationMode = _spaces.ps.ui.keyboardPropagationMode;
-
-        /**
-         * Policy action modes - Used for custom policies
-         * Numerically, they're identical for keyboard and pointer
-         * PROPAGATE_BY_ALPHA (applies as PROPAGATE_BY_FOCUS on Keyboard events)
-         * PROPAGATE_TO_PHOTOSHOP
-         * PROPAGATE_TO_BROWSER
-         */
-        this.policyAction = _spaces.ps.ui.policyAction;
-
-        /**
-         * Command kinds - Used for certain commands that are also used in
-         * OS dialogs (like copy/paste), with USER_DEFINED as extra
-         */
-        this.commandKind = _spaces.ps.ui.commandKind;
     }
+
+    /**
+     * Overscroll modes
+     * 
+     * @const
+     * @type {Object.<string, number>}
+     */
+    static get overscrollMode () { return _spaces.ps.ui.overscrollMode; }
+
+    /**
+     * Pointer propagation modes - Used for the default mouse policy
+     * PROPAGATE_BY_ALPHA: Default behavior, events will be sent to Spaces
+     * if they're clicking on a Spaces view
+     * PROPAGATE_TO_PHOTOSHOP: Spaces will never get a pointer event
+     * PROPAGATE_TO_BROWSER: Spaces consumes all pointer events
+     */
+    static get pointerPropagationMode () { return _spaces.ps.ui.pointerPropagationMode; }
+
+    /**
+     * Keyboard propagation modes - Used for the default keyboard policy
+     * PROPAGATE_BY_FOCUS: Default behavior, events will be sent to in focus element
+     * PROPAGATE_TO_PHOTOSHOP: Spaces will never get a keyboard event
+     * PROPAGATE_TO_BROWSER: Spaces consumes all keyboard events
+     */
+    static get keyboardPropagationMode () { return _spaces.ps.ui.keyboardPropagationMode; }
+
+    /**
+     * Policy action modes - Used for custom policies
+     * Numerically, they're identical for keyboard and pointer
+     * PROPAGATE_BY_ALPHA (applies as PROPAGATE_BY_FOCUS on Keyboard events)
+     * PROPAGATE_TO_PHOTOSHOP
+     * PROPAGATE_TO_BROWSER
+     */
+    static get policyAction () { return _spaces.ps.ui.policyAction; }
+
+    /**
+     * Command kinds - Used for certain commands that are also used in
+     * OS dialogs (like copy/paste), with USER_DEFINED as extra
+     */
+    static get commandKind () { return _spaces.ps.ui.commandKind; }
 
     /**
      * Event handler for menu events from the native bridge.
@@ -409,25 +409,37 @@ class UI extends EventEmitter {
 }
 
 /**
- * The UI singleton
- * @type {UI}
+ * Construct a UI object with the given options.
+ *
+ * @param {object=} options
+ * @param {object=} options.menu
+ * @param {object=} options.interaction
+ * @param {number} options.interaction.notificationKind
+ * @return {UI}
  */
-const theUI = new UI();
+export function makeUI (options = {}) {
+    let menu = options.menu || {},
+        interaction = options.interaction || {},
+        ui = new UI();
 
-// Install the menu notifier group handler
-_spaces.setNotifier(_spaces.notifierGroup.MENU, {}, theUI._menuEventHandler.bind(theUI));
+    // Install the menu notifier group handler
+    _spaces.setNotifier(_spaces.notifierGroup.MENU, menu, ui._menuEventHandler.bind(ui));
 
-// Install the interaction notifier group handler. For now, listen to "options" and
-// "context" and "error" events, but not "progress" events, because listening for
-// a particular class of events also suppresses the corresponding interaction dialog.
-// In the case of "error" events, only an internally black-listed set of dialogs are
-// suppresesed.
-let _interactionOpts = _spaces.notifierOptions.interaction;
-_spaces.setNotifier(_spaces.notifierGroup.INTERACTION, {
-    notificationKind:
-        _interactionOpts.OPTIONS +
-        _interactionOpts.CONTEXT +
-        _interactionOpts.ERROR
-}, theUI._interactionEventHandler.bind(theUI));
+    // Install the interaction notifier group handler. For now, listen to "options" and
+    // "context" and "error" events, but not "progress" events, because listening for
+    // a particular class of events also suppresses the corresponding interaction dialog.
+    // In the case of "error" events, only an internally black-listed set of dialogs are
+    // suppresesed.
+    let _interactionOpts = _spaces.notifierOptions.interaction;
 
-export default theUI;
+    if (!interaction.notificationKind) {
+        interaction.notificationKind =
+            _interactionOpts.OPTIONS +
+            _interactionOpts.CONTEXT +
+            _interactionOpts.ERROR;
+    }
+
+    _spaces.setNotifier(_spaces.notifierGroup.INTERACTION, interaction, ui._interactionEventHandler.bind(ui));
+
+    return ui;
+}

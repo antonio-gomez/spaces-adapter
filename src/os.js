@@ -48,42 +48,42 @@ var _clipboard = Promise.promisifyAll(_spaces.os.clipboard);
  * @constructor
  * @private
  */
-class OS extends EventEmitter {
+export class OS extends EventEmitter {
     constructor () {
         super();
-
-        /**
-         * OS notifier kinds
-         *
-         * @const
-         * @type {Object.<string, number>}
-         */
-        this.notifierKind = _os.notifierKind;
-
-        /**
-         * OS event kinds
-         *
-         * @const
-         * @type {Object.<string, number>}
-         */
-        this.eventKind = _os.eventKind;
-
-        /**
-         * OS event modifiers
-         *
-         * @const
-         * @type {Object.<string, number>}
-         */
-        this.eventModifiers = _os.eventModifiers;
-
-        /**
-         * OS event keyCodes
-         *
-         * @const
-         * @type {Object.<string, number>}
-         */
-        this.eventKeyCode = _os.eventKeyCode;
     }
+
+    /**
+     * OS notifier kinds
+     *
+     * @const
+     * @type {Object.<string, number>}
+     */
+    static get notifierKind () { return _os.notifierKind; }
+
+    /**
+     * OS event kinds
+     *
+     * @const
+     * @type {Object.<string, number>}
+     */
+    static get eventKind () { return _os.eventKind; }
+
+    /**
+     * OS event modifiers
+     *
+     * @const
+     * @type {Object.<string, number>}
+     */
+    static get eventModifiers () { return _os.eventModifiers; }
+
+    /**
+     * OS event keyCodes
+     *
+     * @const
+     * @type {Object.<string, number>}
+     */
+    static get eventKeyCode () { return _os.eventKeyCode; }
 
     /**
      * Event handler for events from the native bridge.
@@ -278,12 +278,16 @@ class OS extends EventEmitter {
 }
 
 /**
- * The OS singleton
- * @type {OS}
+ * Construct an OS object with the given options.
+ *
+ * @param {object=} options
+ * @return {OS}
  */
-const theOS = new OS();
+export function makeOS (options = {}) {
+    let os = new OS();
 
-// bind native Photoshop event handler to our handler function
-_spaces.setNotifier(_spaces.notifierGroup.OS, {}, theOS._eventHandler.bind(theOS));
+    // bind native Photoshop event handler to our handler function
+    _spaces.setNotifier(_spaces.notifierGroup.OS, options, os._eventHandler.bind(os));
 
-export default theOS;
+    return os;
+}
