@@ -24,7 +24,7 @@
 import { Descriptor } from "./ps/descriptor";
 
 /**
- * Dummy instance that only hosts the play method.
+ * Dummy instance that only hosts the play method and listens for no events.
  *
  * FIXME: Ideally Descriptor methods like playObject would be available
  * statically, but that isn't a simple change because those methods aren't
@@ -33,7 +33,7 @@ import { Descriptor } from "./ps/descriptor";
  * @private
  * @type {Descriptor}
  */
-const _descriptor = new Descriptor();
+const _descriptor = new Descriptor({ events: [] });
 
 export default class PlayObject {
     /**

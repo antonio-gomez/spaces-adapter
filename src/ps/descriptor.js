@@ -109,8 +109,55 @@ const _makePropertyReference = function (reference, property) {
  * @private
  */
 export class Descriptor extends EventEmitter {
-    constructor () {
+    /**
+     * @param {object=} options
+     * @param {Array.<string|{event: string, universal: boolean}>=} options.events
+     */
+    constructor (options) {
         super();
+
+        let enabledEvents = null;
+        if (!options.hasOwnProperty("events")) {
+            /* eslint no-console: 0 */
+            console.warn("Listening for all Photoshop descriptor events is a potential performance problem.");
+        } else if (options.events && options.events.length > 0) {
+            // Used to verify at runtime that listeners are only added for enabled events.
+            enabledEvents = options.events.reduce(function (set, event) {
+                if (typeof event === "object") {
+                    event = event.event;
+                }
+
+                return set.add(event);
+            }, new Set());
+        } else {
+            // To allow all events, remove the events property from the batchPlay options
+            delete options.events;
+        }
+
+        /**
+         * Whether or not the notifier is currently active.
+         *
+         * @private
+         * @type {boolean}
+         */
+        this._paused = true;
+
+        /**
+         * Options used to set the Photoshop descriptor notifier.
+         *
+         * @private
+         * @type {object=}
+         */
+        this._options = options;
+
+        /**
+         * Photoshop descriptor event handler. Handles notifications from Photoshop
+         * by emitting events.
+         *
+         * @private
+         * @type {function}
+         */
+        this._psEventHandler = this._psEventHandler.bind(this);
 
         /**
          * The Set of enabled Photoshop descriptor event, or null if all events are enabled.
@@ -118,7 +165,7 @@ export class Descriptor extends EventEmitter {
          * @private
          * @type {?Set.<string>}
          */
-        this._enabledEvents = null;
+        this._enabledEvents = enabledEvents;
 
         /**
          * Transaction ID counter
@@ -221,6 +268,47 @@ export class Descriptor extends EventEmitter {
      */
     off (event, listener) {
         return this.removeListener(event, listener);
+    }
+
+    /**
+     * Temporarily disable Photoshop descriptor notifier, and hence temporarily
+     * disable emitting events.
+     */
+    pause () {
+        if (this._paused) {
+            return;
+        }
+
+        this._paused = true;
+
+        // No need to unset the notifier because client wasn't listening for events
+        var options = this._options;
+        if (options.events && options.events.length === 0) {
+            return;
+        }
+
+        // Unset the notifier
+        _spaces.setNotifier(_spaces.notifierGroup.PHOTOSHOP, options, undefined);
+    }
+
+    /**
+     * Reenable Photoshop descriptor notifier, and continue emitting events.
+     */
+    unpause () {
+        if (!this._paused) {
+            return;
+        }
+
+        this._paused = false;
+
+        // Don't set the notifier if the client isn't listening for events
+        var options = this._options;
+        if (options.events && options.events.length === 0) {
+            return;
+        }
+
+        // Re-bind native Photoshop event handler to our handler function
+        _spaces.setNotifier(_spaces.notifierGroup.PHOTOSHOP, this._options, this._psEventHandler);
     }
 
     /**
@@ -833,27 +921,9 @@ export class Descriptor extends EventEmitter {
  * @return {Descriptor}
  */
 export function makeDescriptor (options = {}) {
-    let descriptor = new Descriptor();
+    let descriptor = new Descriptor(options);
 
-    if (!options.hasOwnProperty("events")) {
-        /* eslint no-console: 0 */
-        console.warn("Listening for all Photoshop descriptor events is a potential performance problem.");
-    } else if (options.events && options.events.length > 0) {
-        // Used to verify at runtime that listeners are only added for enabled events.
-        descriptor._enabledEvents = options.events.reduce(function (set, event) {
-            if (typeof event === "object") {
-                event = event.event;
-            }
-
-            return set.add(event);
-        }, new Set());
-    } else {
-        // To allow all events, remove the events property from the batchPlay options
-        delete options.events;
-    }
-
-    // bind native Photoshop event handler to our handler function
-    _spaces.setNotifier(_spaces.notifierGroup.PHOTOSHOP, options, descriptor._psEventHandler.bind(descriptor));
+    descriptor.unpause();
 
     return descriptor;
 }
