@@ -829,7 +829,7 @@ export class Descriptor extends EventEmitter {
  * Construct a Descriptor object with the given options.
  *
  * @param {object=} options
- * @param {?Array.<string>=} options.events Null to allow all events.
+ * @param {?Array.<string|{event: string, universal: boolean}>=} options.events Null to allow all events.
  * @return {Descriptor}
  */
 export function makeDescriptor (options = {}) {
@@ -841,6 +841,10 @@ export function makeDescriptor (options = {}) {
     } else if (options.events && options.events.length > 0) {
         // Used to verify at runtime that listeners are only added for enabled events.
         descriptor._enabledEvents = options.events.reduce(function (set, event) {
+            if (typeof event === "object") {
+                event = event.event;
+            }
+
             return set.add(event);
         }, new Set());
     } else {
