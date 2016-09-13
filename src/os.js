@@ -270,7 +270,7 @@ export class OS extends EventEmitter {
      *
      * @param {object} options
      * @param {string} options.kind "UserApplicationSupport" is the only supported kind currently.
-     * @return {Promise.<string>}
+     * @return {Promise.<{path: string}>}
      */
     getStandardFolderPath (options) {
         return _os.getStandardFolderPathAsync(options);
