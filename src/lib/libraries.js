@@ -147,17 +147,20 @@ export function placeElement (docRef, element, path, location) {
         }]
     });
 
-    return new PlayObject(
-        "spacesLibraryPlaceElement",
-        {
-            "null": docRef,
-            "json": eventData,
-            "location": {
-                "_obj": "paint",
-                "horizontal": location.x,
-                "vertical": location.y
-            }
-        });
+    var descriptor = {
+        "null": docRef,
+        "json": eventData
+    };
+
+    if (location) {
+        descriptor.location = {
+            "_obj": "paint",
+            "horizontal": location.x,
+            "vertical": location.y
+        };
+    }
+    
+    return new PlayObject("spacesLibraryPlaceElement", descriptor);
 }
 
 /**
