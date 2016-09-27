@@ -23,9 +23,10 @@
 
 /* global _spaces */
 
-import EventEmitter from "events";
 import Promise from "bluebird";
 import _ from "lodash";
+
+import NotifierProxy from "../util/notifierproxy";
 
 /** 
  * Wraps certain type of parameters making it easier to call Descriptor.prototype.get
@@ -108,64 +109,13 @@ const _makePropertyReference = function (reference, property) {
  * @constructor
  * @private
  */
-export class Descriptor extends EventEmitter {
+export class Descriptor extends NotifierProxy {
     /**
      * @param {object=} options
      * @param {Array.<string|{event: string, universal: boolean}>=} options.events
      */
     constructor (options) {
-        super();
-
-        let enabledEvents = null;
-        if (!options.hasOwnProperty("events")) {
-            /* eslint no-console: 0 */
-            console.warn("Listening for all Photoshop descriptor events is a potential performance problem.");
-        } else if (options.events && options.events.length > 0) {
-            // Used to verify at runtime that listeners are only added for enabled events.
-            enabledEvents = options.events.reduce(function (set, event) {
-                if (typeof event === "object") {
-                    event = event.event;
-                }
-
-                return set.add(event);
-            }, new Set());
-        } else {
-            // To allow all events, remove the events property from the batchPlay options
-            delete options.events;
-        }
-
-        /**
-         * Whether or not the notifier is currently active.
-         *
-         * @private
-         * @type {boolean}
-         */
-        this._paused = true;
-
-        /**
-         * Options used to set the Photoshop descriptor notifier.
-         *
-         * @private
-         * @type {object=}
-         */
-        this._options = options;
-
-        /**
-         * Photoshop descriptor event handler. Handles notifications from Photoshop
-         * by emitting events.
-         *
-         * @private
-         * @type {function}
-         */
-        this._psEventHandler = this._psEventHandler.bind(this);
-
-        /**
-         * The Set of enabled Photoshop descriptor event, or null if all events are enabled.
-         *
-         * @private
-         * @type {?Set.<string>}
-         */
-        this._enabledEvents = enabledEvents;
+        super(_spaces.notifierGroup.PHOTOSHOP, options);
 
         /**
          * Transaction ID counter
@@ -199,16 +149,6 @@ export class Descriptor extends EventEmitter {
         this._getAsync = Promise.promisify(_spaces.ps.descriptor.get, {
             context: _spaces.ps.descriptor
         });
-
-        /**
-         * Promisified version of sendDirectMessage
-         *
-         * @private
-         * @type {function():Promise}
-         */
-        this._sendDirectMessageAsync = Promise.promisify(_spaces.ps.descriptor.sendDirectMessage, {
-            context: _spaces.ps.descriptor
-        });
     }
 
     /**
@@ -220,142 +160,6 @@ export class Descriptor extends EventEmitter {
      */
 
     static get interactionMode () { return _spaces.ps.descriptor.interactionMode; }
-
-    /**
-     * Event handler for events from the native bridge.
-     *
-     * @private
-     * @param {*=} err Error information
-     * @param {String} eventID typeID for event type
-     * @param {Object} payload serialized ActionDescriptor for the event, dependent on event type
-     */
-    _psEventHandler (err, eventID, payload) {
-        if (err) {
-            this.emit("error", "Failed to handle Photoshop event: " + err);
-            return;
-        }
-
-        this.emit("all", eventID, payload);
-        this.emit(eventID, payload);
-    }
-
-    /**
-     * Override the method to verify that the listener is being added for an
-     * enabled event, lest the client wait for an event that shall never come.
-     *
-     * Related methods on, once and addOnceListener are implemented with this
-     * method.
-     *
-     * @param {string|RegExp} event
-     * @param {*} rest
-     * @return {*}
-     */
-    addListener (event, ...rest) {
-        if (typeof event === "string" && this._enabledEvents && !this._enabledEvents.has(event)) {
-            throw new Error(`Event ${event} is not enabled in this Descriptor instance.`);
-        }
-
-        return super.addListener(event, ...rest);
-    }
-
-    /**
-     * Adding this because some clients use off instead of removeListener and it's a wolfy87-eventemitter
-     * artifact
-     *
-     * @param {string} event
-     * @param {function} listener
-     * @return {Descriptor} Returns a reference to the instance
-     */
-    off (event, listener) {
-        return this.removeListener(event, listener);
-    }
-
-    /**
-     * Temporarily disable Photoshop descriptor notifier, and hence temporarily
-     * disable emitting events.
-     */
-    pause () {
-        if (this._paused) {
-            return;
-        }
-
-        this._paused = true;
-
-        // No need to unset the notifier because client wasn't listening for events
-        var options = this._options;
-        if (options.events && options.events.length === 0) {
-            return;
-        }
-
-        // Unset the notifier
-        _spaces.setNotifier(_spaces.notifierGroup.PHOTOSHOP, options, undefined);
-    }
-
-    /**
-     * Reenable Photoshop descriptor notifier, and continue emitting events.
-     */
-    unpause () {
-        if (!this._paused) {
-            return;
-        }
-
-        this._paused = false;
-
-        // Don't set the notifier if the client isn't listening for events
-        var options = this._options;
-        if (options.events && options.events.length === 0) {
-            return;
-        }
-
-        // Re-bind native Photoshop event handler to our handler function
-        _spaces.setNotifier(_spaces.notifierGroup.PHOTOSHOP, this._options, this._psEventHandler);
-    }
-
-    /**
-     * Send a direct message to Photoshop.
-     *
-     * @param {string} name
-     * @param {object} payload
-     * @param {object=} options
-     * @return {Promise}
-     */
-    sendDirectMessage (name, payload, options = {}) {
-        return this._sendDirectMessageAsync(name, payload, options);
-    }
-
-    /**
-     * Emit the named event with the given arguments as parameters. Throws if the
-     * event is "error" and there are no listeners.
-     * 
-     * @see EventEmitter.prototype.emitEvent
-     * @param {string|RegExp} event Name of the event to emit and execute listeners for
-     * @param {Array=} args Optional array of arguments to be passed to each listener
-     * @return {object} Current instance for chaining
-     */
-    emitEvent (event, args) {
-        if (event === "error") {
-            var listeners = this.getListeners(event);
-
-            if (listeners.length === 0) {
-                var message,
-                    error;
-
-                if (args.length > 0 && typeof args[0] === "string") {
-                    message = args.shift();
-                } else {
-                    message = "Unhandled error event";
-                }
-
-                error = new Error(message);
-                error.args = args;
-                throw error;
-            }
-        }
-
-        this.emitEvent.call(event, args);
-
-        return this;
-    }
 
     /**
      * Executes a low-level "get" call using an ActionReference.

@@ -22,6 +22,7 @@
  */
 
 import descriptor from "./descriptor";
+import messages from "./messages";
 import ui from "./ui";
 
-export { descriptor, ui };
+export { descriptor, messages, ui };
