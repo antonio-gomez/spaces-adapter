@@ -1,6 +1,6 @@
 {
   "name": "spaces-adapter",
-  "version": "4.1.1",
+  "version": "5.0.0",
   "dependencies": {
     "bluebird": {
       "version": "3.3.4",
