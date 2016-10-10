@@ -105,5 +105,6 @@ export function logHeadlightsDataGroup (info, options = {}) {
 
 import * as ui from "./ps/ui";
 import * as descriptor from "./ps/descriptor";
+import * as messages from "./ps/messages";
 
-export { ui, descriptor };
+export { ui, descriptor, messages };
