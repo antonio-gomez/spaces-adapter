@@ -114,14 +114,6 @@ export function openURLInDefaultBrowser (url) {
     return _main.openURLInDefaultBrowserAsync(url);
 }
 
-// TODO: Currently it is VERY hard to pinpoint the origin of Bluebird
-// warnings. When that improves, we should enable this and then fix the
-// sources of the warnings.
-Promise.config({
-    warnings: false,
-    cancellation: true
-});
-
 import * as ps from "./ps";
 import * as util from "./util";
 import * as window from "./window";
