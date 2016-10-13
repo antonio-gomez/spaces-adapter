@@ -55,10 +55,10 @@ git clone git@github.com:adobe-photoshop/spaces-adapter.git
 cd spaces-adapter
 npm install
 npm link
- ./node_modules/.bin/webpack --debug --watch
+npm run dev
 
 # 2. Now you can make changes to spaces-adapter.
-# The `webpack` command will automatically pickup your changes
+# The `npm run dev` command will automatically pickup your changes
 # and rebuild the package in the `build` folder.
 
 # 3. Link the local spaces-adapter repo to your project.
