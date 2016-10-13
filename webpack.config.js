@@ -1,4 +1,3 @@
-var webpack = require("webpack");
 var path = require("path");
 
 module.exports = {
@@ -15,6 +14,10 @@ module.exports = {
     resolve: {
         root: path.resolve("./src"),
         extensions: ["", ".js"]
+    },
+    externals: {
+        // Exclude peerDependencies building
+        "bluebird": true
     },
     module: {
         preLoaders: [
@@ -35,9 +38,5 @@ module.exports = {
                 }
             }
         ]
-    },
-    plugins: [
-        // Does not allow a bundle when there are errors present
-        new webpack.NoErrorsPlugin()
-    ]
+    }
 };
