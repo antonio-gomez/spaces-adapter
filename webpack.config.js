@@ -16,6 +16,10 @@ module.exports = {
         root: path.resolve("./src"),
         extensions: ["", ".js"]
     },
+    externals: {
+        // Exclude peerDependencies building
+        "bluebird": true
+    },
     module: {
         preLoaders: [
             {
