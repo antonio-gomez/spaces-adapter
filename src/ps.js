@@ -62,6 +62,29 @@ export function performMenuCommand (commandID) {
 }
 
 /**
+ * Read preferences. This method will only work if the
+ * initialized Spaces plug-in has set up a preference ID
+ *
+ * @param {object=} options
+ * @return {Promise.<*>} Promise
+ */
+export function readPreferences (options = {}) {
+    return _ps.readPreferencesAsync(options);
+}
+
+/**
+ * Write preferences. This method will only work if the
+ * initialized Spaces plug-in has set up a preference ID
+ *
+ * @param {object} data Data to store in preferences
+ * @param {object=} options
+ * @return {Promise.<*>} Promise
+ */
+export function writePreferences (data, options = {}) {
+    return _ps.writePreferencesAsync(data, options);
+}
+
+/**
  * Log an analytics event using the Adobe Headlights API.
  *
  * NOTE: This is an Adobe-private API that must not be used by third-party
