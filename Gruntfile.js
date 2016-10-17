@@ -34,10 +34,8 @@ module.exports = function (grunt) {
             all: [
                 "*.js",
                 "src/**/*.js",
-                "test/**/*.js",
                 "examples/**/*.js",
-                "!package.json",
-                "!test/spec/low-level-test.js"
+                "!package.json"
             ]
         },
         jscs: {
@@ -59,8 +57,7 @@ module.exports = function (grunt) {
         jsonlint: {
             src: [
                 "*.json",
-                "src/**/*.json",
-                "test/**/*.json"
+                "src/**/*.json"
             ]
         },
         lintspaces: {

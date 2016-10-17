@@ -17,7 +17,6 @@
   ],
   "description": "JavaScript adapter for the Adobe Photoshop Spaces plugin",
   "scripts": {
-    "test": "eslint src",
     "prepublish": "webpack --production --config webpack-prd.config.js",
     "dev": "webpack --debug --watch"
   },
