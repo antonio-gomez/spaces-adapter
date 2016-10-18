@@ -159,7 +159,7 @@ export function placeElement (docRef, element, path, location) {
             "vertical": location.y
         };
     }
-    
+
     return new PlayObject("spacesLibraryPlaceElement", descriptor);
 }
 
@@ -221,4 +221,18 @@ export function createTextThumbnail (path, postscriptName, text, size, color) {
             "fontSize": size,
             "color": color
         });
+}
+
+/**
+ * Reveal an element in the Libraries panel
+ *
+ * @param {AdobeLibraryElement} element
+ * @return {PlayObject}
+ */
+export function revealElement (element) {
+    let descriptor = {
+        elementReference: element.getReference()
+    };
+
+    return new PlayObject("placedLayerRevealInOS", descriptor);
 }
