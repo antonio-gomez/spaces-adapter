@@ -40,7 +40,7 @@ export default class NotifierProxy extends EventEmitter {
 
         let enabledEvents = null;
         if (!options.hasOwnProperty("events")) {
-            /* eslint no-console: 0 */
+            // eslint-disable-next-line no-console
             console.warn("Listening for all events is a potential performance problem.");
         } else if (options.events && options.events.length > 0) {
             // Used to verify at runtime that listeners are only added for enabled events.
@@ -227,7 +227,7 @@ export default class NotifierProxy extends EventEmitter {
         let enabledEvents = null;
 
         if (!events) {
-            /* eslint no-console: 0 */
+            // eslint-disable-next-line no-console
             console.warn("Listening for all events is a potential performance problem.");
         } else if (events && events.length > 0) {
             // Used to verify at runtime that listeners are only added for enabled events.
