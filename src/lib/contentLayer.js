@@ -73,15 +73,15 @@ const _strokeCorner = {
  */
 const _patternName = {
     pBubbles: ["b7334da0-122f-11d4-8bb5-e27e45023b5f",
-    "$$$/Presets/Patterns/Patterns_pat/Bubbles=Bubbles"],
+        "$$$/Presets/Patterns/Patterns_pat/Bubbles=Bubbles"],
     pTieDye: ["1b29876b-58b7-11d4-b895-a898787104c1",
-    "$$$/Presets/Patterns/Patterns_pat/TieDye=Tie Dye"],
+        "$$$/Presets/Patterns/Patterns_pat/TieDye=Tie Dye"],
     pLaidhorizontal: ["52a93427-f5d6-1172-a989-8dc82a43aa51",
-    "$$$/Presets/Patterns/Patterns_pat/Laidhorizontal=Laid-horizontal"],
+        "$$$/Presets/Patterns/Patterns_pat/Laidhorizontal=Laid-horizontal"],
     pFineGrain: ["c02fddff-f05a-1172-9a0f-f7bad69dd4b0",
-    "$$$/Presets/Patterns/Patterns_pat/FineGrain=Fine Grain"],
+        "$$$/Presets/Patterns/Patterns_pat/FineGrain=Fine Grain"],
     pGrayGranite: ["f293c3d4-57f7-1177-b70c-a0459fa92660",
-    "$$$/Presets/Patterns/Patterns_pat/GrayGranite=Gray Granite"]
+        "$$$/Presets/Patterns/Patterns_pat/GrayGranite=Gray Granite"]
 };
 
 /**

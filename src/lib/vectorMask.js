@@ -125,8 +125,8 @@ export function makeVectorMaskFromWorkPath () {
         "null": {
             "_ref": [{
                 "_ref": "path"
-            }
-        ] },
+            }]
+        },
         "at": maskRef,
         "using": pathRef
     });
