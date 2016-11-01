@@ -231,7 +231,7 @@ export function createTextThumbnail (path, postscriptName, text, size, color) {
  */
 export function revealElement (element) {
     let descriptor = {
-        "null" : {
+        "null": {
             "_ref": [
                 {
                     "_ref": "property",
