@@ -231,8 +231,17 @@ export function createTextThumbnail (path, postscriptName, text, size, color) {
  */
 export function revealElement (element) {
     let descriptor = {
-        elementReference: element.getReference()
+        "null" : {
+            "_ref": [
+                {
+                    "_ref": "property",
+                    "_property": "ccLibrariesRevealInUI"
+                },
+                appReference.current
+            ]
+        },
+        "elementReference": element.getReference()
     };
 
-    return new PlayObject("placedLayerRevealInOS", descriptor);
+    return new PlayObject("get", descriptor);
 }
