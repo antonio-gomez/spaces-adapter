@@ -22,7 +22,8 @@
  */
 
 import PlayObject from "../playObject";
-import { wrapper } from "./reference";
+import { wrapper, refersTo as referenceOf } from "./reference";
+import { assert } from "../util";
 
 const referenceBy = wrapper("application");
 
@@ -112,6 +113,22 @@ export function getApplicationFrameInfo () {
 }
 
 /**
+ * If visible, will return the information on a
+ * given layer's cell in the layers panel
+ * Such as it's global bounds, and where the specific controls are
+ *
+ * @param {Reference} layerRef
+ *
+ * @return {PlayObject}
+ */
+export function getLayersPanelInfo (layerRef) {
+    assert(referenceOf(layerRef) === "layer", "getLayersPanelInfo requires a layer reference");
+    return new PlayObject("getLayersPanelInfo", {
+        "null": layerRef
+    });
+}
+
+/**
  * Gets the information on all the tools from Photoshop
  *
  * @return {PlayObject}
@@ -138,7 +155,7 @@ export function getCurrentToolbarSpecification () {
 /**
  * Gets information on the given tool
  *
- * @param {string} toolID OSType of the tool e.g. `$pntb`
+ * @param {string} toolID String ID of the tool ("moveTool")
  *
  * @return {PlayObject}
  */
@@ -146,7 +163,7 @@ export function getToolInfo (toolID) {
     return new PlayObject("uiInfo", {
         "null": referenceBy.current,
         "command": "getToolInfo",
-        "toolKey": toolID
+        "toolID": toolID
     });
 }
 
