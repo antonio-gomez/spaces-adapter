@@ -41,6 +41,17 @@ var _keyboardFocus = Promise.promisifyAll(_spaces.os.keyboardFocus);
 var _clipboard = Promise.promisifyAll(_spaces.os.clipboard);
 
 /**
+ * External events map to their event notification mode.
+ * @type {Object}
+ */
+var _EXTERNAL_EVENT_MODE = {
+    "externalMouseDown": _spaces.os.externalEventNotificationMode.EXTERNAL_EVENT_NOTIFICATION_LEFT_MOUSEDOWN,
+    "externalRMouseDown": _spaces.os.externalEventNotificationMode.EXTERNAL_EVENT_NOTIFICATION_RIGHT_MOUSEDOWN,
+    "externalMouseMove": _spaces.os.externalEventNotificationMode.EXTERNAL_EVENT_NOTIFICATION_MOUSEMOVE,
+    "externalMouseWheel": _spaces.os.externalEventNotificationMode.EXTERNAL_EVENT_NOTIFICATION_MOUSEWHEEL
+};
+
+/**
  * The OS object provides helper methods for dealing with operating
  * system by way of Photoshop.
  *
@@ -275,6 +286,84 @@ export class OS extends EventEmitter {
     getStandardFolderPath (options) {
         return _os.getStandardFolderPathAsync(options);
     }
+
+    /**
+     * Register to receive external events, like "externalMouseDown", from Photoshop.
+     * These external event notifications are disabled by default.
+     *
+     * Example:
+     *      os.registerExternalEventNotification("externalMouseMove", "externalMouseDown");
+     *      os.addListener("externalMouseMove", callback);
+     *      os.addListener("externalMouseDown", callback);
+     *
+     * @param {...String} events
+     * @return {Promise}
+     */
+    registerExternalEventNotification (...events) {
+        return this._setExternalEventNotification(events);
+    }
+
+    /**
+     * Unregister to stop receiving external events, like "externalMouseMove", from Photoshop.
+     *
+     * @param {...String} events
+     * @return {Promise}
+     */
+    unregisterExternalEventNotification (...events) {
+        return this._setExternalEventNotification(events, false);
+    }
+
+    /**
+     * Return Photoshop's current notification modes of external events.
+     *
+     * @return {Promise.<Array.<String>>}
+     */
+    getExternalEventNotificationMode () {
+        return _os.getExternalEventNotificationModeAsync()
+            .then(function (mode) {
+                return Object.entries(_EXTERNAL_EVENT_MODE).reduce(function (events, event) {
+                    if (event[1] & mode) {
+                        events.push(event[0]);
+                    }
+
+                    return events;
+                }, []);
+            });
+    }
+
+    /**
+     * @private
+     * @param {Array.<string>} events
+     * @param {Boolean=} register
+     * @return {Promise}
+     */
+    _setExternalEventNotification (events, register = true) {
+        var nextMode;
+
+        return _os.getExternalEventNotificationModeAsync()
+            .then(function (mode) {
+                nextMode = mode;
+
+                return events;
+            })
+            .each(function (event) {
+                var mode = _EXTERNAL_EVENT_MODE[event];
+
+                if (!mode) {
+                    return Promise.reject("Unsupported external event: " + mode);
+                }
+
+                if (register) {
+                    nextMode |= mode;
+                } else {
+                    nextMode ^= mode;
+                }
+            })
+            .then(function () {
+                return _os.setExternalEventNotificationModeAsync({ mode: nextMode });
+            });
+    }
+
 }
 
 /**
