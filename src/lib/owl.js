@@ -153,7 +153,7 @@ export function getCurrentToolbarSpecification () {
 }
 
 /**
- * Gets information on the given tool
+ * Gets information on the given tool by its string ID
  *
  * @param {string} toolID String ID of the tool ("moveTool")
  *
@@ -164,6 +164,21 @@ export function getToolInfo (toolID) {
         "null": referenceBy.current,
         "command": "getToolInfo",
         "toolID": toolID
+    });
+}
+
+/**
+ * Gets information on the given tool by its OSType or numeric key
+ *
+ * @param {string} toolKey Numeric key cast to string ("1634891604") or OSType (`$pntb`)
+ *
+ * @return {PlayObject}
+ */
+export function getToolInfoByKey (toolKey) {
+    return new PlayObject("uiInfo", {
+        "null": referenceBy.current,
+        "command": "getToolInfo",
+        "toolKey": toolKey
     });
 }
 
