@@ -206,3 +206,18 @@ export function getMenuCommands () {
 
     return new PlayObject("get", descriptor);
 }
+
+/**
+ * Open Learn Panel with provided tutorial
+ *
+ * @return {PlayObject}
+ */
+export function openLearnPanel (tutoral) { 
+    return new PlayObject(
+        "toggleLearnPanel",
+        {
+            "null": referenceBy.current,
+            "tutorals": tutoral
+        }
+    );
+}
