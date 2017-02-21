@@ -212,7 +212,7 @@ export function getMenuCommands () {
  *
  * @return {PlayObject}
  */
-export function openLearnPanel (tutoral) { 
+export function openLearnPanel (tutoral) {
     return new PlayObject(
         "toggleLearnPanel",
         {
